@@ -8,16 +8,9 @@ PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/XTLS/Xray-core/tar.gz/v$(PKG_VERSION)?
 PKG_HASH:=skip
 
-#PKG_SOURCE_PROTO:=git
-#PKG_SOURCE_URL:=https://github.com/XTLS/xray-core.git
-#PKG_MIRROR_HASH:=skip
-#PKG_SOURCE_VERSION:=c345d4818efa763b07961d6c132afe1cf91845de
-#PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION).tar.gz
-
 PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
 PKG_LICENSE:=MPL-2.0
 PKG_LICENSE_FILES:=LICENSE
-
 
 PKG_BUILD_DEPENDS:=golang/host
 PKG_BUILD_PARALLEL:=1

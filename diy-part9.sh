@@ -149,6 +149,6 @@ cp -rf $GITHUB_WORKSPACE/patchs/5.4/netsupport.mk package/kernel/linux/modules/n
 rm -rf feeds/small8/fullconenat-nft
 rm -rf feeds/small8/fullconenat
 
-cp -rf feeds/small8/xray/Makefile feeds/helloworld/xray-core/Makefile
-cp -rf feeds/small8/xray/Makefile feeds/packages/net/xray-core/Makefile
-cp -rf feeds/small8/xray/Makefile feeds/packages/net/xray-core/Makefile
+cp -rf feeds/small8/xray-core/Makefile feeds/helloworld/xray-core/Makefile
+cp -rf feeds/small8/xray-core/Makefile feeds/packages/net/xray-core/Makefile
+cp -rf feeds/small8/xray-core/Makefile feeds/packages/net/xray-core/Makefile

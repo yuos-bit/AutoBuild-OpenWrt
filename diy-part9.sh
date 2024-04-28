@@ -158,6 +158,6 @@ cp -rf $GITHUB_WORKSPACE/patchs/5.4/netsupport.mk package/kernel/linux/modules/n
 # 删除多余组件
 rm -rf feeds/small8/fullconenat-nft
 rm -rf feeds/small8/fullconenat
-# cp -rf $GITHUB_WORKSPACE/patchs/xray/1.7.5/Makefile feeds/helloworld/xray-core/Makefile
-# cp -rf $GITHUB_WORKSPACE/patchs/xray/1.7.5/Makefile feeds/packages/net/xray-core/Makefile
+cp -rf $GITHUB_WORKSPACE/patchs/xray/1.7.5/Makefile feeds/helloworld/xray-core/Makefile
+cp -rf $GITHUB_WORKSPACE/patchs/xray/1.7.5/Makefile feeds/packages/net/xray-core/Makefile
 # cp -rf feeds/small8/xray/Makefile feeds/packages/net/xray-core/Makefile

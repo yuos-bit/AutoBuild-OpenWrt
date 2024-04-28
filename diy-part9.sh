@@ -73,7 +73,7 @@ sed -i '/luciversion/d' feeds/luci/modules/luci-base/luasrc/version.lua
 #升级golang
 find . -type d -name "golang" -exec rm -r {} +
 rm -rf feeds/packages/lang/golang
-git clone https://github.com/sbwml/packages_lang_golang -b 21.x feeds/packages/lang/golang
+git clone https://github.com/sbwml/packages_lang_golang -b 22.x feeds/packages/lang/golang
 # mkdir -p feeds/packages/lang/golang/golang/
 # cp -rf $GITHUB_WORKSPACE/patchs/5.4/golang/* feeds/packages/lang/golang/golang/
 
@@ -82,18 +82,14 @@ find . -type d -name "gn" -exec rm -r {} +
 mkdir -p feeds/small8/gn/
 cp -rf $GITHUB_WORKSPACE/patchs/5.4/gn/* feeds/small8/gn/
 
-find . -type d -name "naiveproxy" -exec rm -r {} +
-mkdir -p feeds/small8/naiveproxy/
-mkdir -p feeds/helloworld/naiveproxy/
-cp -rf $GITHUB_WORKSPACE/patchs/5.4/naiveproxy/* feeds/small8/naiveproxy/
-cp -rf $GITHUB_WORKSPACE/patchs/5.4/naiveproxy/* feeds/helloworld/naiveproxy/
+cp -rf feeds/small8/naiveproxy/* feeds/small/naiveproxy/
+cp -rf feeds/small8/naiveproxy/* feeds/small8/naiveproxy/
+cp -rf feeds/small8/naiveproxy/* feeds/helloworld/naiveproxy/
 
 # rm -rf feeds/helloworld/hysteria
-rm -rf feeds/small/hysteria
-cp -rf $GITHUB_WORKSPACE/patchs/5.4/hysteria/* feeds/packages/net/hysteria/
-cp -rf $GITHUB_WORKSPACE/patchs/5.4/hysteria/* feeds/helloworld/hysteria/
-
-
+cp -rf feeds/small8/hysteria/* feeds/small/hysteria/
+cp -rf feeds/small8/hysteria/* feeds/packages/net/hysteria/
+cp -rf feeds/small8/hysteria/* feeds/helloworld/hysteria/
 
 rm -rf feeds/small/luci-app-passwall2
 rm -rf feeds/small/brook
@@ -109,11 +105,11 @@ rm -rf feeds/small/v2ray-plugin
 rm -rf feeds/helloworld/xray-core
 rm -rf feeds/small/xray-core
 cp -rf feeds/small8/xray-core/* feeds/packages/net/xray-core/
-cp -rf feeds/small8/xray-core/* feeds/Lienol/net/xray-core/
+
 # find . -type d -name "sing-box" -exec rm -r {} +
 
 
-cp -rf $GITHUB_WORKSPACE/patchs/5.4/tailscale/* feeds/packages/net/tailscale/
+# cp -rf $GITHUB_WORKSPACE/patchs/5.4/tailscale/* feeds/packages/net/tailscale/
 
 #升级cmake
 rm -rf tools/cmake
@@ -135,12 +131,6 @@ popd
 ### 后补的
 # SFE kernel patch
 cp -n $GITHUB_WORKSPACE/patchs/5.4/hack-5.4/* target/linux/generic/hack-5.4/
-
-# 临时处理
-# rm -rf target/linux/generic/hack-5.4/952-net-conntrack-events-support-multiple-registrant.patch
-# rm -rf target/linux/generic/hack-5.4/953-net-patch-linux-kernel-to-support-shortcut-fe.patch
-# 临时处理
-
 cp -n $GITHUB_WORKSPACE/patchs/5.4/pending-5.4/* target/linux/generic/pending-5.4/
 cp -rf $GITHUB_WORKSPACE/patchs/5.4/sfe/* package/yuos/
 
@@ -158,6 +148,7 @@ cp -rf $GITHUB_WORKSPACE/patchs/5.4/netsupport.mk package/kernel/linux/modules/n
 # 删除多余组件
 rm -rf feeds/small8/fullconenat-nft
 rm -rf feeds/small8/fullconenat
-cp -rf $GITHUB_WORKSPACE/patchs/xray/1.7.5/Makefile feeds/helloworld/xray-core/Makefile
-cp -rf $GITHUB_WORKSPACE/patchs/xray/1.7.5/Makefile feeds/packages/net/xray-core/Makefile
-# cp -rf feeds/small8/xray/Makefile feeds/packages/net/xray-core/Makefile
+
+cp -rf feeds/small8/xray/Makefile feeds/helloworld/xray-core/Makefile
+cp -rf feeds/small8/xray/Makefile feeds/packages/net/xray-core/Makefile
+cp -rf feeds/small8/xray/Makefile feeds/packages/net/xray-core/Makefile

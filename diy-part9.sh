@@ -107,9 +107,9 @@ rm -rf feeds/small/xray-core
 cp -rf feeds/small8/xray-core/* feeds/packages/net/xray-core/
 
 # find . -type d -name "sing-box" -exec rm -r {} +
-
-
-# cp -rf $GITHUB_WORKSPACE/patchs/5.4/tailscale/* feeds/packages/net/tailscale/
+cp -rf feeds/small8/tailscale/* feeds/packages/net/tailscale/
+cp -rf feeds/small8/tailscale/* feeds/small/tailscale/
+cp -rf feeds/small8/tailscale/* feeds/helloworld/tailscale/
 
 #升级cmake
 rm -rf tools/cmake

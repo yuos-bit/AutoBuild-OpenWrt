@@ -58,7 +58,7 @@ rm -rf package/network/services/dnsmasq
 cp -rf $GITHUB_WORKSPACE/patchs/5.4/dnsmasq package/network/services/dnsmasq
 
 # 测试编译时间
-YUOS_DATE="$(date +%Y.%m.%d)(纯享版)"
+YUOS_DATE="$(date +%Y.%m.%d)(养老版)"
 BUILD_STRING=${BUILD_STRING:-$YUOS_DATE}
 echo "Write build date in openwrt : $BUILD_DATE"
 echo -e '\n小渔学长 Build @ '${BUILD_STRING}'\n'  >> package/base-files/files/etc/banner
@@ -67,49 +67,6 @@ echo "DISTRIB_REVISION=''" >> package/base-files/files/etc/openwrt_release
 sed -i '/DISTRIB_DESCRIPTION/d' package/base-files/files/etc/openwrt_release
 echo "DISTRIB_DESCRIPTION='小渔学长 Build @ ${BUILD_STRING}'" >> package/base-files/files/etc/openwrt_release
 sed -i '/luciversion/d' feeds/luci/modules/luci-base/luasrc/version.lua
-
-
-
-#升级golang
-find . -type d -name "golang" -exec rm -r {} +
-rm -rf feeds/packages/lang/golang
-git clone https://github.com/sbwml/packages_lang_golang -b 22.x feeds/packages/lang/golang
-# mkdir -p feeds/packages/lang/golang/golang/
-# cp -rf $GITHUB_WORKSPACE/patchs/5.4/golang/* feeds/packages/lang/golang/golang/
-
-#设置软件唯一性
-find . -type d -name "gn" -exec rm -r {} +
-mkdir -p feeds/small8/gn/
-cp -rf $GITHUB_WORKSPACE/patchs/5.4/gn/* feeds/small8/gn/
-
-cp -rf feeds/small8/naiveproxy/* feeds/small/naiveproxy/
-cp -rf feeds/small8/naiveproxy/* feeds/small8/naiveproxy/
-cp -rf feeds/small8/naiveproxy/* feeds/helloworld/naiveproxy/
-
-# rm -rf feeds/helloworld/hysteria
-cp -rf feeds/small8/hysteria/* feeds/small/hysteria/
-cp -rf feeds/small8/hysteria/* feeds/packages/net/hysteria/
-cp -rf feeds/small8/hysteria/* feeds/helloworld/hysteria/
-
-rm -rf feeds/small/luci-app-passwall2
-rm -rf feeds/small/brook
-rm -rf feeds/helloworld/shadowsocks-rust
-rm -rf feeds/small/shadowsocks-rust
-
-# rm -rf feeds/helloworld/simple-obfs
-rm -rf feeds/small/simple-obfs
-
-
-rm -rf feeds/helloworld/v2ray-plugin
-rm -rf feeds/small/v2ray-plugin
-rm -rf feeds/helloworld/xray-core
-rm -rf feeds/small/xray-core
-cp -rf feeds/small8/xray-core/* feeds/packages/net/xray-core/
-
-# find . -type d -name "sing-box" -exec rm -r {} +
-cp -rf $GITHUB_WORKSPACE/patchs/5.4/tailscale/* feeds/packages/net/tailscale/
-cp -rf $GITHUB_WORKSPACE/patchs/5.4/tailscale/* feeds/small/tailscale/
-cp -rf $GITHUB_WORKSPACE/patchs/5.4/tailscale/* feeds/helloworld/tailscale/
 
 #升级cmake
 rm -rf tools/cmake
@@ -144,11 +101,47 @@ cp -rf $GITHUB_WORKSPACE/patchs/5.4/files-5.4/* target/linux/generic/files-5.4/
 # 测试
 cp -rf $GITHUB_WORKSPACE/patchs/5.4/netsupport.mk package/kernel/linux/modules/netsupport.mk
 
-
 # 删除多余组件
 rm -rf feeds/small8/fullconenat-nft
 rm -rf feeds/small8/fullconenat
 
-cp -rf feeds/small8/xray-core/Makefile feeds/helloworld/xray-core/Makefile
-cp -rf feeds/small8/xray-core/Makefile feeds/packages/net/xray-core/Makefile
-cp -rf feeds/small8/xray-core/Makefile feeds/packages/net/xray-core/Makefile
+
+# 为保障流畅，针对SSR做特定版本处理
+# xray 1.7.5
+cp -rf $GITHUB_WORKSPACE/patchs/5.4/xray-core/1.7.5/* feeds/helloworld/xray-core/
+cp -rf $GITHUB_WORKSPACE/patchs/5.4/xray-core/1.7.5/* feeds/small/xray-core/
+cp -rf $GITHUB_WORKSPACE/patchs/5.4/xray-core/1.7.5/* feeds/small8/xray-core/
+
+# tailscale 1.40.0
+cp -rf $GITHUB_WORKSPACE/patchs/5.4/tailscale/* feeds/packages/net/tailscale/
+cp -rf $GITHUB_WORKSPACE/patchs/5.4/tailscale/* feeds/small/tailscale/
+cp -rf $GITHUB_WORKSPACE/patchs/5.4/tailscale/* feeds/helloworld/tailscale/
+
+# naiveproxy
+cp -rf feeds/small8/naiveproxy/* feeds/small/naiveproxy/
+cp -rf feeds/small8/naiveproxy/* feeds/small8/naiveproxy/
+cp -rf feeds/small8/naiveproxy/* feeds/helloworld/naiveproxy/
+
+# hysteria 1.3.5
+cp -rf $GITHUB_WORKSPACE/patchs/5.4/hysteria/* feeds/small/hysteria/
+cp -rf $GITHUB_WORKSPACE/patchs/5.4/hysteria/* feeds/packages/net/hysteria/
+cp -rf $GITHUB_WORKSPACE/patchs/5.4/hysteria/* feeds/helloworld/hysteria/
+
+#升级golang
+find . -type d -name "golang" -exec rm -r {} +
+rm -rf feeds/packages/lang/golang
+git clone https://github.com/sbwml/packages_lang_golang -b 20.x feeds/packages/lang/golang
+# mkdir -p feeds/packages/lang/golang/golang/
+# cp -rf $GITHUB_WORKSPACE/patchs/5.4/golang/* feeds/packages/lang/golang/golang/
+
+#设置软件唯一性
+find . -type d -name "gn" -exec rm -r {} +
+mkdir -p feeds/small8/gn/
+cp -rf $GITHUB_WORKSPACE/patchs/5.4/gn/* feeds/small8/gn/
+rm -rf feeds/small/brook
+rm -rf feeds/helloworld/shadowsocks-rust
+rm -rf feeds/small/shadowsocks-rust
+rm -rf feeds/helloworld/simple-obfs
+rm -rf feeds/helloworld/v2ray-plugin
+rm -rf feeds/small/v2ray-plugin
+# find . -type d -name "sing-box" -exec rm -r {} +

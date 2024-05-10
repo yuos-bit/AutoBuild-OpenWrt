@@ -165,8 +165,8 @@ find . -type d -name "ucl" -exec rm -r {} +
 rm -rf feeds/small8/fullconenat-nft
 rm -rf feeds/small8/fullconenat
 
-cp -rf $GITHUB_WORKSPACE/patchs/xray/1.5.3/* feeds/small8/xray-core/
-cp -rf $GITHUB_WORKSPACE/patchs/xray/1.5.3/* feeds/small/xray-core/
-cp -rf $GITHUB_WORKSPACE/patchs/xray/1.5.3/* feeds/helloworld/xray-core/
-cp -rf $GITHUB_WORKSPACE/patchs/xray/1.5.3/* feeds/packages/net/xray-core/
-cp -rf $GITHUB_WORKSPACE/patchs/xray/1.5.3/* package/feeds/packages/xray-core/
+cp -rf $GITHUB_WORKSPACE/patchs/xray-core/1.5.3/* feeds/small8/xray-core/
+cp -rf $GITHUB_WORKSPACE/patchs/xray-core/1.5.3/* feeds/small/xray-core/
+cp -rf $GITHUB_WORKSPACE/patchs/xray-core/1.5.3/* feeds/helloworld/xray-core/
+cp -rf $GITHUB_WORKSPACE/patchs/xray-core/1.5.3/* feeds/packages/net/xray-core/
+cp -rf $GITHUB_WORKSPACE/patchs/xray-core/1.5.3/* package/feeds/packages/xray-core/

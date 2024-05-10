@@ -20,7 +20,7 @@ detect_mtwifi() {
 					hwmode="11g"
 					htmode="HE40"
 					htbsscoex="1"
-					wan_mac=$(ifconfig $(uci get network.wan.ifname) | awk '/ether/{print $2}' | cut -c1-4)
+					wan_mac=$(ifconfig $(uci get network.wan.ifname) | awk '/ether/{print $2}')
 					ssid="Xiaoyu_${wan_mac}_2.4G"
 					dbdc_main="1"
 				else
@@ -28,7 +28,7 @@ detect_mtwifi() {
 					hwmode="11a"
 					htmode="HE160"
 					htbsscoex="0"
-					wan_mac=$(ifconfig $(uci get network.wan.ifname) | awk '/ether/{print $2}' | cut -c1-4)
+					wan_mac=$(ifconfig $(uci get network.wan.ifname) | awk '/ether/{print $2}')
 					ssid="Xiaoyu_$(echo $wan_mac | awk -F: '{print $1$2}')_5G"
 					dbdc_main="0"
 				fi

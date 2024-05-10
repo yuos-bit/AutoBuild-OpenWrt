@@ -117,16 +117,10 @@ jobs:
     - name: 更新插件
       run: cd immortalwrt && ./scripts/feeds update -a
 
-    - name: 设置xray1.7.5
-      run: |
-          cd immortalwrt
-          cp -rf $GITHUB_WORKSPACE/patchs/xray/1.7.5/Makefile feeds/helloworld/xray-core/Makefile
-          cp -rf $GITHUB_WORKSPACE/patchs/xray/1.7.5/Makefile feeds/packages/net/xray-core/Makefile
-
     - name: 安装插件
       run: cd immortalwrt && ./scripts/feeds install -a
 
-    - name: 加载配置文件
+    - name: 运行第二脚本
       run: |
         [ -e files ] && mv files immortalwrt/files
         [ -e $CONFIG_FILE ] && mv $CONFIG_FILE immortalwrt/.config

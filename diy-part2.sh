@@ -36,7 +36,7 @@ git clone -b main --single-branch https://github.com/fullcone-nat-nftables/nftab
 git clone -b master --single-branch https://github.com/fullcone-nat-nftables/libnftnl-1.2.4-with-fullcone package/libnftnl
 
 # 测试编译时间
-YUOS_DATE="$(date +%Y.%m.%d)(新春贺岁版)"
+YUOS_DATE="$(date +%Y.%m.%d)(月更版)"
 BUILD_STRING=${BUILD_STRING:-$YUOS_DATE}
 echo "Write build date in openwrt : $BUILD_DATE"
 echo -e '\n小渔学长 Build @ '${BUILD_STRING}'\n'  >> package/base-files/files/etc/banner
@@ -44,3 +44,78 @@ sed -i '/DISTRIB_REVISION/d' package/base-files/files/etc/openwrt_release
 echo "DISTRIB_REVISION=''" >> package/base-files/files/etc/openwrt_release
 sed -i '/DISTRIB_DESCRIPTION/d' package/base-files/files/etc/openwrt_release
 echo "DISTRIB_DESCRIPTION='小渔学长 Build @ ${BUILD_STRING}'" >> package/base-files/files/etc/openwrt_release
+
+
+#升级cmake
+rm -rf tools/cmake
+mkdir -p tools/cmake/
+cp -rf $GITHUB_WORKSPACE/patchs/5.4/tools/cmake/* tools/cmake/
+
+### 后补的
+
+#FullCone Patch
+git clone -b master --single-branch https://github.com/QiuSimons/openwrt-fullconenat package/fullconenat
+# Patch FireWall for fullcone
+mkdir package/network/config/firewall/patches
+wget -P package/network/config/firewall/patches/ https://raw.githubusercontent.com/LGA1150/fullconenat-fw3-patch/master/fullconenat.patch
+
+pushd feeds/luci
+wget -O- https://raw.githubusercontent.com/LGA1150/fullconenat-fw3-patch/master/luci.patch | git apply
+popd
+
+### 后补的
+# SFE kernel patch
+cp -n $GITHUB_WORKSPACE/patchs/5.4/hack-5.4/* target/linux/generic/hack-5.4/
+cp -n $GITHUB_WORKSPACE/patchs/5.4/pending-5.4/* target/linux/generic/pending-5.4/
+cp -rf $GITHUB_WORKSPACE/patchs/5.4/sfe/* package/yuos/
+
+# 解决kconfig补丁
+wget -P target/linux/generic/backport-5.4/ https://raw.githubusercontent.com/hanwckf/immortalwrt-mt798x/openwrt-21.02/target/linux/generic/backport-5.4/500-v5.15-fs-ntfs3-Add-NTFS3-in-fs-Kconfig-and-fs-Makefile.patch
+patch -p1 < target/linux/generic/backport-5.4/500-v5.15-fs-ntfs3-Add-NTFS3-in-fs-Kconfig-and-fs-Makefile.patch
+
+mkdir -p target/linux/generic/files-5.4/
+cp -rf $GITHUB_WORKSPACE/patchs/5.4/files-5.4/* target/linux/generic/files-5.4/
+
+# 删除多余组件
+rm -rf feeds/small8/fullconenat-nft
+rm -rf feeds/small8/fullconenat
+
+# 为保障流畅，针对SSR做特定版本处理
+# xray 1.7.5
+cp -rf $GITHUB_WORKSPACE/patchs/5.4/xray-core/1.7.5/* feeds/helloworld/xray-core/
+cp -rf $GITHUB_WORKSPACE/patchs/5.4/xray-core/1.7.5/* feeds/small/xray-core/
+cp -rf $GITHUB_WORKSPACE/patchs/5.4/xray-core/1.7.5/* feeds/small8/xray-core/
+
+# tailscale 1.40.0
+cp -rf $GITHUB_WORKSPACE/patchs/5.4/tailscale/* feeds/packages/net/tailscale/
+cp -rf $GITHUB_WORKSPACE/patchs/5.4/tailscale/* feeds/small/tailscale/
+cp -rf $GITHUB_WORKSPACE/patchs/5.4/tailscale/* feeds/helloworld/tailscale/
+
+# naiveproxy
+cp -rf feeds/small8/naiveproxy/* feeds/small/naiveproxy/
+cp -rf feeds/small8/naiveproxy/* feeds/small8/naiveproxy/
+cp -rf feeds/small8/naiveproxy/* feeds/helloworld/naiveproxy/
+
+# hysteria 1.3.5
+cp -rf $GITHUB_WORKSPACE/patchs/5.4/hysteria/* feeds/small/hysteria/
+cp -rf $GITHUB_WORKSPACE/patchs/5.4/hysteria/* feeds/packages/net/hysteria/
+cp -rf $GITHUB_WORKSPACE/patchs/5.4/hysteria/* feeds/helloworld/hysteria/
+
+#升级golang
+find . -type d -name "golang" -exec rm -r {} +
+rm -rf feeds/packages/lang/golang
+git clone https://github.com/sbwml/packages_lang_golang -b 20.x feeds/packages/lang/golang
+# mkdir -p feeds/packages/lang/golang/golang/
+# cp -rf $GITHUB_WORKSPACE/patchs/5.4/golang/* feeds/packages/lang/golang/golang/
+
+#设置软件唯一性
+find . -type d -name "gn" -exec rm -r {} +
+mkdir -p feeds/small8/gn/
+cp -rf $GITHUB_WORKSPACE/patchs/5.4/gn/* feeds/small8/gn/
+rm -rf feeds/small/brook
+rm -rf feeds/helloworld/shadowsocks-rust
+rm -rf feeds/small/shadowsocks-rust
+rm -rf feeds/helloworld/simple-obfs
+rm -rf feeds/helloworld/v2ray-plugin
+rm -rf feeds/small/v2ray-plugin
+# find . -type d -name "sing-box" -exec rm -r {} +

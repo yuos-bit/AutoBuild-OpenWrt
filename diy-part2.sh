@@ -63,18 +63,6 @@ pushd feeds/luci
 wget -O- https://raw.githubusercontent.com/LGA1150/fullconenat-fw3-patch/master/luci.patch | git apply
 popd
 
-### 后补的
-# SFE kernel patch
-cp -n $GITHUB_WORKSPACE/patchs/5.4/hack-5.4/* target/linux/generic/hack-5.4/
-cp -n $GITHUB_WORKSPACE/patchs/5.4/pending-5.4/* target/linux/generic/pending-5.4/
-cp -rf $GITHUB_WORKSPACE/patchs/5.4/sfe/* package/yuos/
-
-# 解决kconfig补丁
-wget -P target/linux/generic/backport-5.4/ https://raw.githubusercontent.com/hanwckf/immortalwrt-mt798x/openwrt-21.02/target/linux/generic/backport-5.4/500-v5.15-fs-ntfs3-Add-NTFS3-in-fs-Kconfig-and-fs-Makefile.patch
-patch -p1 < target/linux/generic/backport-5.4/500-v5.15-fs-ntfs3-Add-NTFS3-in-fs-Kconfig-and-fs-Makefile.patch
-
-mkdir -p target/linux/generic/files-5.4/
-cp -rf $GITHUB_WORKSPACE/patchs/5.4/files-5.4/* target/linux/generic/files-5.4/
 
 # 删除多余组件
 rm -rf feeds/small8/fullconenat-nft

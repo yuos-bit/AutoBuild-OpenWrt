@@ -7,7 +7,7 @@
 # https://github.com/P3TERX/Actions-OpenWrt
 # Description: Build OpenWrt using GitHub Actions
 
-name: 小米4A千兆定制编译
+name: 小米Flas16M路由器-科学定制编译
 
 on:
   repository_dispatch:
@@ -20,6 +20,7 @@ on:
         type: choice
         options:
           - 'miwifi-4a-G'
+          - 'miwifi-4c'
       UPLOAD_BIN_DIR:
         type: boolean
         description: '上传bin文件夹'

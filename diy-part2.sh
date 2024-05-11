@@ -68,27 +68,6 @@ popd
 rm -rf feeds/small8/fullconenat-nft
 rm -rf feeds/small8/fullconenat
 
-# 为保障流畅，针对SSR做特定版本处理
-# xray 1.7.5
-cp -rf $GITHUB_WORKSPACE/patchs/5.4/xray-core/1.7.5/* feeds/helloworld/xray-core/
-cp -rf $GITHUB_WORKSPACE/patchs/5.4/xray-core/1.7.5/* feeds/small/xray-core/
-cp -rf $GITHUB_WORKSPACE/patchs/5.4/xray-core/1.7.5/* feeds/small8/xray-core/
-
-# tailscale 1.40.0
-cp -rf $GITHUB_WORKSPACE/patchs/5.4/tailscale/* feeds/packages/net/tailscale/
-cp -rf $GITHUB_WORKSPACE/patchs/5.4/tailscale/* feeds/small/tailscale/
-cp -rf $GITHUB_WORKSPACE/patchs/5.4/tailscale/* feeds/helloworld/tailscale/
-
-# naiveproxy
-cp -rf feeds/small8/naiveproxy/* feeds/small/naiveproxy/
-cp -rf feeds/small8/naiveproxy/* feeds/small8/naiveproxy/
-cp -rf feeds/small8/naiveproxy/* feeds/helloworld/naiveproxy/
-
-# hysteria 1.3.5
-cp -rf $GITHUB_WORKSPACE/patchs/5.4/hysteria/* feeds/small/hysteria/
-cp -rf $GITHUB_WORKSPACE/patchs/5.4/hysteria/* feeds/packages/net/hysteria/
-cp -rf $GITHUB_WORKSPACE/patchs/5.4/hysteria/* feeds/helloworld/hysteria/
-
 #升级golang
 find . -type d -name "golang" -exec rm -r {} +
 rm -rf feeds/packages/lang/golang

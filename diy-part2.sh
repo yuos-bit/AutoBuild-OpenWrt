@@ -86,3 +86,5 @@ rm -rf feeds/helloworld/simple-obfs
 rm -rf feeds/helloworld/v2ray-plugin
 rm -rf feeds/small/v2ray-plugin
 # find . -type d -name "sing-box" -exec rm -r {} +
+cp -rf feeds/helloworld/naiveproxy/* package/feeds/packages/naiveproxy/
+cp -rf feeds/helloworld/naiveproxy/* feeds/packages/net/naiveproxy/

@@ -86,8 +86,8 @@ rm -rf feeds/helloworld/simple-obfs
 rm -rf feeds/helloworld/v2ray-plugin
 rm -rf feeds/small/v2ray-plugin
 # find . -type d -name "sing-box" -exec rm -r {} +
-find . -type d -name "naiveproxy" -exec rm -r {} +
-mkdir -p feeds/small8/naiveproxy/
-mkdir -p feeds/helloworld/naiveproxy/
-cp -rf $GITHUB_WORKSPACE/patchs/5.4/naiveproxy/* feeds/small8/naiveproxy/
-cp -rf $GITHUB_WORKSPACE/patchs/5.4/naiveproxy/* feeds/helloworld/naiveproxy/
+# cp -rf $GITHUB_WORKSPACE/patchs/5.4/naiveproxy/* feeds/small8/naiveproxy/
+# cp -rf $GITHUB_WORKSPACE/patchs/5.4/naiveproxy/* feeds/helloworld/naiveproxy/
+# cp -rf $GITHUB_WORKSPACE/patchs/5.4/naiveproxy/* feeds/helloworld/naiveproxy/
+
+find "$GITHUB_WORKSPACE/patchs/5.4/naiveproxy/" -type f -exec sh -c 'cp "$1" "/feeds/$(dirname "$1")/naiveproxy/"' _ {} \;

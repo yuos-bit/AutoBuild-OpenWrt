@@ -80,13 +80,6 @@ mkdir -p tools/cmake/
 cp -rf $GITHUB_WORKSPACE/patchs/5.4/tools/cmake/* tools/cmake/
 
 ### 后补的
-
-#FullCone Patch
-git clone -b master --single-branch https://github.com/QiuSimons/openwrt-fullconenat package/fullconenat
-# Patch FireWall for fullcone
-mkdir package/network/config/firewall/patches
-wget -P package/network/config/firewall/patches/ https://raw.githubusercontent.com/LGA1150/fullconenat-fw3-patch/master/fullconenat.patch
-
 pushd feeds/luci
 wget -O- https://raw.githubusercontent.com/LGA1150/fullconenat-fw3-patch/master/luci.patch | git apply
 popd

@@ -126,11 +126,8 @@ jobs:
     - name: 设置xray1.7.2
       run: |
           cd openwrt
-          cp -rf $GITHUB_WORKSPACE/patchs/xray/1.7.2/Makefile feeds/helloworld/xray-core/Makefile
-          cp -rf $GITHUB_WORKSPACE/patchs/xray/1.7.2/Makefile feeds/packages/net/xray-core/Makefile 
-
-          cp -rf $GITHUB_WORKSPACE/patchs/xray/1.5.5/xray feeds/helloworld/xray-core/xray
-          cp -rf $GITHUB_WORKSPACE/patchs/xray/1.5.5/xray feeds/packages/net/xray-core/xray
+          cp -rf $GITHUB_WORKSPACE/patchs/xray-core/1.7.2/Makefile feeds/helloworld/xray-core/Makefile
+          cp -rf $GITHUB_WORKSPACE/patchs/xray-core/1.7.2/Makefile feeds/packages/net/xray-core/Makefile 
 
     - name: 降级fullconenat-nft
       run: |

@@ -18,8 +18,14 @@ sed -i 's/192.168.$((addr_offset++)).1/10.32.$((addr_offset++)).1/g' package/bas
 # 修改主机名称
 sed -i 's/OpenWrt/Yuos/g' package/base-files/files/bin/config_generate
 
-# 修改版本号
-# sed -i "s/OpenWrt/小渔学长 build $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt /g" package/default-settings/files/zzz-default-settings
+# 修改默认wifi名称ssid为Xiaoyu-Wifi
+sed -i 's/ssid=OpenWrt/ssid=Xiaomi-Wifi/g' package/kernel/mac80211/files/lib/wifi/mac80211.sh
+
+# 修改默认wifi密码key为1234567890
+sed -i 's/encryption=none/encryption=psk2/g' package/kernel/mac80211/files/lib/wifi/mac80211.sh
+
+#使用sed 在第四行后添加新字
+sed -i '/set wireless.default_radio${devidx}.encryption=psk2/a\set wireless.default_radio${devidx}.key=1234567890' package/kernel/mac80211/files/lib/wifi/mac80211.sh
 
 
 # Add kernel build user
@@ -38,16 +44,27 @@ cp -rf package/firmware/xt_FULLCONENAT.c package/nftables/include/linux/netfilte
 cp -rf package/firmware/xt_FULLCONENAT.c package/libnftnl/include/linux/netfilter/xt_FULLCONENAT.c
 cp -rf package/firmware/xt_FULLCONENAT.c package/libs/libnetfilter-conntrack/xt_FULLCONENAT.c
 
+# 添加5.4内核ACC、shortcut-fe补丁
+# openwrt21.02 netfilter补丁\
+cp -rf $GITHUB_WORKSPACE/patchs/firewall/* package/firmware/
+patch -p1 < package/firmware/001-fix-firewall-flock.patch
+
+# nft-fullcone
+git clone -b main --single-branch https://github.com/fullcone-nat-nftables/nftables-1.0.5-with-fullcone package/nftables
+git clone -b master --single-branch https://github.com/fullcone-nat-nftables/libnftnl-1.2.4-with-fullcone package/libnftnl
+
+# 打补丁
+wget -O package/firmware/xt_FULLCONENAT.c https://raw.githubusercontent.com/Chion82/netfilter-full-cone-nat/master/xt_FULLCONENAT.c
+cp -rf package/firmware/xt_FULLCONENAT.c package/nftables/include/linux/netfilter/xt_FULLCONENAT.c
+cp -rf package/firmware/xt_FULLCONENAT.c package/libnftnl/include/linux/netfilter/xt_FULLCONENAT.c
+cp -rf package/firmware/xt_FULLCONENAT.c package/libs/libnetfilter-conntrack/xt_FULLCONENAT.c
+
 # dnsmasq-full升级2.89
 rm -rf package/network/services/dnsmasq
 cp -rf $GITHUB_WORKSPACE/patchs/5.4/dnsmasq package/network/services/dnsmasq
 
-# 补丁
-rm -rf package/network/utils
-cp -rf $GITHUB_WORKSPACE/patchs/5.4/network/utils package/network/utils
-
 # 测试编译时间
-YUOS_DATE="$(date +%Y.%m.%d)(自用版)"
+YUOS_DATE="$(date +%Y.%m.%d)(养老版)"
 BUILD_STRING=${BUILD_STRING:-$YUOS_DATE}
 echo "Write build date in openwrt : $BUILD_DATE"
 echo -e '\n小渔学长 Build @ '${BUILD_STRING}'\n'  >> package/base-files/files/etc/banner
@@ -56,3 +73,69 @@ echo "DISTRIB_REVISION=''" >> package/base-files/files/etc/openwrt_release
 sed -i '/DISTRIB_DESCRIPTION/d' package/base-files/files/etc/openwrt_release
 echo "DISTRIB_DESCRIPTION='小渔学长 Build @ ${BUILD_STRING}'" >> package/base-files/files/etc/openwrt_release
 sed -i '/luciversion/d' feeds/luci/modules/luci-base/luasrc/version.lua
+
+#升级cmake
+rm -rf tools/cmake
+mkdir -p tools/cmake/
+cp -rf $GITHUB_WORKSPACE/patchs/5.4/tools/cmake/* tools/cmake/
+
+### 后补的
+
+#FullCone Patch
+git clone -b master --single-branch https://github.com/QiuSimons/openwrt-fullconenat package/fullconenat
+# Patch FireWall for fullcone
+mkdir package/network/config/firewall/patches
+wget -P package/network/config/firewall/patches/ https://raw.githubusercontent.com/LGA1150/fullconenat-fw3-patch/master/fullconenat.patch
+
+pushd feeds/luci
+wget -O- https://raw.githubusercontent.com/LGA1150/fullconenat-fw3-patch/master/luci.patch | git apply
+popd
+
+### 后补的
+# SFE kernel patch
+cp -rf $GITHUB_WORKSPACE/patchs/5.4/sfe/* package/yuos/
+
+# 删除多余组件
+rm -rf feeds/small8/fullconenat-nft
+rm -rf feeds/small8/fullconenat
+
+
+# 为保障流畅，针对SSR做特定版本处理
+# xray 1.7.5
+cp -rf $GITHUB_WORKSPACE/patchs/5.4/xray-core/1.7.5/* feeds/helloworld/xray-core/
+cp -rf $GITHUB_WORKSPACE/patchs/5.4/xray-core/1.7.5/* feeds/small/xray-core/
+cp -rf $GITHUB_WORKSPACE/patchs/5.4/xray-core/1.7.5/* feeds/small8/xray-core/
+
+# tailscale 1.40.0
+cp -rf $GITHUB_WORKSPACE/patchs/5.4/tailscale/* feeds/packages/net/tailscale/
+cp -rf $GITHUB_WORKSPACE/patchs/5.4/tailscale/* feeds/small/tailscale/
+cp -rf $GITHUB_WORKSPACE/patchs/5.4/tailscale/* feeds/helloworld/tailscale/
+
+# naiveproxy
+cp -rf feeds/small8/naiveproxy/* feeds/small/naiveproxy/
+cp -rf feeds/small8/naiveproxy/* feeds/small8/naiveproxy/
+cp -rf feeds/small8/naiveproxy/* feeds/helloworld/naiveproxy/
+
+# hysteria 1.3.5
+cp -rf $GITHUB_WORKSPACE/patchs/5.4/hysteria/* feeds/small/hysteria/
+cp -rf $GITHUB_WORKSPACE/patchs/5.4/hysteria/* feeds/packages/net/hysteria/
+cp -rf $GITHUB_WORKSPACE/patchs/5.4/hysteria/* feeds/helloworld/hysteria/
+
+#升级golang
+find . -type d -name "golang" -exec rm -r {} +
+rm -rf feeds/packages/lang/golang
+git clone https://github.com/sbwml/packages_lang_golang -b 20.x feeds/packages/lang/golang
+# mkdir -p feeds/packages/lang/golang/golang/
+# cp -rf $GITHUB_WORKSPACE/patchs/5.4/golang/* feeds/packages/lang/golang/golang/
+
+#设置软件唯一性
+find . -type d -name "gn" -exec rm -r {} +
+mkdir -p feeds/small8/gn/
+cp -rf $GITHUB_WORKSPACE/patchs/5.4/gn/* feeds/small8/gn/
+rm -rf feeds/small/brook
+rm -rf feeds/helloworld/shadowsocks-rust
+rm -rf feeds/small/shadowsocks-rust
+rm -rf feeds/helloworld/simple-obfs
+rm -rf feeds/helloworld/v2ray-plugin
+rm -rf feeds/small/v2ray-plugin
+# find . -type d -name "sing-box" -exec rm -r {} +

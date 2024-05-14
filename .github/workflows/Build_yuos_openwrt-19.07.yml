@@ -123,19 +123,6 @@ jobs:
     - name: 更新插件
       run: cd openwrt && ./scripts/feeds update -a
 
-    - name: 设置xray1.7.2
-      run: |
-          cd openwrt
-          cp -rf $GITHUB_WORKSPACE/patchs/xray-core/1.7.2/Makefile feeds/helloworld/xray-core/Makefile
-          cp -rf $GITHUB_WORKSPACE/patchs/xray-core/1.7.2/Makefile feeds/packages/net/xray-core/Makefile 
-
-    - name: 降级fullconenat-nft
-      run: |
-          cd openwrt
-          rm -rf feeds/small8/fullconenat
-          rm -rf feeds/small8/fullconenat-nft
-          cp -rf $GITHUB_WORKSPACE/patchs/firewall/fullconenat package/fullconenat
-
     - name: 安装插件
       run: cd openwrt && ./scripts/feeds install -a
 

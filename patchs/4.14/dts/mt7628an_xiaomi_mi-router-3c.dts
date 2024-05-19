@@ -30,17 +30,17 @@
         
         led_power_blue: power_blue {
 			label = "blue:power";
-			gpios = <&gpio 11 GPIO_ACTIVE_LOW>;
+			gpios = <&gpio0 11 GPIO_ACTIVE_LOW>;
 		};
 
 		led_power_yellow: power_yellow {
 			label = "yellow:power";
-			gpios = <&gpio 44 GPIO_ACTIVE_LOW>;
+			gpios = <&gpio1 5 GPIO_ACTIVE_LOW>;
 		};
 
 		led_power_red: power_red {
 			label = "red:power";
-			gpios = <&gpio 5 GPIO_ACTIVE_LOW>;
+			gpios = <&gpio1 12 GPIO_ACTIVE_LOW>;
 		};
 
 	};
@@ -50,7 +50,7 @@
 
 		reset {
 			label = "reset";
-			gpios = <&gpio 38 GPIO_ACTIVE_LOW>;
+			gpios = <&gpio1 6 GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_RESTART>;
 		};
 	};

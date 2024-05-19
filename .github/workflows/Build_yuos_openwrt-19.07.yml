@@ -22,13 +22,7 @@ on:
         options:
           - 'miwifi-nano'
           - 'miwifi-mini'
-          - 'miwifi-r3'
-          - 'miwifi-r3x'
-          - 'miwifi-3a'
           - 'miwifi-3c'
-          - 'mir4a-100m'
-          - 'miwifi-4c'
-          - 'E8820v1'
       UPLOAD_BIN_DIR:
         type: boolean
         description: '上传bin文件夹'

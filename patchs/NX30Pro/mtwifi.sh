@@ -20,16 +20,38 @@ detect_mtwifi() {
 					hwmode="11g"
 					htmode="HE40"
 					htbsscoex="1"
-					wan_mac=$(ifconfig $(uci get network.wan.ifname) | awk '/ether/{print $2}')
-					ssid="Xiaoyu_${wan_mac}_2.4G"
+					# 使用 ip 命令获取WAN MAC地址
+					wan_mac=$(ip link show $(uci get network.wan.ifname) | awk '/ether/ {print $2}')
+
+					# 检查是否成功获取到MAC地址
+					if [ -z "$wan_mac" ]; then
+					    echo "无法获取WAN MAC地址"
+					    exit 1
+					fi
+					
+					# 提取MAC地址的后三个字节并去掉冒号，然后转换为大写
+					mac_suffix=$(echo $wan_mac | awk -F: '{print $4$5$6}' | tr 'a-f' 'A-F')
+					
+					ssid="Xiaoyu_${mac_suffix}_2.4G"
 					dbdc_main="1"
 				else
 					band="5g"
 					hwmode="11a"
 					htmode="HE160"
 					htbsscoex="0"
-					wan_mac=$(ifconfig $(uci get network.wan.ifname) | awk '/ether/{print $2}')
-					ssid="Xiaoyu_$(echo $wan_mac | awk -F: '{print $1$2}')_5G"
+					# 使用 ip 命令获取WAN MAC地址
+					wan_mac=$(ip link show $(uci get network.wan.ifname) | awk '/ether/ {print $2}')
+
+					# 检查是否成功获取到MAC地址
+					if [ -z "$wan_mac" ]; then
+					    echo "无法获取WAN MAC地址"
+					    exit 1
+					fi
+					
+					# 提取MAC地址的后三个字节并去掉冒号，然后转换为大写
+					mac_suffix=$(echo $wan_mac | awk -F: '{print $4$5$6}' | tr 'a-f' 'A-F')
+					
+					ssid="Xiaoyu_${mac_suffix}_5G"
 					dbdc_main="0"
 				fi
 				uci -q batch <<-EOF

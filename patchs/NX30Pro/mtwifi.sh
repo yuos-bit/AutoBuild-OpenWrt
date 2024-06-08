@@ -31,7 +31,6 @@ detect_mtwifi() {
 					
 					# 提取MAC地址的后三个字节并去掉冒号，然后转换为大写
 					mac_suffix=$(echo $wan_mac | awk -F: '{print $4$5$6}' | tr 'a-f' 'A-F')
-					
 					ssid="Xiaoyu_${mac_suffix}_2.4G"
 					dbdc_main="1"
 				else
@@ -67,7 +66,6 @@ detect_mtwifi() {
 					set wireless.${dev}.country=CN
 					set wireless.${dev}.mu_beamformer=1
 					set wireless.${dev}.noscan=${htbsscoex}
-
 					set wireless.default_${dev}=wifi-iface
 					set wireless.default_${dev}.device=${dev}
 					set wireless.default_${dev}.network=lan

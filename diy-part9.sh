@@ -91,6 +91,9 @@ cp -n $GITHUB_WORKSPACE/patchs/5.4/hack-5.4/* target/linux/generic/hack-5.4/
 cp -n $GITHUB_WORKSPACE/patchs/5.4/pending-5.4/* target/linux/generic/pending-5.4/
 cp -rf $GITHUB_WORKSPACE/patchs/5.4/sfe/* package/yuos/
 
+# 解锁160MHZ
+cp -n $GITHUB_WORKSPACE/patchs/5.4/unlock-160mhz/* package/kernel/mac80211/patches/brcm/
+
 # 解决kconfig补丁
 wget -P target/linux/generic/backport-5.4/ https://raw.githubusercontent.com/hanwckf/immortalwrt-mt798x/openwrt-21.02/target/linux/generic/backport-5.4/500-v5.15-fs-ntfs3-Add-NTFS3-in-fs-Kconfig-and-fs-Makefile.patch
 patch -p1 < target/linux/generic/backport-5.4/500-v5.15-fs-ntfs3-Add-NTFS3-in-fs-Kconfig-and-fs-Makefile.patch

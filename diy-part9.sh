@@ -148,3 +148,9 @@ rm -rf feeds/helloworld/simple-obfs
 rm -rf feeds/helloworld/v2ray-plugin
 rm -rf feeds/small/v2ray-plugin
 # find . -type d -name "sing-box" -exec rm -r {} +
+
+# vssr
+cd package/lean/  
+git clone https://github.com/jerrykuku/lua-maxminddb.git  
+#git lua-maxminddb 依赖
+git clone https://github.com/jerrykuku/luci-app-vssr.git  

@@ -150,7 +150,7 @@ rm -rf feeds/small/v2ray-plugin
 # find . -type d -name "sing-box" -exec rm -r {} +
 
 # vssr
-cd package/lean/  
+cd package/
 git clone https://github.com/jerrykuku/lua-maxminddb.git  
 #git lua-maxminddb 依赖
-git clone https://github.com/jerrykuku/luci-app-vssr.git  
+git clone https://github.com/MilesPoupart/luci-app-vssr.git  

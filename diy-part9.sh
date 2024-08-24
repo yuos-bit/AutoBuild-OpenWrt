@@ -134,7 +134,7 @@ cp -rf $GITHUB_WORKSPACE/patchs/5.4/hysteria/* feeds/helloworld/hysteria/
 find . -type d -name "golang" -exec rm -r {} +
 rm -rf feeds/packages/lang/golang
 git clone https://github.com/sbwml/packages_lang_golang -b 21.x feeds/packages/lang/golang
-
+go get github.com/quic-go/quic-go@latest
 #设置软件唯一性
 find . -type d -name "gn" -exec rm -r {} +
 mkdir -p feeds/small8/gn/

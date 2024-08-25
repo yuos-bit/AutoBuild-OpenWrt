@@ -110,10 +110,15 @@ rm -rf feeds/small8/fullconenat
 
 
 # 为保障流畅，针对SSR做特定版本处理
-# xray 1.7.5
-cp -rf $GITHUB_WORKSPACE/patchs/5.4/xray-core/1.7.5/* feeds/helloworld/xray-core/
-cp -rf $GITHUB_WORKSPACE/patchs/5.4/xray-core/1.7.5/* feeds/small/xray-core/
-cp -rf $GITHUB_WORKSPACE/patchs/5.4/xray-core/1.7.5/* feeds/small8/xray-core/
+# xray 1.8.9
+cp -rf $GITHUB_WORKSPACE/patchs/5.4/xray-core/1.8.9/* feeds/helloworld/xray-core/
+cp -rf $GITHUB_WORKSPACE/patchs/5.4/xray-core/1.8.9/* feeds/small/xray-core/
+cp -rf $GITHUB_WORKSPACE/patchs/5.4/xray-core/1.8.9/* feeds/small8/xray-core/
+
+# xray-plugin
+cp -rf $GITHUB_WORKSPACE/patchs/5.4/xray-plugin/* feeds/helloworld/xray-plugin/
+cp -rf $GITHUB_WORKSPACE/patchs/5.4/xray-plugin/* feeds/small/xray-plugin/
+cp -rf $GITHUB_WORKSPACE/patchs/5.4/xray-plugin/* feeds/small8/xray-plugin/
 
 # tailscale 1.40.0
 cp -rf $GITHUB_WORKSPACE/patchs/5.4/tailscale/* feeds/packages/net/tailscale/
@@ -134,7 +139,9 @@ cp -rf $GITHUB_WORKSPACE/patchs/5.4/hysteria/* feeds/helloworld/hysteria/
 find . -type d -name "golang" -exec rm -r {} +
 rm -rf feeds/packages/lang/golang
 git clone https://github.com/sbwml/packages_lang_golang -b 21.x feeds/packages/lang/golang
-git clone https://github.com/quic-go/quic-go -b master feeds/packages/lang/golang/quic-go
+
+# git clone https://github.com/quic-go/quic-go -b master feeds/packages/lang/golang/quic-go
+
 #设置软件唯一性
 find . -type d -name "gn" -exec rm -r {} +
 mkdir -p feeds/small8/gn/

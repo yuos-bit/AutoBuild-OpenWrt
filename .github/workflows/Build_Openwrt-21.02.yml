@@ -135,6 +135,10 @@ jobs:
         make download -j8 V=s
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
+
+    - name: Get dependencies
+      run: |
+        go get -u github.com/quic-go/quic-go@master
     
     - name: 编译固件中
       id: compile

@@ -138,7 +138,7 @@ cp -rf $GITHUB_WORKSPACE/patchs/5.4/hysteria/* feeds/helloworld/hysteria/
 #升级golang
 find . -type d -name "golang" -exec rm -r {} +
 rm -rf feeds/packages/lang/golang
-git clone https://github.com/sbwml/packages_lang_golang -b 21.x feeds/packages/lang/golang
+git clone https://github.com/sbwml/packages_lang_golang -b 20.x feeds/packages/lang/golang
 
 # git clone https://github.com/quic-go/quic-go -b master feeds/packages/lang/golang/quic-go
 

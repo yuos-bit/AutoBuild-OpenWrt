@@ -154,6 +154,10 @@
 -			cpu_clk = 20 * fbdiv * 1000 * 1000;
 -		}
 +		pll = rt_memc_r32(MEMC_REG_CPU_PLL);
++		pll &= ~(0x7ff);
++		pll |=  (0x362);
++		rt_memc_w32(pll,MEMC_REG_CPU_PLL);
++		for(i=0;i<1024;i++);
 +		fbdiv = (pll >> CPU_PLL_FBDIV_SHIFT) & CPU_PLL_FBDIV_MASK;
 +		prediv = (pll >> CPU_PLL_PREDIV_SHIFT) & CPU_PLL_PREDIV_MASK;
 +		cpu_clk = ((fbdiv + 1) * xtal_clk) >> prediv_tbl[prediv];

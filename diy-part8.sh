@@ -10,14 +10,14 @@
 # Description: OpenWrt DIY script part 1 (Before Update feeds)
 #
 #patches
-wget https://github.com/quintus-lab/Openwrt-R2S/raw/master/patches/dnsmasq-add-filter-aaaa-option.patch
-wget https://github.com/quintus-lab/Openwrt-R2S/raw/master/patches/luci-add-filter-aaaa-option.patch
-wget https://github.com/quintus-lab/Openwrt-R2S/raw/master/patches/luci-app-firewall_add_sfe_switch.patch
-wget https://github.com/quintus-lab/Openwrt-R2S/raw/master/patches/use_json_object_new_int64.patch
-wget https://github.com/quintus-lab/Openwrt-R2S/raw/master/patches/kernel_crypto-add-rk3328-crypto-support.patch
-wget https://github.com/quintus-lab/Openwrt-R2S/raw/master/patches/900-add-filter-aaaa-option.patch
-wget https://github.com/quintus-lab/Openwrt-R2S/raw/master/patches/998-rockchip-enable-i2c0-on-NanoPi-R2S.patch
-wget https://github.com/quintus-lab/Openwrt-R2S/raw/master/patches/991-r8152-Add-module-param-for-customized-LEDs.patch
+wget https://github.com/quintus-lab/openwrt-rockchip/raw/21.02/patches/1001-dnsmasq-add-filter-aaaa-option.patch
+wget https://github.com/quintus-lab/openwrt-rockchip/raw/21.02/patches/luci-add-filter-aaaa-option.patch
+wget https://github.com/quintus-lab/openwrt-rockchip/raw/21.02/patches/luci-app-firewall_add_sfe_switch.patch
+wget https://github.com/quintus-lab/openwrt-rockchip/raw/21.02/patches/use_json_object_new_int64.patch
+wget https://github.com/quintus-lab/openwrt-rockchip/raw/21.02/patches/kernel_crypto-add-rk3328-crypto-support.patch
+wget https://github.com/quintus-lab/openwrt-rockchip/raw/21.02/patches/900-add-filter-aaaa-option.patch
+wget https://github.com/quintus-lab/openwrt-rockchip/raw/21.02/patches/998-rockchip-enable-i2c0-on-NanoPi-R2S.patch
+wget https://github.com/quintus-lab/openwrt-rockchip/raw/21.02/patches/991-r8152-Add-module-param-for-customized-LEDs.patch
 
 patch -p1 < ./kernel_crypto-add-rk3328-crypto-support.patch
 patch -p1 < ./use_json_object_new_int64.patch
@@ -53,7 +53,7 @@ popd
 svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/shortcut-fe package/new/shortcut-fe
 svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/fast-classifier package/new/fast-classifier
 
-wget https://github.com/quintus-lab/Openwrt-R2S/raw/master/patches/999-unlock-1608mhz-rk3328.patch
+wget https://github.com/quintus-lab/openwrt-rockchip/raw/21.02/patches/999-unlock-1608mhz-rk3328.patch
 cp 999-unlock-1608mhz-rk3328.patch target/linux/rockchip/patches-5.4/
 
 

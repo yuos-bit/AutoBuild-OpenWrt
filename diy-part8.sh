@@ -8,6 +8,60 @@
 # https://github.com/P3TERX/Actions-OpenWrt
 # File name: diy-part1.sh
 # Description: OpenWrt DIY script part 1 (Before Update feeds)
+#
+#patches
+wget https://github.com/quintus-lab/Openwrt-R2S/raw/master/patches/dnsmasq-add-filter-aaaa-option.patch
+wget https://github.com/quintus-lab/Openwrt-R2S/raw/master/patches/luci-add-filter-aaaa-option.patch
+wget https://github.com/quintus-lab/Openwrt-R2S/raw/master/patches/luci-app-firewall_add_sfe_switch.patch
+wget https://github.com/quintus-lab/Openwrt-R2S/raw/master/patches/use_json_object_new_int64.patch
+wget https://github.com/quintus-lab/Openwrt-R2S/raw/master/patches/kernel_crypto-add-rk3328-crypto-support.patch
+wget https://github.com/quintus-lab/Openwrt-R2S/raw/master/patches/900-add-filter-aaaa-option.patch
+wget https://github.com/quintus-lab/Openwrt-R2S/raw/master/patches/998-rockchip-enable-i2c0-on-NanoPi-R2S.patch
+wget https://github.com/quintus-lab/Openwrt-R2S/raw/master/patches/991-r8152-Add-module-param-for-customized-LEDs.patch
+
+patch -p1 < ./kernel_crypto-add-rk3328-crypto-support.patch
+patch -p1 < ./use_json_object_new_int64.patch
+patch -p1 < ./dnsmasq-add-filter-aaaa-option.patch
+patch -p1 < ./luci-add-filter-aaaa-option.patch
+patch -p1 < ./luci-app-firewall_add_sfe_switch.patch
+cp ./900-add-filter-aaaa-option.patch package/network/services/dnsmasq/patches/
+cp ./998-rockchip-enable-i2c0-on-NanoPi-R2S.patch ./target/linux/rockchip/patches-5.4/
+cp ./991-r8152-Add-module-param-for-customized-LEDs.patch ./target/linux/rockchip/patches-5.4/
+
+svn co https://github.com/project-openwrt/openwrt/branches/master/package/lean/luci-app-cpufreq package/lean/luci-app-cpufreq
+wget https://github.com/project-openwrt/R2S-OpenWrt/raw/master/PATCH/luci-app-freq.patch
+patch -p1 < ./luci-app-freq.patch
+
+#FullCone Patch
+git clone -b master --single-branch https://github.com/QiuSimons/openwrt-fullconenat package/fullconenat
+# Patch FireWall for fullcone
+mkdir package/network/config/firewall/patches
+wget -P package/network/config/firewall/patches/ https://github.com/LGA1150/fullconenat-fw3-patch/raw/master/fullconenat.patch
+
+pushd feeds/luci
+wget -O- https://github.com/LGA1150/fullconenat-fw3-patch/raw/master/luci.patch | git apply
+popd
+#Patch Kernel for fullcone
+pushd target/linux/generic/hack-5.4
+wget https://raw.githubusercontent.com/coolsnowwolf/lede/master/target/linux/generic/hack-5.4/952-net-conntrack-events-support-multiple-registrant.patch
+popd
+
+# SFE kernel patch
+pushd target/linux/generic/hack-5.4
+wget https://raw.githubusercontent.com/coolsnowwolf/lede/master/target/linux/generic/hack-5.4/999-shortcut-fe-support.patch
+popd
+svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/shortcut-fe package/new/shortcut-fe
+svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/fast-classifier package/new/fast-classifier
+
+wget https://github.com/quintus-lab/Openwrt-R2S/raw/master/patches/999-unlock-1608mhz-rk3328.patch
+cp 999-unlock-1608mhz-rk3328.patch target/linux/rockchip/patches-5.4/
+
+
+rm -rf ./feeds/packages/devel/gcc
+svn co https://github.com/openwrt/packages/trunk/devel/gcc feeds/packages/devel/gcc
+#
+
+
 # 复制E8820V1配置文件到编译目录
 cp -rf $GITHUB_WORKSPACE/patchs/E8820V1/* $GITHUB_WORKSPACE/openwrt/target/linux/ath79/
 

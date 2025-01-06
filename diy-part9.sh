@@ -58,7 +58,7 @@ rm -rf package/network/services/dnsmasq
 cp -rf $GITHUB_WORKSPACE/patchs/5.4/dnsmasq package/network/services/dnsmasq
 
 # 测试编译时间
-YUOS_DATE="$(date +%Y.%m.%d)(养老版)"
+YUOS_DATE="$(date +%Y.%m.%d)(测试版)"
 BUILD_STRING=${BUILD_STRING:-$YUOS_DATE}
 echo "Write build date in openwrt : $BUILD_DATE"
 echo -e '\n小渔学长 Build @ '${BUILD_STRING}'\n'  >> package/base-files/files/etc/banner
@@ -72,18 +72,6 @@ sed -i '/luciversion/d' feeds/luci/modules/luci-base/luasrc/version.lua
 rm -rf tools/cmake
 mkdir -p tools/cmake/
 cp -rf $GITHUB_WORKSPACE/patchs/5.4/tools/cmake/* tools/cmake/
-
-### 后补的
-
-#FullCone Patch
-git clone -b master --single-branch https://github.com/QiuSimons/openwrt-fullconenat package/fullconenat
-# Patch FireWall for fullcone
-mkdir package/network/config/firewall/patches
-wget -P package/network/config/firewall/patches/ https://raw.githubusercontent.com/LGA1150/fullconenat-fw3-patch/master/fullconenat.patch
-
-pushd feeds/luci
-wget -O- https://raw.githubusercontent.com/LGA1150/fullconenat-fw3-patch/master/luci.patch | git apply
-popd
 
 ### 后补的
 # SFE kernel patch

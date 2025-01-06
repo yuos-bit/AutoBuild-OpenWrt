@@ -15,9 +15,7 @@ wget https://github.com/quintus-lab/openwrt-rockchip/raw/21.02/patches/1003-luci
 wget https://github.com/quintus-lab/openwrt-rockchip/raw/21.02/patches/0000-use_json_object_new_int64.patch
 wget https://github.com/quintus-lab/openwrt-rockchip/raw/21.02/patches/1002-add-fullconenat-support.patch
 
-patch -p1 < ./kernel_crypto-add-rk3328-crypto-support.patch
 patch -p1 < ./0000-use_json_object_new_int64.patch
-patch -p1 < ./dnsmasq-add-filter-aaaa-option.patch
 patch -p1 < ./1002-add-fullconenat-support.patch
 patch -p1 < ./1003-luci-app-firewall_add_fullcone.patch
 cp ./1001-dnsmasq-add-filter-aaaa-option.patch package/network/services/dnsmasq/patches/

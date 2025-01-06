@@ -11,22 +11,17 @@
 #
 #patches
 wget https://github.com/quintus-lab/openwrt-rockchip/raw/21.02/patches/1001-dnsmasq-add-filter-aaaa-option.patch
-wget https://github.com/quintus-lab/openwrt-rockchip/raw/21.02/patches/luci-add-filter-aaaa-option.patch
-wget https://github.com/quintus-lab/openwrt-rockchip/raw/21.02/patches/luci-app-firewall_add_sfe_switch.patch
-wget https://github.com/quintus-lab/openwrt-rockchip/raw/21.02/patches/use_json_object_new_int64.patch
-wget https://github.com/quintus-lab/openwrt-rockchip/raw/21.02/patches/kernel_crypto-add-rk3328-crypto-support.patch
-wget https://github.com/quintus-lab/openwrt-rockchip/raw/21.02/patches/900-add-filter-aaaa-option.patch
-wget https://github.com/quintus-lab/openwrt-rockchip/raw/21.02/patches/998-rockchip-enable-i2c0-on-NanoPi-R2S.patch
-wget https://github.com/quintus-lab/openwrt-rockchip/raw/21.02/patches/991-r8152-Add-module-param-for-customized-LEDs.patch
+wget https://github.com/quintus-lab/openwrt-rockchip/raw/21.02/patches/1003-luci-app-firewall_add_fullcone.patch
+wget https://github.com/quintus-lab/openwrt-rockchip/raw/21.02/patches/0000-use_json_object_new_int64.patch
+wget https://github.com/quintus-lab/openwrt-rockchip/raw/21.02/patches/1001-dnsmasq-add-filter-aaaa-option.patch
+wget https://github.com/quintus-lab/openwrt-rockchip/raw/21.02/patches/1002-add-fullconenat-support.patch
 
 patch -p1 < ./kernel_crypto-add-rk3328-crypto-support.patch
-patch -p1 < ./use_json_object_new_int64.patch
+patch -p1 < ./0000-use_json_object_new_int64.patch
 patch -p1 < ./dnsmasq-add-filter-aaaa-option.patch
-patch -p1 < ./luci-add-filter-aaaa-option.patch
-patch -p1 < ./luci-app-firewall_add_sfe_switch.patch
-cp ./900-add-filter-aaaa-option.patch package/network/services/dnsmasq/patches/
-cp ./998-rockchip-enable-i2c0-on-NanoPi-R2S.patch ./target/linux/rockchip/patches-5.4/
-cp ./991-r8152-Add-module-param-for-customized-LEDs.patch ./target/linux/rockchip/patches-5.4/
+patch -p1 < ./1002-add-fullconenat-support.patch
+patch -p1 < ./1003-luci-app-firewall_add_fullcone.patch
+cp ./1001-dnsmasq-add-filter-aaaa-option.patch package/network/services/dnsmasq/patches/
 
 svn co https://github.com/project-openwrt/openwrt/branches/master/package/lean/luci-app-cpufreq package/lean/luci-app-cpufreq
 wget https://github.com/project-openwrt/R2S-OpenWrt/raw/master/PATCH/luci-app-freq.patch

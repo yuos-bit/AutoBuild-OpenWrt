@@ -23,6 +23,7 @@ on:
           - 'miwifi-4c'
           - 'MI-R3G'
           - 'Redmi_AC2100'
+          - 'Xiaomi_AC2100'
           - 'K2P'
           - 'miwifi-mini'
           - 'miwifi-3'

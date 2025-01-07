@@ -12,10 +12,8 @@
 #patches
 wget https://github.com/quintus-lab/openwrt-rockchip/raw/21.02/patches/1001-dnsmasq-add-filter-aaaa-option.patch
 wget https://github.com/quintus-lab/openwrt-rockchip/raw/21.02/patches/1003-luci-app-firewall_add_fullcone.patch
-wget https://github.com/quintus-lab/openwrt-rockchip/raw/21.02/patches/0000-use_json_object_new_int64.patch
 wget https://github.com/quintus-lab/openwrt-rockchip/raw/21.02/patches/1002-add-fullconenat-support.patch
 
-patch -p1 < ./0000-use_json_object_new_int64.patch
 patch -p1 < ./1002-add-fullconenat-support.patch
 patch -p1 < ./1003-luci-app-firewall_add_fullcone.patch
 cp ./1001-dnsmasq-add-filter-aaaa-option.patch package/network/services/dnsmasq/patches/
@@ -40,9 +38,6 @@ wget https://raw.githubusercontent.com/coolsnowwolf/lede/master/target/linux/gen
 popd
 svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/shortcut-fe package/new/shortcut-fe
 svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/fast-classifier package/new/fast-classifier
-
-wget https://github.com/quintus-lab/openwrt-rockchip/raw/21.02/patches/999-unlock-1608mhz-rk3328.patch
-cp 999-unlock-1608mhz-rk3328.patch target/linux/rockchip/patches-5.4/
 
 
 rm -rf ./feeds/packages/devel/gcc

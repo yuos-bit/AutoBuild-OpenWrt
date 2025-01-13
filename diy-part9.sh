@@ -81,7 +81,8 @@ cp -rf $GITHUB_WORKSPACE/patchs/5.4/netsupport.mk package/kernel/linux/modules/n
 #升级golang
 find . -type d -name "golang" -exec rm -r {} +
 rm -rf feeds/packages/lang/golang
-git clone https://github.com/sbwml/packages_lang_golang -b 20.x feeds/packages/lang/golang
+git clone https://github.com/sbwml/packages_lang_golang -b 23.x feeds/packages/lang/golang
+
 # vssr
 cd package/
 #git lua-maxminddb 依赖

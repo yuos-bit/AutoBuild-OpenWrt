@@ -18,7 +18,7 @@ patch -p1 < ./1002-add-fullconenat-support.patch
 patch -p1 < ./1003-luci-app-firewall_add_fullcone.patch
 cp ./1001-dnsmasq-add-filter-aaaa-option.patch package/network/services/dnsmasq/patches/
 
-svn co https://github.com/project-openwrt/openwrt/branches/master/package/lean/luci-app-cpufreq package/lean/luci-app-cpufreq
+svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/cpufreq package/lean/cpufreq
 wget https://github.com/project-openwrt/R2S-OpenWrt/raw/master/PATCH/luci-app-freq.patch
 patch -p1 < ./luci-app-freq.patch
 
@@ -81,9 +81,6 @@ sed -i '$a src-git kenzo https://github.com/kenzok8/openwrt-packages.git;master'
 sed -i '$a src-git small https://github.com/kenzok8/small.git;master' feeds.conf.default
 sed -i '$a src-git small8 https://github.com/kenzok8/small-package.git;main' feeds.conf.default
 
-# # 删除冲突包
-# rm -rf feeds/smpackage/{base-files,dnsmasq,firewall*,fullconenat,libnftnl,nftables,ppp,opkg,ucl,upx,vsftpd-alt,miniupnpd-iptables,wireless-regdb}
-
 # 修改默认dnsmasq为dnsmasq-full
 sed -i 's/dnsmasq/dnsmasq-full firewall iptables block-mount coremark kmod-nf-nathelper kmod-nf-nathelper-extra kmod-ipt-raw kmod-ipt-raw6 kmod-tun/g' include/target.mk
 
@@ -114,7 +111,6 @@ sed -i '2a ifconfig rai0 up\nifconfig ra0 up\nbrctl addif br-lan rai0\nbrctl add
 # 单独拉取软件包
 git clone -b Lienol-default-settings https://github.com/yuos-bit/other package/default-settings
 git clone -b main --single-branch https://github.com/yuos-bit/other package/yuos
-# git clone -b main --single-branch https://github.com/siwind/luci-app-usb_printer.git package/yuos/luci-app-usb_printer
 
 # 添加iptables-mod-socket
 cp -rf $GITHUB_WORKSPACE/patchs/5.4/iptables-mod-socket.patch $GITHUB_WORKSPACE/openwrt/package/iptables-mod-socket.patch

@@ -64,15 +64,19 @@ sed -i '/DISTRIB_DESCRIPTION/d' package/base-files/files/etc/openwrt_release
 echo "DISTRIB_DESCRIPTION='小渔学长 Build @ ${BUILD_STRING}'" >> package/base-files/files/etc/openwrt_release
 sed -i '/luciversion/d' feeds/luci/modules/luci-base/luasrc/version.lua
 
-#升级cmake
-rm -rf tools/cmake
-svn co https://github.com/openwrt/openwrt/trunk/tools/cmake tools/cmake
-
 # 解决kconfig补丁
 wget -P target/linux/generic/backport-5.4/ https://raw.githubusercontent.com/hanwckf/immortalwrt-mt798x/openwrt-21.02/target/linux/generic/backport-5.4/500-v5.15-fs-ntfs3-Add-NTFS3-in-fs-Kconfig-and-fs-Makefile.patch
 patch -p1 < target/linux/generic/backport-5.4/500-v5.15-fs-ntfs3-Add-NTFS3-in-fs-Kconfig-and-fs-Makefile.patch
 # 测试
 cp -rf $GITHUB_WORKSPACE/patchs/5.4/netsupport.mk package/kernel/linux/modules/netsupport.mk
+
+# dnsmasq-full升级
+rm -rf package/network/services/dnsmasq/*
+cp -rf $GITHUB_WORKSPACE/patchs/5.4/dnsmasq/* $GITHUB_WORKSPACE/openwrt/package/network/services/dnsmasq/
+
+#升级cmake
+rm -rf tools/cmake/*
+cp -rf $GITHUB_WORKSPACE/patchs/5.4/tools/cmake/* $GITHUB_WORKSPACE/openwrt/tools/cmake/
 
 #升级golang
 find . -type d -name "golang" -exec rm -r {} +

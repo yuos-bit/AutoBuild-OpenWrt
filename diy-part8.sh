@@ -38,14 +38,6 @@ svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/fast-classifier p
 
 rm -rf ./feeds/packages/devel/gcc
 svn co https://github.com/openwrt/packages/trunk/devel/gcc feeds/packages/devel/gcc
-#
-# dnsmasq-full升级
-rm -rf package/network/services/dnsmasq/*
-cp -rf $GITHUB_WORKSPACE/patchs/5.4/dnsmasq/* package/network/services/dnsmasq/
-
-#升级cmake
-rm -rf tools/cmake/*
-cp -rf $GITHUB_WORKSPACE/patchs/5.4/tools/cmake/* tools/cmake/
 
 # 复制E8820V1配置文件到编译目录
 cp -rf $GITHUB_WORKSPACE/patchs/E8820V1/* $GITHUB_WORKSPACE/openwrt/target/linux/ath79/

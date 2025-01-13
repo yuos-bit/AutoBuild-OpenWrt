@@ -82,8 +82,4 @@ git clone https://github.com/sbwml/packages_lang_golang -b 23.x feeds/packages/l
 # vssr
 cd package/
 #git lua-maxminddb 依赖
-git clone https://github.com/MilesPoupart/luci-app-vssr.git  
-
-#cpufreq
-wget https://github.com/quintus-lab/openwrt-rockchip/raw/21.02/not_use_file/luci-app-freq.patch
-patch -p1 < ./luci-app-freq.patch
+git clone https://github.com/MilesPoupart/luci-app-vssr.git

@@ -53,10 +53,6 @@ cp -rf package/firmware/xt_FULLCONENAT.c package/nftables/include/linux/netfilte
 cp -rf package/firmware/xt_FULLCONENAT.c package/libnftnl/include/linux/netfilter/xt_FULLCONENAT.c
 cp -rf package/firmware/xt_FULLCONENAT.c package/libs/libnetfilter-conntrack/xt_FULLCONENAT.c
 
-# dnsmasq-full升级2.90
-rm -rf package/network/services/dnsmasq
-svn co https://github.com/Entware/Entware/trunk/package/network/services/dnsmasq package/network/services/dnsmasq
-
 # 测试编译时间
 YUOS_DATE="$(date +%Y.%m.%d)(测试版)"
 BUILD_STRING=${BUILD_STRING:-$YUOS_DATE}
@@ -87,3 +83,24 @@ git clone https://github.com/sbwml/packages_lang_golang -b 23.x feeds/packages/l
 cd package/
 #git lua-maxminddb 依赖
 git clone https://github.com/MilesPoupart/luci-app-vssr.git  
+
+
+# dnsmasq-full升级2.90
+cd $GITHUB_WORKSPACE/openwrt
+rm -rf package/network/services/dnsmasq
+git clone https://github.com/Entware/Entware.git
+cp -rf Entware/package/network/services/dnsmasq package/network/services/dnsmasq
+
+#升级cmake
+$GITHUB_WORKSPACE/openwrt
+rm -rf tools/cmake
+git clone https://github.com/openwrt/openwrt.git
+cp -rf openwrt/tools/cmake tools/cmake
+
+#cpufreq
+cd $GITHUB_WORKSPACE/openwrt
+git clone https://github.com/coolsnowwolf/lede.git
+cp -rf lede/package/lean/cpufreq package/lean/cpufreq
+
+wget https://github.com/quintus-lab/openwrt-rockchip/raw/21.02/not_use_file/luci-app-freq.patch
+patch -p1 < ./luci-app-freq.patch

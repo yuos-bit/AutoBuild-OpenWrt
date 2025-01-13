@@ -18,10 +18,6 @@ patch -p1 < ./1002-add-fullconenat-support.patch
 patch -p1 < ./1003-luci-app-firewall_add_fullcone.patch
 cp ./1001-dnsmasq-add-filter-aaaa-option.patch package/network/services/dnsmasq/patches/
 
-svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/cpufreq package/lean/cpufreq
-wget https://github.com/project-openwrt/R2S-OpenWrt/raw/master/PATCH/luci-app-freq.patch
-patch -p1 < ./luci-app-freq.patch
-
 #FullCone Patch
 git clone -b master --single-branch https://github.com/QiuSimons/openwrt-fullconenat package/fullconenat
 # Patch FireWall for fullcone

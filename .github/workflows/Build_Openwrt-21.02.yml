@@ -113,9 +113,9 @@ jobs:
     
     - name: 安装插件
       run: |
-      cd openwrt
-      ./scripts/feeds install -p small small8 kenzo packages luci routing telephony -a
-      ./scripts/feeds install -p helloworld shadowsocks-libev
+        cd openwrt
+        ./scripts/feeds install -p small small8 kenzo packages luci routing telephony -a
+        ./scripts/feeds install -p helloworld shadowsocks-libev
 
     - name: 运行第二脚本
       run: |

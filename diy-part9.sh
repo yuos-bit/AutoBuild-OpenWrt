@@ -84,15 +84,6 @@ cd package/
 #git lua-maxminddb 依赖
 git clone https://github.com/MilesPoupart/luci-app-vssr.git  
 
-
-# dnsmasq-full升级
-rm -rf package/network/services/dnsmasq
-cp -rf $GITHUB_WORKSPACE/patchs/5.4/dnsmasq package/network/services/dnsmasq
-
-#升级cmake
-rm -rf tools/cmake
-cp -rf $GITHUB_WORKSPACE/patchs/5.4/tools/cmake tools/cmake
-
 #cpufreq
 wget https://github.com/quintus-lab/openwrt-rockchip/raw/21.02/not_use_file/luci-app-freq.patch
 patch -p1 < ./luci-app-freq.patch

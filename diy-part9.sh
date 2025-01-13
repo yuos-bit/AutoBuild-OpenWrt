@@ -85,22 +85,14 @@ cd package/
 git clone https://github.com/MilesPoupart/luci-app-vssr.git  
 
 
-# dnsmasq-full升级2.90
-cd $GITHUB_WORKSPACE/openwrt
+# dnsmasq-full升级
 rm -rf package/network/services/dnsmasq
-git clone https://github.com/Entware/Entware.git
-cp -rf Entware/package/network/services/dnsmasq package/network/services/dnsmasq
+cp -rf $GITHUB_WORKSPACE/patchs/5.4/dnsmasq package/network/services/dnsmasq
 
 #升级cmake
-$GITHUB_WORKSPACE/openwrt
 rm -rf tools/cmake
-git clone https://github.com/openwrt/openwrt.git
-cp -rf openwrt/tools/cmake tools/cmake
+cp -rf $GITHUB_WORKSPACE/patchs/5.4/tools/cmake tools/cmake
 
 #cpufreq
-cd $GITHUB_WORKSPACE/openwrt
-git clone https://github.com/coolsnowwolf/lede.git
-cp -rf lede/package/lean/cpufreq package/lean/cpufreq
-
 wget https://github.com/quintus-lab/openwrt-rockchip/raw/21.02/not_use_file/luci-app-freq.patch
 patch -p1 < ./luci-app-freq.patch

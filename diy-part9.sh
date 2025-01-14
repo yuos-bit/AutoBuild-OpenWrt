@@ -75,8 +75,8 @@ rm -rf package/network/services/dnsmasq/*
 cp -rf $GITHUB_WORKSPACE/patchs/5.4/dnsmasq/* $GITHUB_WORKSPACE/openwrt/package/network/services/dnsmasq/
 
 #升级cmake
-rm -rf tools/cmake/*
-cp -rf $GITHUB_WORKSPACE/patchs/5.4/tools/cmake/* $GITHUB_WORKSPACE/openwrt/tools/cmake/
+# rm -rf tools/cmake/*
+# cp -rf $GITHUB_WORKSPACE/patchs/5.4/tools/cmake/* $GITHUB_WORKSPACE/openwrt/tools/cmake/
 
 #升级golang
 find . -type d -name "golang" -exec rm -r {} +

@@ -41,9 +41,8 @@ popd
 svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/shortcut-fe package/new/shortcut-fe
 svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/fast-classifier package/new/fast-classifier
 
-
-rm -rf ./feeds/packages/devel/gcc/*
-cp -rf $GITHUB_WORKSPACE/patchs/5.4/gcc $GITHUB_WORKSPACE/openwrt/feeds/packages/devel/gcc
+# rm -rf ./feeds/packages/devel/gcc/*
+# cp -rf $GITHUB_WORKSPACE/patchs/5.4/gcc $GITHUB_WORKSPACE/openwrt/feeds/packages/devel/gcc
 
 # 复制E8820V1配置文件到编译目录
 cp -rf $GITHUB_WORKSPACE/patchs/E8820V1/* $GITHUB_WORKSPACE/openwrt/target/linux/ath79/

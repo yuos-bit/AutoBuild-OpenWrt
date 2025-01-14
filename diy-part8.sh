@@ -9,6 +9,11 @@
 # File name: diy-part1.sh
 # Description: OpenWrt DIY script part 1 (Before Update feeds)
 #
+# 复制配置文件到编译目录
+cp -rf $GITHUB_WORKSPACE/patchs/5.4/include/meson.mk $GITHUB_WORKSPACE/openwrt/include/meson.mk
+cp -rf $GITHUB_WORKSPACE/patchs/5.4/include/cmake.mk $GITHUB_WORKSPACE/openwrt/include/cmake.mk
+cp -rf $GITHUB_WORKSPACE/patchs/5.4/rules.mk $GITHUB_WORKSPACE/openwrt/rules.mk
+cp -rf $GITHUB_WORKSPACE/patchs/5.4/tools/Makefile $GITHUB_WORKSPACE/openwrt/tools/Makefile
 #patches
 wget https://github.com/quintus-lab/openwrt-rockchip/raw/21.02/patches/1001-dnsmasq-add-filter-aaaa-option.patch
 wget https://github.com/quintus-lab/openwrt-rockchip/raw/21.02/patches/1003-luci-app-firewall_add_fullcone.patch

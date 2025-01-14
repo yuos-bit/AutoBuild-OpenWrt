@@ -1,5 +1,4 @@
 cmake_bool = $(patsubst %,-D%:BOOL=$(if $($(1)),ON,OFF),$(2))
-
 PKG_USE_NINJA ?= 1
 HOST_USE_NINJA ?= 1
 ifeq ($(PKG_USE_NINJA),1)
@@ -18,7 +17,6 @@ endif
 CMAKE_BINARY_DIR = $(PKG_BUILD_DIR)$(if $(CMAKE_BINARY_SUBDIR),/$(CMAKE_BINARY_SUBDIR))
 CMAKE_SOURCE_DIR = $(PKG_BUILD_DIR)$(if $(CMAKE_SOURCE_SUBDIR),/$(CMAKE_SOURCE_SUBDIR))
 HOST_CMAKE_SOURCE_DIR = $(HOST_BUILD_DIR)$(if $(CMAKE_SOURCE_SUBDIR),/$(CMAKE_SOURCE_SUBDIR))
-HOST_CMAKE_BINARY_DIR = $(HOST_BUILD_DIR)$(if $(CMAKE_BINARY_SUBDIR),/$(CMAKE_BINARY_SUBDIR))
 MAKE_PATH = $(firstword $(CMAKE_BINARY_SUBDIR) .)
 
 ifeq ($(CONFIG_EXTERNAL_TOOLCHAIN),)
@@ -68,6 +66,8 @@ ifeq ($(HOST_USE_NINJA),1)
   define Host/Uninstall/Default
 	+$(NINJA) -C $(HOST_CMAKE_BINARY_DIR) uninstall
   endef
+else
+  CMAKE_HOST_OPTIONS += -DCMAKE_GENERATOR="Unix Makefiles"
 endif
 
 ifeq ($(PKG_USE_NINJA),1)
@@ -80,6 +80,8 @@ ifeq ($(PKG_USE_NINJA),1)
   define Build/Install/Default
 	+DESTDIR="$(PKG_INSTALL_DIR)" $(NINJA) -C $(CMAKE_BINARY_DIR) install
   endef
+else
+  CMAKE_OPTIONS += -DCMAKE_GENERATOR="Unix Makefiles"
 endif
 
 define Build/Configure/Default
@@ -135,8 +137,7 @@ endef
 Build/InstallDev = $(if $(CMAKE_INSTALL),$(Build/InstallDev/cmake))
 
 define Host/Configure/Default
-	mkdir -p "$(HOST_CMAKE_BINARY_DIR)"
-	(cd $(HOST_CMAKE_BINARY_DIR); \
+	(cd $(HOST_BUILD_DIR); \
 		CFLAGS="$(HOST_CFLAGS)" \
 		CXXFLAGS="$(HOST_CFLAGS)" \
 		LDFLAGS="$(HOST_LDFLAGS)" \
@@ -158,7 +159,7 @@ define Host/Configure/Default
 			-DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY \
 			-DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY \
 			-DCMAKE_STRIP=: \
-			-DCMAKE_INSTALL_PREFIX=$(CMAKE_HOST_INSTALL_PREFIX) \
+			-DCMAKE_INSTALL_PREFIX=$(HOST_BUILD_PREFIX) \
 			-DCMAKE_PREFIX_PATH=$(HOST_BUILD_PREFIX) \
 			-DCMAKE_SKIP_RPATH=TRUE  \
 			-DCMAKE_INSTALL_LIBDIR=lib \

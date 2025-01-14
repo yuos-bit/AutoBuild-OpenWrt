@@ -14,6 +14,7 @@ cp -rf $GITHUB_WORKSPACE/patchs/5.4/include/meson.mk $GITHUB_WORKSPACE/openwrt/i
 cp -rf $GITHUB_WORKSPACE/patchs/5.4/include/cmake.mk $GITHUB_WORKSPACE/openwrt/include/cmake.mk
 cp -rf $GITHUB_WORKSPACE/patchs/5.4/rules.mk $GITHUB_WORKSPACE/openwrt/rules.mk
 cp -rf $GITHUB_WORKSPACE/patchs/5.4/tools/Makefile $GITHUB_WORKSPACE/openwrt/tools/Makefile
+cp -rf $GITHUB_WORKSPACE/patchs/5.4/tools/ninja/* $GITHUB_WORKSPACE/openwrt/tools/ninja/
 #patches
 wget https://github.com/quintus-lab/openwrt-rockchip/raw/21.02/patches/1001-dnsmasq-add-filter-aaaa-option.patch
 wget https://github.com/quintus-lab/openwrt-rockchip/raw/21.02/patches/1003-luci-app-firewall_add_fullcone.patch

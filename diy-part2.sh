@@ -45,14 +45,6 @@ echo "DISTRIB_REVISION=''" >> package/base-files/files/etc/openwrt_release
 sed -i '/DISTRIB_DESCRIPTION/d' package/base-files/files/etc/openwrt_release
 echo "DISTRIB_DESCRIPTION='小渔学长 Build @ ${BUILD_STRING}'" >> package/base-files/files/etc/openwrt_release
 
-
-#升级cmake
-rm -rf tools/cmake
-mkdir -p tools/cmake/
-cp -rf $GITHUB_WORKSPACE/patchs/5.4/tools/cmake/* tools/cmake/
-
-### 后补的
-
 #FullCone Patch
 git clone -b master --single-branch https://github.com/QiuSimons/openwrt-fullconenat package/fullconenat
 # Patch FireWall for fullcone
@@ -63,29 +55,7 @@ pushd feeds/luci
 wget -O- https://raw.githubusercontent.com/LGA1150/fullconenat-fw3-patch/master/luci.patch | git apply
 popd
 
-
-# 删除多余组件
-rm -rf feeds/small8/fullconenat-nft
-rm -rf feeds/small8/fullconenat
-
 #升级golang
 find . -type d -name "golang" -exec rm -r {} +
 rm -rf feeds/packages/lang/golang
 git clone https://github.com/sbwml/packages_lang_golang -b 20.x feeds/packages/lang/golang
-# mkdir -p feeds/packages/lang/golang/golang/
-# cp -rf $GITHUB_WORKSPACE/patchs/5.4/golang/* feeds/packages/lang/golang/golang/
-
-#设置软件唯一性
-find . -type d -name "gn" -exec rm -r {} +
-mkdir -p feeds/small8/gn/
-cp -rf $GITHUB_WORKSPACE/patchs/5.4/gn/* feeds/small8/gn/
-rm -rf feeds/small/brook
-rm -rf feeds/helloworld/shadowsocks-rust
-rm -rf feeds/small/shadowsocks-rust
-rm -rf feeds/helloworld/simple-obfs
-rm -rf feeds/helloworld/v2ray-plugin
-rm -rf feeds/small/v2ray-plugin
-# find . -type d -name "sing-box" -exec rm -r {} +
-cp -rf $GITHUB_WORKSPACE/patchs/5.4/naiveproxy/* feeds/small8/naiveproxy/
-cp -rf $GITHUB_WORKSPACE/patchs/5.4/naiveproxy/* feeds/helloworld/naiveproxy/
-cp -rf $GITHUB_WORKSPACE/patchs/5.4/naiveproxy/* feeds/packages/net/naiveproxy/

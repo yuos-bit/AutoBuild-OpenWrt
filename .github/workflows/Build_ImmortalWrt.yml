@@ -23,6 +23,7 @@ on:
           - 'mtk-deprecated'
           - 'NX30Pro'
           - 'ASR3000'
+          - 'X86'
       UPLOAD_BIN_DIR:
         type: boolean
         description: '上传bin文件夹'

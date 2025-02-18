@@ -39,11 +39,11 @@ git clone -b master --single-branch https://github.com/fullcone-nat-nftables/lib
 YUOS_DATE="$(date +%Y.%m.%d)(月更版)"
 BUILD_STRING=${BUILD_STRING:-$YUOS_DATE}
 echo "Write build date in openwrt : $BUILD_DATE"
-echo -e '\n小渔学长 Build @ '${BUILD_STRING}'\n'  >> package/base-files/files/etc/banner
+echo -e '\n Build @ '${BUILD_STRING}'\n'  >> package/base-files/files/etc/banner
 sed -i '/DISTRIB_REVISION/d' package/base-files/files/etc/openwrt_release
 echo "DISTRIB_REVISION=''" >> package/base-files/files/etc/openwrt_release
 sed -i '/DISTRIB_DESCRIPTION/d' package/base-files/files/etc/openwrt_release
-echo "DISTRIB_DESCRIPTION='小渔学长 Build @ ${BUILD_STRING}'" >> package/base-files/files/etc/openwrt_release
+echo "DISTRIB_DESCRIPTION=' Build @ ${BUILD_STRING}'" >> package/base-files/files/etc/openwrt_release
 
 #FullCone Patch
 git clone -b master --single-branch https://github.com/QiuSimons/openwrt-fullconenat package/fullconenat

@@ -43,7 +43,7 @@ echo -e '\n 小渔学长 Build @ '${BUILD_STRING}'\n'  >> package/base-files/fil
 sed -i '/DISTRIB_REVISION/d' package/base-files/files/etc/openwrt_release
 echo "DISTRIB_REVISION=''" >> package/base-files/files/etc/openwrt_release
 sed -i '/DISTRIB_DESCRIPTION/d' package/base-files/files/etc/openwrt_release
-echo "DISTRIB_DESCRIPTION=' Build @ ${BUILD_STRING}'" >> package/base-files/files/etc/openwrt_release
+echo "DISTRIB_DESCRIPTION='小渔学长 Build @ ${BUILD_STRING}'" >> package/base-files/files/etc/openwrt_release
 
 #FullCone Patch
 git clone -b master --single-branch https://github.com/QiuSimons/openwrt-fullconenat package/fullconenat

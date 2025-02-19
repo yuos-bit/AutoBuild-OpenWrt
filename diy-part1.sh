@@ -26,6 +26,6 @@ sed -i '2a ifconfig rai0 up\nifconfig ra0 up\nbrctl addif br-lan rai0\nbrctl add
 # 单独拉取软件包
 git clone -b Lienol-default-settings https://github.com/yuos-bit/other package/default-settings
 
-git clone -b debug https://github.com/yuos-bit/luci-theme-edge package/luci-theme-argon
+git clone -b edge2 https://github.com/yuos-bit/luci-theme-edge package/luci-theme-edge2
 # 更改默认wifi
 # cp -rf $GITHUB_WORKSPACE/patchs/NX30Pro/mtwifi.sh package/mtk/applications/mtwifi-cfg/files/mtwifi.sh

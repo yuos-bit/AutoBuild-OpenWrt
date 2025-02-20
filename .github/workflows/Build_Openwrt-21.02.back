@@ -1,3 +1,12 @@
+#
+# Copyright (c) 2019-2020 P3TERX <https://p3terx.com>
+#
+# This is free software, licensed under the MIT License.
+# See /LICENSE for more information.
+#
+# https://github.com/P3TERX/Actions-OpenWrt
+# Description: Build OpenWrt using GitHub Actions
+
 name: 云编译Openwrt官方21.02固件+插件
 
 on:
@@ -38,12 +47,13 @@ on:
         description: '上传RELEASE'
         required: false
         default: 'true'
+      
       ssh:
         description: 'SSH connection to Actions'
         required: false
         default: 'false'
         type: boolean
-
+  
 env:
   REPO_URL: https://github.com/yuos-bit/openwrt
   REPO_BRANCH: openwrt-21.02
@@ -189,37 +199,6 @@ jobs:
         files: | 
           ${{ env.FIRMWARE }}/*
           ${{ runner.workspace }}/logs/*
-
-    - name: 设置WebDAV目标目录
-      run: |
-        CURRENT_DATE=$(date +"%Y/%m/%d")
-        TARGET_DIR="${CURRENT_DATE}"
-
-        if ! curl -u "${{ secrets.WEBDAV_USERNAME }}:${{ secrets.WEBDAV_PASSWORD }}" --head "${{ secrets.WEBDAV_URL }}/${TARGET_DIR}" | grep -q "200 OK"; then
-          echo "目标目录不存在，正在创建..."
-          curl -u "${{ secrets.WEBDAV_USERNAME }}:${{ secrets.WEBDAV_PASSWORD }}" -X MKCOL "${{ secrets.WEBDAV_URL }}/${TARGET_DIR}"
-        fi
-        
-        echo "TARGET_DIR=${TARGET_DIR}" >> $GITHUB_ENV
-
-    - name: 上传文件至Cloudreve
-      run: |
-        UPLOAD_PATH="${{ env.FIRMWARE }}/*"
-        LOGS_PATH="${{ runner.workspace }}/logs/*"
-        
-        for file in $UPLOAD_PATH; do
-          if [[ -f $file ]]; then
-            echo "上传文件: $file"
-            curl -u "${{ secrets.WEBDAV_USERNAME }}:${{ secrets.WEBDAV_PASSWORD }}" -T "$file" "${{ secrets.WEBDAV_URL }}/${TARGET_DIR}/$(basename $file)"
-          fi
-        done
-        
-        for log in $LOGS_PATH; do
-          if [[ -f $log ]]; then
-            echo "上传日志文件: $log"
-            curl -u "${{ secrets.WEBDAV_USERNAME }}:${{ secrets.WEBDAV_PASSWORD }}" -T "$log" "${{ secrets.WEBDAV_URL }}/${TARGET_DIR}/$(basename $log)"
-          fi
-        done
 
     - name: 删除工作目录
       uses: Mattraks/delete-workflow-runs@main

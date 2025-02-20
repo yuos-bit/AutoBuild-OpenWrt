@@ -38,10 +38,6 @@ sed -i '/set wireless.default_radio${devidx}.encryption=psk2/a\set wireless.defa
     echo 'CONFIG_KERNEL_BUILD_DOMAIN="GitHub Actions"' >>.config ||
     sed -i 's@\(CONFIG_KERNEL_BUILD_DOMAIN=\).*@\1$"GitHub Actions"@' .config
 
-# 添加5.4内核ACC、shortcut-fe补丁
-# openwrt21.02 netfilter补丁\
-cp -rf $GITHUB_WORKSPACE/patchs/firewall/* package/firmware/
-patch -p1 < package/firmware/001-fix-firewall-flock.patch
 
 # nft-fullcone
 git clone -b main --single-branch https://github.com/fullcone-nat-nftables/nftables-1.0.5-with-fullcone package/nftables
@@ -63,10 +59,6 @@ echo "DISTRIB_REVISION=''" >> package/base-files/files/etc/openwrt_release
 sed -i '/DISTRIB_DESCRIPTION/d' package/base-files/files/etc/openwrt_release
 echo "DISTRIB_DESCRIPTION='小渔学长 Build @ ${BUILD_STRING}'" >> package/base-files/files/etc/openwrt_release
 sed -i '/luciversion/d' feeds/luci/modules/luci-base/luasrc/version.lua
-
-# 解决kconfig补丁
-wget -P target/linux/generic/backport-5.4/ https://raw.githubusercontent.com/hanwckf/immortalwrt-mt798x/openwrt-21.02/target/linux/generic/backport-5.4/500-v5.15-fs-ntfs3-Add-NTFS3-in-fs-Kconfig-and-fs-Makefile.patch
-patch -p1 < target/linux/generic/backport-5.4/500-v5.15-fs-ntfs3-Add-NTFS3-in-fs-Kconfig-and-fs-Makefile.patch
 # 测试
 cp -rf $GITHUB_WORKSPACE/patchs/5.4/netsupport.mk package/kernel/linux/modules/netsupport.mk
 

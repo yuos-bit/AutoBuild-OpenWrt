@@ -8,13 +8,6 @@
 # https://github.com/P3TERX/Actions-OpenWrt
 # File name: diy-part1.sh
 # Description: OpenWrt DIY script part 1 (Before Update feeds)
-#
-# 复制配置文件到编译目录
-# cp -rf $GITHUB_WORKSPACE/patchs/5.4/include/meson.mk $GITHUB_WORKSPACE/openwrt/include/meson.mk
-# cp -rf $GITHUB_WORKSPACE/patchs/5.4/include/cmake.mk $GITHUB_WORKSPACE/openwrt/include/cmake.mk
-# cp -rf $GITHUB_WORKSPACE/patchs/5.4/rules.mk $GITHUB_WORKSPACE/openwrt/rules.mk
-# cp -rf $GITHUB_WORKSPACE/patchs/5.4/tools/Makefile $GITHUB_WORKSPACE/openwrt/tools/Makefile
-# cp -rf $GITHUB_WORKSPACE/patchs/5.4/tools/ninja/* $GITHUB_WORKSPACE/openwrt/tools/ninja/
 #patches
 wget https://github.com/quintus-lab/openwrt-rockchip/raw/21.02/patches/1001-dnsmasq-add-filter-aaaa-option.patch
 wget https://github.com/quintus-lab/openwrt-rockchip/raw/21.02/patches/1003-luci-app-firewall_add_fullcone.patch
@@ -23,12 +16,6 @@ wget https://github.com/quintus-lab/openwrt-rockchip/raw/21.02/patches/1002-add-
 patch -p1 < ./1002-add-fullconenat-support.patch
 patch -p1 < ./1003-luci-app-firewall_add_fullcone.patch
 cp ./1001-dnsmasq-add-filter-aaaa-option.patch package/network/services/dnsmasq/patches/
-
-#FullCone Patch
-git clone -b master --single-branch https://github.com/QiuSimons/openwrt-fullconenat package/fullconenat
-# Patch FireWall for fullcone
-mkdir package/network/config/firewall/patches
-wget -P package/network/config/firewall/patches/ https://github.com/LGA1150/fullconenat-fw3-patch/raw/master/fullconenat.patch
 
 pushd feeds/luci
 wget -O- https://github.com/LGA1150/fullconenat-fw3-patch/raw/master/luci.patch | git apply
@@ -40,9 +27,6 @@ wget https://raw.githubusercontent.com/coolsnowwolf/lede/master/target/linux/gen
 popd
 svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/shortcut-fe package/new/shortcut-fe
 svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/fast-classifier package/new/fast-classifier
-
-# rm -rf ./feeds/packages/devel/gcc/*
-# cp -rf $GITHUB_WORKSPACE/patchs/5.4/gcc $GITHUB_WORKSPACE/openwrt/feeds/packages/devel/gcc
 
 # 复制E8820V1配置文件到编译目录
 cp -rf $GITHUB_WORKSPACE/patchs/E8820V1/* $GITHUB_WORKSPACE/openwrt/target/linux/ath79/

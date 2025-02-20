@@ -201,9 +201,14 @@ jobs:
           CURRENT_DATE=$(date +"%Y/%m/%d")
           TARGET_DIR="${CURRENT_DATE}"
 
+          # 检查目标目录是否存在
+          echo "检查WebDAV目标目录: $TARGET_DIR"
           if ! curl -u "${{ secrets.WEBDAV_USERNAME }}:${{ secrets.WEBDAV_PASSWORD }}" --head "${{ secrets.WEBDAV_URL }}/${TARGET_DIR}" | grep -q "200 OK"; then
             echo "目标目录不存在，正在创建..."
             curl -u "${{ secrets.WEBDAV_USERNAME }}:${{ secrets.WEBDAV_PASSWORD }}" -X MKCOL "${{ secrets.WEBDAV_URL }}/${TARGET_DIR}"
+            echo "目录已创建: $TARGET_DIR"
+          else
+            echo "目标目录已存在: $TARGET_DIR"
           fi
 
           echo "TARGET_DIR=${TARGET_DIR}" >> $GITHUB_ENV
@@ -215,17 +220,25 @@ jobs:
         UPLOAD_PATH="${{ env.FIRMWARE }}/*"
         LOGS_PATH="${{ runner.workspace }}/logs/*"
         
+        # 上传固件文件
+        echo "开始上传固件文件到Cloudreve..."
         for file in $UPLOAD_PATH; do
           if [[ -f $file ]]; then
             echo "上传文件: $file"
             curl -u "${{ secrets.WEBDAV_USERNAME }}:${{ secrets.WEBDAV_PASSWORD }}" -T "$file" "${{ secrets.WEBDAV_URL }}/${TARGET_DIR}/$(basename $file)"
+          else
+            echo "未找到文件: $file"
           fi
         done
         
+        # 上传日志文件
+        echo "开始上传日志文件到Cloudreve..."
         for log in $LOGS_PATH; do
           if [[ -f $log ]]; then
             echo "上传日志文件: $log"
             curl -u "${{ secrets.WEBDAV_USERNAME }}:${{ secrets.WEBDAV_PASSWORD }}" -T "$log" "${{ secrets.WEBDAV_URL }}/${TARGET_DIR}/$(basename $log)"
+          else
+            echo "未找到日志文件: $log"
           fi
         done
 

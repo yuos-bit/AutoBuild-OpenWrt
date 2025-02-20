@@ -38,6 +38,11 @@ on:
         description: '上传RELEASE'
         required: false
         default: 'true'
+      UPLOAD_CLOUDREVE:
+        type: boolean
+        description: '上传固件和日志到Cloudreve'
+        required: false
+        default: 'false'  # 默认不上传到Cloudreve
       ssh:
         description: 'SSH connection to Actions'
         required: false
@@ -192,17 +197,20 @@ jobs:
 
     - name: 设置WebDAV目标目录
       run: |
-        CURRENT_DATE=$(date +"%Y/%m/%d")
-        TARGET_DIR="${CURRENT_DATE}"
+        if [[ "${{ github.event.inputs.UPLOAD_CLOUDREVE }}" == "true" ]]; then
+          CURRENT_DATE=$(date +"%Y/%m/%d")
+          TARGET_DIR="${CURRENT_DATE}"
 
-        if ! curl -u "${{ secrets.WEBDAV_USERNAME }}:${{ secrets.WEBDAV_PASSWORD }}" --head "${{ secrets.WEBDAV_URL }}/${TARGET_DIR}" | grep -q "200 OK"; then
-          echo "目标目录不存在，正在创建..."
-          curl -u "${{ secrets.WEBDAV_USERNAME }}:${{ secrets.WEBDAV_PASSWORD }}" -X MKCOL "${{ secrets.WEBDAV_URL }}/${TARGET_DIR}"
+          if ! curl -u "${{ secrets.WEBDAV_USERNAME }}:${{ secrets.WEBDAV_PASSWORD }}" --head "${{ secrets.WEBDAV_URL }}/${TARGET_DIR}" | grep -q "200 OK"; then
+            echo "目标目录不存在，正在创建..."
+            curl -u "${{ secrets.WEBDAV_USERNAME }}:${{ secrets.WEBDAV_PASSWORD }}" -X MKCOL "${{ secrets.WEBDAV_URL }}/${TARGET_DIR}"
+          fi
+
+          echo "TARGET_DIR=${TARGET_DIR}" >> $GITHUB_ENV
         fi
-        
-        echo "TARGET_DIR=${TARGET_DIR}" >> $GITHUB_ENV
 
     - name: 上传文件至Cloudreve
+      if: steps.organize.outputs.status == 'success' && github.event.inputs.UPLOAD_CLOUDREVE == 'true' && !cancelled()
       run: |
         UPLOAD_PATH="${{ env.FIRMWARE }}/*"
         LOGS_PATH="${{ runner.workspace }}/logs/*"

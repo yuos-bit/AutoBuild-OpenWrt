@@ -202,8 +202,8 @@ jobs:
           CURRENT_DATE=$(date +"%Y%m%d")
           # 获取设备型号
           DEVICE_MODEL="${{ github.event.inputs.model }}"
-          # 组合目录格式：openwrt/20250220/miwifi-4c
-          TARGET_DIR="openwrt/${CURRENT_DATE}/${DEVICE_MODEL}"
+          # 组合目录格式：20250220/miwifi-4c
+          TARGET_DIR="${CURRENT_DATE}/${DEVICE_MODEL}"
 
           # 检查目标目录是否存在
           echo "检查WebDAV目标目录: $TARGET_DIR"

@@ -42,7 +42,7 @@ on:
         type: boolean
         description: '上传固件和日志到Cloudreve'
         required: false
-        default: 'false'  # 默认不上传到Cloudreve
+        default: 'true'  # 默认上传到Cloudreve
       ssh:
         description: 'SSH connection to Actions'
         required: false

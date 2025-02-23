@@ -121,7 +121,10 @@ jobs:
         $GITHUB_WORKSPACE/$DIY_P1_SH
 
     - name: 更新插件
-      run: cd immortalwrt && ./scripts/feeds update -a
+      run: |
+        cd immortalwrt
+        /scripts/feeds update -a
+        rm -rf feeds/packages/net/brook
 
     - name: 安装插件
       run: |

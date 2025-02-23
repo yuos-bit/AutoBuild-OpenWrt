@@ -123,7 +123,7 @@ jobs:
     - name: 更新插件
       run: |
         cd immortalwrt
-        /scripts/feeds update -a
+        ./scripts/feeds update -a
         rm -rf feeds/packages/net/brook
 
     - name: 安装插件

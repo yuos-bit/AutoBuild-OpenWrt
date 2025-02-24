@@ -23,6 +23,9 @@ sed -i 's/ppp-mod-pppoe/iptables-mod-tproxy iptables-mod-extra ipset ip-full ppp
 # 设置闭源驱动开机自启
 sed -i '2a ifconfig rai0 up\nifconfig ra0 up\nbrctl addif br-lan rai0\nbrctl addif br-lan ra0' package/base-files/files/etc/rc.local
 
+# 设置shadowsocksr-libev
+sed -i 's/ +libopenssl-legacy//g' feeds/small/shadowsocksr-libev/Makefile
+
 # 单独拉取软件包
 git clone -b Lienol-default-settings https://github.com/yuos-bit/other package/default-settings
 git clone -b lua5.4 https://github.com/yuos-bit/other package/lua5.4

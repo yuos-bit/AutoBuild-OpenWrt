@@ -124,11 +124,9 @@ jobs:
       run: |
         cd immortalwrt
         ./scripts/feeds update -a
-        rm -rf feeds/packages/net/brook
-        rm -rf feeds/packages/devel/gn
-        rm -rf feeds/packages/net/hysteria
-        rm -rf feeds/packages/net/xray-core
-        rm -rf feeds/packages/net/xray-plugin
+        rm -rf feeds/packages/net/{brook,hysteria,xray-core,xray-plugin,haproxy,naiveproxy,shadowsocksr-libev,shadowsocks-rust,shadowsocks-libev,simple-obfs,trojan,trojan-go,trojan-plus,tuic-client,ua2f} \
+               feeds/packages/devel/gn
+
 
     - name: 安装插件
       run: |

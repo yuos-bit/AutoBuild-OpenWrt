@@ -125,7 +125,7 @@ jobs:
         cd immortalwrt
         ./scripts/feeds update -a
         rm -rf feeds/packages/net/brook
-        rm -rf feeds/packages/gn
+        rm -rf feeds/packages/devel/gn
 
     - name: 安装插件
       run: |

@@ -7,7 +7,7 @@
 # Description: Build OpenWrt using GitHub Actions
 # Modified for ImmortalWrt/immortalwrt
 
-name: 云编译_ImmortalWrt_MT798x
+name: 云编译_ImmortalWrt_官方
 
 on:
   repository_dispatch:
@@ -16,11 +16,9 @@ on:
       model:
         description: '选择机型'
         required: true
-        default: 'NX30Pro' 
+        default: 'X86' 
         type: choice
         options:
-          - 'NX30Pro'
-          - 'abt_asr3000'
           - 'X86'
       UPLOAD_BIN_DIR:
         type: boolean
@@ -61,7 +59,7 @@ on:
   #   types: [started]                  # 点击 star 之后
   
 env:
-  REPO_URL: https://github.com/hanwckf/immortalwrt-mt798x
+  REPO_URL: https://github.com/immortalwrt/immortalwrt
   REPO_BRANCH: openwrt-21.02
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: config/ImmortalWrt/ImmortalWrt_${{ github.event.inputs.model }}.config

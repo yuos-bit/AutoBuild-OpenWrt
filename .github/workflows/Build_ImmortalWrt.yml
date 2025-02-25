@@ -16,11 +16,9 @@ on:
       model:
         description: '选择机型'
         required: true
-        default: 'mtk-deprecated' 
+        default: 'NX30Pro' 
         type: choice
         options:
-          - 'TEST'
-          - 'mtk-deprecated'
           - 'NX30Pro'
           - 'abt_asr3000'
           - 'X86'

@@ -103,7 +103,7 @@ git clone -b debug https://github.com/yuos-bit/luci-theme-edge2 package/luci-the
 # 更新openssl3.0
 rm -rf package/libs/openssl
 git clone -b openssl https://github.com/yuos-bit/other package/openssl
-cp -rf $GITHUB_WORKSPACE/patchs/immortalwrt-mt798x/openssl-module.mk $GITHUB_WORKSPACE/immortalwrt/include/openssl-module.mk
+cp -rf $GITHUB_WORKSPACE/patchs/immortalwrt-mt798x/openssl-module.mk $GITHUB_WORKSPACE/openwrt/include/openssl-module.mk
 
 # 添加iptables-mod-socket
 cp -rf $GITHUB_WORKSPACE/patchs/5.4/iptables-mod-socket.patch $GITHUB_WORKSPACE/openwrt/package/iptables-mod-socket.patch

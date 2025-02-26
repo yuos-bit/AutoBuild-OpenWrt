@@ -133,13 +133,13 @@ jobs:
         git clone -b master https://github.com/yuos-bit/luci-theme-netgear.git feeds/kenzo/luci-theme-netgear
 
     - name: 更新插件
-    run: |
-      cd openwrt
-      ./scripts/feeds update -a
-      rm -rf feeds/packages/net/{brook,hysteria,xray-core,xray-plugin,haproxy,naiveproxy,shadowsocksr-libev,shadowsocks-rust,shadowsocks-libev,simple-obfs,trojan,trojan-go,trojan-plus,tuic-client,ua2f,v2ray-core,v2ray-geodata,v2ray-geoview,v2ray-plugin,v2raya} \
-             feeds/packages/devel/gn \
-             feeds/packages/libs/libfido2/Makefile \
-      cp -rf $GITHUB_WORKSPACE/patchs/immortalwrt-mt798x/libfido2/Makefile $GITHUB_WORKSPACE/openwrt/feeds/packages/libs/libfido2/Makefile
+      run: |
+        cd openwrt
+        ./scripts/feeds update -a
+        rm -rf feeds/packages/net/{brook,hysteria,xray-core,xray-plugin,haproxy,naiveproxy,shadowsocksr-libev,shadowsocks-rust,shadowsocks-libev,simple-obfs,trojan,trojan-go,trojan-plus,tuic-client,ua2f,v2ray-core,v2ray-geodata,v2ray-geoview,v2ray-plugin,v2raya} \
+               feeds/packages/devel/gn \
+               feeds/packages/libs/libfido2/Makefile \
+        cp -rf $GITHUB_WORKSPACE/patchs/immortalwrt-mt798x/libfido2/Makefile $GITHUB_WORKSPACE/openwrt/feeds/packages/libs/libfido2/Makefile
 
     - name: 安装插件
       run: |

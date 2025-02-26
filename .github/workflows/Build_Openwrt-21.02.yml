@@ -99,10 +99,19 @@ jobs:
         chmod +x $DIY_P1_SH
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P1_SH
-        
+
+    - name: 更新插件
+    run: |
+      cd openwrt
+      ./scripts/feeds update -a
+      rm -rf feeds/packages/net/{brook,hysteria,xray-core,xray-plugin,haproxy,naiveproxy,shadowsocksr-libev,shadowsocks-rust,shadowsocks-libev,simple-obfs,trojan,trojan-go,trojan-plus,tuic-client,ua2f,v2ray-core,v2ray-geodata,v2ray-geoview,v2ray-plugin,v2raya} \
+             feeds/packages/devel/gn \
+             feeds/packages/libs/libfido2/Makefile \
+      cp -rf $GITHUB_WORKSPACE/patchs/immortalwrt-mt798x/libfido2/Makefile $GITHUB_WORKSPACE/openwrt/feeds/packages/libs/libfido2/Makefile
+
     - name: 安装插件
       run: |
-        cd immortalwrt
+        cd openwrt
         ./scripts/feeds install -p helloworld shadowsocks-libev
         ./scripts/feeds install -p kenzo luci-app-dnsfilter luci-app-istorex luci-app-partexp luci-app-store luci-theme-argone luci-theme-atmaterial_new luci-theme-tomato
         ./scripts/feeds install -p small brook dns2tcp gn lua-neturl luci-app-fchomo luci-app-homeproxy luci-app-passwall luci-app-passwall2 pdnsd-alt edsocks2 shadowsocksr-libev trojan-plus

@@ -74,8 +74,3 @@ cp -rf $GITHUB_WORKSPACE/patchs/5.4/dnsmasq/* $GITHUB_WORKSPACE/openwrt/package/
 find . -type d -name "golang" -exec rm -r {} +
 rm -rf feeds/packages/lang/golang
 git clone https://github.com/sbwml/packages_lang_golang -b 23.x feeds/packages/lang/golang
-
-# vssr
-cd package/
-#git lua-maxminddb 依赖
-git clone https://github.com/MilesPoupart/luci-app-vssr.git

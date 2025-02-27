@@ -21,7 +21,6 @@ on:
         options:
           - 'NX30Pro'
           - 'abt_asr3000'
-          - 'X86'
       UPLOAD_BIN_DIR:
         type: boolean
         description: '上传bin文件夹'

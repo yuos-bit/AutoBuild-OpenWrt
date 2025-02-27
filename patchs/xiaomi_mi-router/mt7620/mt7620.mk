@@ -1324,7 +1324,7 @@ define Device/xiaomi_mi-router-3x
   IMAGE_SIZE := 15872k
   DEVICE_VENDOR := Xiaomi
   DEVICE_MODEL := Mi Router 3X
-  DEVICE_PACKAGES := kmod-mt76x2 kmod-usb2 kmod-usb-ohci
+  DEVICE_PACKAGES := kmod-mt76x2e luci-app-mtwifi -wpad-openssl kmod-usb2 kmod-usb-ohci
   SUPPORTED_DEVICES += mi-router-3x
 endef
 TARGET_DEVICES += xiaomi_mi-router-3x
@@ -1346,6 +1346,6 @@ define Device/xiaomi_mi-router-3
 			     append-ubi | check-size
   DEVICE_VENDOR := Xiaomi
   DEVICE_MODEL := Mi Router R3
-  DEVICE_PACKAGES := kmod-mt76x2 kmod-usb2 kmod-usb-ohci uboot-envtools
+  DEVICE_PACKAGES := kmod-mt76x2e luci-app-mtwifi -wpad-openssl kmod-usb2 kmod-usb-ohci uboot-envtools
 endef
 TARGET_DEVICES += xiaomi_mi-router-3

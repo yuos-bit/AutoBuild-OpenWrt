@@ -16,6 +16,7 @@ on:
           - 'Xiaomi_AC2100'
           - 'K2P'
           - 'miwifi-3'
+          - 'miwifi-3x'
           - 'miwifi-4a-G'
           - 'E8820v1_32MB'
           - 'E8820v2'

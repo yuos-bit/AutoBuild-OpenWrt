@@ -136,13 +136,8 @@ jobs:
     - name: 更新passwall组件
       run: |
         cd immortalwrt
-        cp -rf $GITHUB_WORKSPACE/immortalwrt/feeds/small8/luci-app-passwall $GITHUB_WORKSPACE/immortalwrt/feeds/luci/applications/luci-app-passwall
-        cp -rf $GITHUB_WORKSPACE/immortalwrt/feeds/small8/haproxy $GITHUB_WORKSPACE/immortalwrt/feeds/packages/net/haproxy
-        cp -rf $GITHUB_WORKSPACE/immortalwrt/feeds/small8/hysteria $GITHUB_WORKSPACE/immortalwrt/feeds/packages/net/hysteria
-        cp -rf $GITHUB_WORKSPACE/immortalwrt/feeds/small8/naiveproxy $GITHUB_WORKSPACE/immortalwrt/feeds/packages/net/naiveproxy
-        cp -rf $GITHUB_WORKSPACE/immortalwrt/feeds/small8/tuic-client $GITHUB_WORKSPACE/immortalwrt/feeds/packages/net/tuic-client
-        cp -rf $GITHUB_WORKSPACE/immortalwrt/feeds/small8/xray-core $GITHUB_WORKSPACE/immortalwrt/feeds/packages/net/xray-core
-
+        cp -rf $GITHUB_WORKSPACE/immortalwrt/feeds/small8/* $GITHUB_WORKSPACE/immortalwrt/feeds/luci/applications/
+        cp -rf $GITHUB_WORKSPACE/immortalwrt/feeds/small8/* $GITHUB_WORKSPACE/immortalwrt/feeds/packages/net/
 
     - name: 安装插件
       run: |

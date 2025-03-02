@@ -132,12 +132,19 @@ jobs:
         rm -rf feeds/packages/libs/libfido2/Makefile
         cp -rf $GITHUB_WORKSPACE/patchs/immortalwrt-mt798x/libfido2/Makefile $GITHUB_WORKSPACE/immortalwrt/feeds/packages/libs/libfido2/Makefile
         chmod -R +755 feeds/
+- name: 更新passwall组件
+  run: |
+    SRC="$GITHUB_WORKSPACE/immortalwrt/feeds/small8"
+    DEST_APPS="$GITHUB_WORKSPACE/immortalwrt/feeds/luci/applications"
+    DEST_NET="$GITHUB_WORKSPACE/immortalwrt/feeds/packages/net"
 
-    - name: 更新passwall组件
-      run: |
-        cd immortalwrt
-        cp -rf $GITHUB_WORKSPACE/immortalwrt/feeds/small8/* $GITHUB_WORKSPACE/immortalwrt/feeds/luci/applications/
-        cp -rf $GITHUB_WORKSPACE/immortalwrt/feeds/small8/* $GITHUB_WORKSPACE/immortalwrt/feeds/packages/net/
+    # 同步到 applications 目录
+    mkdir -p "$DEST_APPS"
+    rsync -av --delete --force "$SRC/" "$DEST_APPS/"
+
+    # 同步到 net 目录
+    mkdir -p "$DEST_NET"
+    rsync -av --delete --force "$SRC/" "$DEST_NET/"
 
     - name: 安装插件
       run: |

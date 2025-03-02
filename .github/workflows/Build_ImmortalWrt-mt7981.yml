@@ -145,6 +145,8 @@ jobs:
         chmod +x $DIY_P2_SH
         cd immortalwrt
         $GITHUB_WORKSPACE/$DIY_P2_SH
+        rm -rf toolchain tools
+        cp -rf $GITHUB_WORKSPACE/patchs/21.02/* $GITHUB_WORKSPACE/immortalwrt/
 
     - name: SSH 自动化
       uses: P3TERX/ssh2actions@v1.0.0

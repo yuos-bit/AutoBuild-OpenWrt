@@ -132,6 +132,7 @@ jobs:
         rm -rf feeds/packages/libs/libfido2/Makefile
         cp -rf $GITHUB_WORKSPACE/patchs/immortalwrt-mt798x/libfido2/Makefile $GITHUB_WORKSPACE/immortalwrt/feeds/packages/libs/libfido2/Makefile
         chmod -R +755 feeds/
+
     - name: 更新passwall组件
       run: |
         SRC="$GITHUB_WORKSPACE/immortalwrt/feeds/small8"

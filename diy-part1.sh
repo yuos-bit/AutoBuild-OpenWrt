@@ -38,3 +38,6 @@ git clone -b passwall https://github.com/yuos-bit/other package/passwall
 rm -rf package/libs/openssl
 git clone -b openssl https://github.com/yuos-bit/other package/openssl
 cp -rf $GITHUB_WORKSPACE/patchs/immortalwrt-mt798x/openssl-module.mk $GITHUB_WORKSPACE/immortalwrt/include/openssl-module.mk
+
+# 删除软件包默认设置
+rm -rf package/emortal/default-settings

@@ -106,12 +106,12 @@ jobs:
         $GITHUB_WORKSPACE/$DIY_P1_SH
 
     - name: 更新插件
-    run: |
-      cd openwrt
-      ./scripts/feeds update -a
-      rm -rf feeds/packages/libs/libfido2/Makefile
-      cp -rf $GITHUB_WORKSPACE/patchs/immortalwrt-mt798x/libfido2/Makefile $GITHUB_WORKSPACE/openwrt/feeds/packages/libs/libfido2/Makefile
-      chmod -R +755 feeds/
+      run: |
+        cd openwrt
+        ./scripts/feeds update -a
+        rm -rf feeds/packages/libs/libfido2/Makefile
+        cp -rf $GITHUB_WORKSPACE/patchs/immortalwrt-mt798x/libfido2/Makefile $GITHUB_WORKSPACE/openwrt/feeds/packages/libs/libfido2/Makefile
+        chmod -R +755 feeds/
 
     - name: 安装插件
       run: |

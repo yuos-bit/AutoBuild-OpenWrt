@@ -105,4 +105,4 @@ git clone -b passwall https://github.com/yuos-bit/other package/passwall
 # 更新openssl3.0
 rm -rf package/libs/openssl
 git clone -b openssl https://github.com/yuos-bit/other package/openssl
-cp -rf $GITHUB_WORKSPACE/patchs/immortalwrt-mt798x/openssl-module.mk $GITHUB_WORKSPACE/immortalwrt/include/openssl-module.mk
+cp -rf $GITHUB_WORKSPACE/patchs/immortalwrt-mt798x/openssl-module.mk $GITHUB_WORKSPACE/openwrt/include/openssl-module.mk

@@ -6,8 +6,8 @@
 #include <dt-bindings/input/input.h>
 
 / {
-	compatible = "xiaomi,mi-router-3c", "mediatek,mt7628an-soc";
-	model = "Xiaomi Mi Router 3C";
+	compatible = "xiaomi,miwifi-3c", "mediatek,mt7628an-soc";
+	model = "MiWiFi 3c";
 
 	aliases {
 		led-boot = &led_power_yellow;

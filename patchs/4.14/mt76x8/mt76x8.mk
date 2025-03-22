@@ -487,24 +487,24 @@ define Device/zyxel_keenetic-extra-ii
 endef
 TARGET_DEVICES += zyxel_keenetic-extra-ii
 
-define Device/xiaomi_mi-router-3c
-  DTS := mt7628an_xiaomi_mi-router-3c
+define Device/miwifi-3c
+  DTS := MIWIFI-3C
   IMAGE_SIZE := 16064k
-  DEVICE_TITLE := Mi Router 3C
+  DEVICE_TITLE := Xiaomi MiWiFi 3c
   DEVICE_PACKAGES := uboot-envtools
 endef
-TARGET_DEVICES += xiaomi_mi-router-3c
+TARGET_DEVICES += miwifi-3c
 
-define Device/xiaomi_mi-router-4c
-  DTS := mt7628an_xiaomi_mi-router-4c
+define Device/miwifi-4c
+  DTS := MIWIFI-4C
   IMAGE_SIZE := 16064k
-  DEVICE_TITLE := Mi Router 4C
+  DEVICE_TITLE := Xiaomi MiWiFi 4c
   DEVICE_PACKAGES := uboot-envtools
 endef
-TARGET_DEVICES += xiaomi_mi-router-4c
+TARGET_DEVICES += miwifi-4c
 
 define Device/cmcc_l1-1
-  DTS := mt7628an_cmcc_l1-1
+  DTS := CMCC-L1-1
   IMAGE_SIZE := 16064k
   DEVICE_TITLE := Cmcc L1-1
   DEVICE_PACKAGES := uboot-envtools

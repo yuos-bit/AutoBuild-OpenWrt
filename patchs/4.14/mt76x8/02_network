@@ -140,11 +140,11 @@ ramips_setup_interfaces()
 		ucidef_add_switch "switch0" \
 			"0:lan" "1:lan" "2:lan" "3:lan" "4:wan" "6@eth0"
 		;;
-	xiaomi,mi-router-3c)
+	xiaomi,miwifi-3c)
 		ucidef_add_switch "switch0" \
 			"0:wan" "2:lan:2" "4:lan:1" "6@eth0"
 		;;
-	xiaomi,mi-router-4c)
+	xiaomi,miwifi-4c)
 		ucidef_add_switch "switch0" \
 			"4:lan:1" "2:lan:2" "1:wan" "6@eth0"
 		;;

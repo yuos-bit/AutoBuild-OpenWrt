@@ -221,7 +221,7 @@ jobs:
 
     - name: 设置WebDAV目标目录
       run: |
-        if [[ "${{ github.event.inputs.UPLOAD_CLOUDREVE }}" == "true" ]]; then
+      if [[ "${{ github.event.inputs.UPLOAD_CLOUDREVE }}" == "true" ]]; then
         # 获取当前日期并格式化为 YYYYMMDD
         CURRENT_DATE=$(date +"%Y%m%d")
         # 获取设备型号

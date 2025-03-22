@@ -219,6 +219,34 @@ jobs:
         body_path: release.txt
         files: ${{ env.FIRMWARE }}/*
 
+    - name: 上传文件至Cloudreve
+    if: steps.organize.outputs.status == 'success' && github.event.inputs.UPLOAD_CLOUDREVE == 'true' && !cancelled()
+      run: |
+      UPLOAD_PATH="${{ env.FIRMWARE }}/*"
+      LOGS_PATH="${{ runner.workspace }}/logs/*"
+      
+      # 上传固件文件
+      echo "开始上传固件文件到Cloudreve..."
+      for file in $UPLOAD_PATH; do
+        if [[ -f $file ]]; then
+          echo "上传文件: $file"
+          curl -u "${{ secrets.WEBDAV_USERNAME }}:${{ secrets.WEBDAV_PASSWORD }}" -T "$file" "${{ secrets.WEBDAV_URL }}/${TARGET_DIR}/$(basename $file)"
+        else
+          echo "未找到文件: $file"
+        fi
+      done
+      
+      # 上传日志文件
+      echo "开始上传日志文件到Cloudreve..."
+      for log in $LOGS_PATH; do
+        if [[ -f $log ]]; then
+          echo "上传日志文件: $log"
+          curl -u "${{ secrets.WEBDAV_USERNAME }}:${{ secrets.WEBDAV_PASSWORD }}" -T "$log" "${{ secrets.WEBDAV_URL }}/${TARGET_DIR}/$(basename $log)"
+        else
+          echo "未找到日志文件: $log"
+        fi
+      done
+  
     - name: 结束工作流
       uses: Mattraks/delete-workflow-runs@main
       with:

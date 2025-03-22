@@ -38,7 +38,7 @@ sed -i 's/ppp-mod-pppoe/ppp-mod-pppoe default-settings luci curl/g' include/targ
 # 单独拉取软件包
 git clone -b Lienol-default-settings https://github.com/yuos-bit/other package/default-settings
 git clone -b main --single-branch https://github.com/yuos-bit/other package/yuos
-
+git clone -b debug https://github.com/yuos-bit/luci-theme-edge2 package/luci-theme-edge2
 # 补充包
 # 修改默认斐讯K2 wifi驱动为闭源驱动
 # sed -i 's/kmod-mt76x2/kmod-mt7612e luci-app-mtwifi/g' target/linux/ramips/image/mt7621.mk

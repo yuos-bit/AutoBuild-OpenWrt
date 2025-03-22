@@ -1,4 +1,4 @@
-# 云编译-OpenWrt、Padavan
+# 云编译-各种版本的OpenWrt
 
 ## 捐贈
 

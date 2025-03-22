@@ -219,6 +219,27 @@ jobs:
         body_path: release.txt
         files: ${{ env.FIRMWARE }}/*
 
+    - name: 设置WebDAV目标目录
+      run: |
+        if [[ "${{ github.event.inputs.UPLOAD_CLOUDREVE }}" == "true" ]]; then
+          # 获取当前日期并格式化为 YYYYMMDD
+          CURRENT_DATE=$(date +"%Y%m%d")
+          # 获取设备型号
+          DEVICE_MODEL="${{ github.event.inputs.model }}"
+          # 组合目录格式：20250220/miwifi-4c
+          TARGET_DIR="${CURRENT_DATE}/${DEVICE_MODEL}"
+          # 检查目标目录是否存在
+          echo "检查WebDAV目标目录: $TARGET_DIR"
+          if ! curl -u "${{ secrets.WEBDAV_USERNAME }}:${{ secrets.WEBDAV_PASSWORD }}" --head "${{ secrets.WEBDAV_URL }}/${TARGET_DIR}" | grep -q "200 OK"; then
+            echo "目标目录不存在，正在创建..."
+            curl -u "${{ secrets.WEBDAV_USERNAME }}:${{ secrets.WEBDAV_PASSWORD }}" -X MKCOL "${{ secrets.WEBDAV_URL }}/${TARGET_DIR}"
+            echo "目录已创建: $TARGET_DIR"
+          else
+            echo "目标目录已存在: $TARGET_DIR"
+          fi
+          echo "TARGET_DIR=${TARGET_DIR}" >> $GITHUB_ENV
+        fi
+
     - name: 上传文件至Cloudreve
       if: steps.organize.outputs.status == 'success' && github.event.inputs.UPLOAD_CLOUDREVE == 'true' && !cancelled()
       run: |

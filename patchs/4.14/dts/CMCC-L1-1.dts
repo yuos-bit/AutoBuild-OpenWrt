@@ -7,7 +7,7 @@
 
 / {
 	compatible = "cmcc,l1-1", "mediatek,mt7628an-soc";
-	model = "Cmcc L1-1";
+	model = "L1	1";
 
 	aliases {
 		led-boot = &led_blue;

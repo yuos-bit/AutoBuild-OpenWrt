@@ -17,12 +17,14 @@ on:
       model:
         description: '选择机型'
         required: true
-        default: 'miwifi-3c' 
+        default: 'cmcc-l1-1' 
         type: choice
         options:
           - 'miwifi-nano'
           - 'miwifi-mini'
           - 'miwifi-3c'
+          - 'miwifi-4c'
+          - 'cmcc-l1-1'
       UPLOAD_BIN_DIR:
         type: boolean
         description: '上传bin文件夹'

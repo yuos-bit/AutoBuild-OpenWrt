@@ -62,13 +62,12 @@
 # echo "DISTRIB_DESCRIPTION='小渔学长 Build @ ${BUILD_STRING}'" >> package/base-files/files/etc/openwrt_release
 # sed -i '/luciversion/d' feeds/luci/modules/luci-base/luasrc/version.lua
 # 
-# #升级cmake
-# find . -type d -name "cmake" -exec rm -r {} +
-# rm -rf tools/cmake
-# mkdir -p tools/cmake/
-# cp -rf $GITHUB_WORKSPACE/patchs/4.14/tools/cmake/* tools/cmake/
-# cp -rf $GITHUB_WORKSPACE/patchs/4.14/include/* include/
-# ### 后补的
+#升级cmake
+find . -type d -name "cmake" -exec rm -r {} +
+rm -rf tools/cmake
+mkdir -p tools/cmake/
+cp -rf $GITHUB_WORKSPACE/patchs/4.14/tools/cmake/* tools/cmake/
+### 后补的
 # pushd feeds/luci
 # wget -O- https://raw.githubusercontent.com/LGA1150/fullconenat-fw3-patch/master/luci.patch | git apply
 # popd

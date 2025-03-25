@@ -10,10 +10,10 @@
 # Description: OpenWrt DIY script part 1 (Before Update feeds)
 #
 # 复制小米路由配置文件到编译目录
-# cp -R $GITHUB_WORKSPACE/patchs/4.14/dts/* $GITHUB_WORKSPACE/openwrt/target/linux/ramips/dts/
-# cp -R $GITHUB_WORKSPACE/patchs/4.14/mt76x8/mt76x8.mk $GITHUB_WORKSPACE/openwrt/target/linux/ramips/image/mt76x8.mk
-# cp -R $GITHUB_WORKSPACE/patchs/4.14/mt76x8/02_network $GITHUB_WORKSPACE/openwrt/target/linux/ramips/base-files/etc/board.d/02_network
-# cp -R $GITHUB_WORKSPACE/patchs/4.14/mt76x8/mac80211.sh $GITHUB_WORKSPACE/openwrt/package/kernel/mac80211/files/lib/wifi/mac80211.sh
+cp -R $GITHUB_WORKSPACE/patchs/4.14/dts/* $GITHUB_WORKSPACE/openwrt/target/linux/ramips/dts/
+cp -R $GITHUB_WORKSPACE/patchs/4.14/mt76x8/mt76x8.mk $GITHUB_WORKSPACE/openwrt/target/linux/ramips/image/mt76x8.mk
+cp -R $GITHUB_WORKSPACE/patchs/4.14/mt76x8/02_network $GITHUB_WORKSPACE/openwrt/target/linux/ramips/base-files/etc/board.d/02_network
+cp -R $GITHUB_WORKSPACE/patchs/4.14/mt76x8/mac80211.sh $GITHUB_WORKSPACE/openwrt/package/kernel/mac80211/files/lib/wifi/mac80211.sh
 
 # 适配E8820V1
 # cp -rf $GITHUB_WORKSPACE/patchs/4.14/ar71xx/* target/linux/ar71xx

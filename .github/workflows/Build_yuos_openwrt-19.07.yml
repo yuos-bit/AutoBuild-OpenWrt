@@ -270,12 +270,12 @@ jobs:
       if: steps.organize.outputs.status == 'success' && github.event.inputs.UPLOAD_CLOUDREVE == 'true' && !cancelled()
       run: |
         echo "开始上传 packages 文件到 Cloudreve..."
-        cd openwrt/packages
+        cd openwrt/bin/packages
         # 遍历当前目录下所有文件，保留相对目录结构上传
         find . -type f | while read file; do
           # 获取相对目录（去掉前导"./"）
           rel_dir=$(dirname "$file" | sed 's#^\./##')
-          # 拼接目标路径: Cloudreve已设定的 TARGET_DIR 下新建 packages/目录
+          # 拼接目标路径: Cloudreve 已设定的 TARGET_DIR 下新建 packages/目录
           remote_path="${TARGET_DIR}/packages/${rel_dir}"
           echo "处理文件: $file，目标路径: $remote_path"
           # 检查目标目录是否存在，若不存在则创建目录

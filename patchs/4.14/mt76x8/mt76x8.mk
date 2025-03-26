@@ -505,7 +505,7 @@ TARGET_DEVICES += miwifi-4c
 
 define Device/l1-1
   DTS := CMCC-L1-1
-  IMAGE_SIZE := 16064k
+  IMAGE_SIZE := 7872k
   DEVICE_TITLE := Cmcc L1-1
   DEVICE_PACKAGES := uboot-envtools
 endef

@@ -8,7 +8,7 @@
 / {
     compatible = "zte,e8820v2", "mediatek,mt7621-soc";
     model = "E8820V2";
-   
+
     aliases {
         led-boot = &led_sys;
         led-failsafe = &led_sys;

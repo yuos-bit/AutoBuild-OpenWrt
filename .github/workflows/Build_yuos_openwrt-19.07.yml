@@ -286,7 +286,7 @@ jobs:
             echo "目录已存在: $remote_path"
           fi
           # 上传当前文件到对应目录
-          curl -u "${{ secrets.WEBDAV_USERNAME }}:${{ secrets.WEBDAV_PASSWORD }}" -T "$file" "${{ secrets.WEBDAV_URL }}/${remote_path}/$(basename "$file")"
+          curl --http1.1 -u "${{ secrets.WEBDAV_USERNAME }}:${{ secrets.WEBDAV_PASSWORD }}" -T "$file" "${{ secrets.WEBDAV_URL }}/${remote_path}/$(basename "$file")"
         done
     
     - name: 结束工作流

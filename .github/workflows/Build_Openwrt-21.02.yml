@@ -237,16 +237,54 @@ jobs:
             echo "未找到文件: $file"
           fi
         done
+
+    - name: 上传文件至Cloudreve
+      if: steps.organize.outputs.status == 'success' && github.event.inputs.UPLOAD_CLOUDREVE == 'true' && !cancelled()
+      run: |
+        UPLOAD_PATH="${{ env.FIRMWARE }}/*"
+        README_FILE="$GITHUB_WORKSPACE/readme/README.md"
         
-        # 上传日志文件
-        echo "开始上传日志文件到Cloudreve..."
-        for log in $LOGS_PATH; do
-          if [[ -f $log ]]; then
-            echo "上传日志文件: $log"
-            curl -u "${{ secrets.WEBDAV_USERNAME }}:${{ secrets.WEBDAV_PASSWORD }}" -T "$log" "${{ secrets.WEBDAV_URL }}/${TARGET_DIR}/$(basename $log)"
+        # 上传固件文件
+        echo "开始上传固件文件到Cloudreve..."
+        for file in $UPLOAD_PATH; do
+          if [[ -f $file ]]; then
+            echo "上传文件: $file"
+            curl -u "${{ secrets.WEBDAV_USERNAME }}:${{ secrets.WEBDAV_PASSWORD }}" -T "$file" "${{ secrets.WEBDAV_URL }}/${TARGET_DIR}/$(basename $file)"
           else
-            echo "未找到日志文件: $log"
+            echo "未找到文件: $file"
           fi
+        done
+        
+        # 上传 README 文件
+        echo "开始上传 README 文件到Cloudreve..."
+        if [[ -f $README_FILE ]]; then
+          echo "上传文件: $README_FILE"
+          curl -u "${{ secrets.WEBDAV_USERNAME }}:${{ secrets.WEBDAV_PASSWORD }}" -T "$README_FILE" "${{ secrets.WEBDAV_URL }}/${TARGET_DIR}/README.md"
+        else
+            echo "未找到 README 文件: $README_FILE"
+          fi
+
+    - name: 上传 packages 文件到 Cloudreve
+      if: steps.organize.outputs.status == 'success' && github.event.inputs.UPLOAD_CLOUDREVE == 'true' && !cancelled()
+      run: |
+        echo "开始上传 packages 文件到 Cloudreve..."
+        cd openwrt/bin/packages
+        # 遍历当前目录下所有文件，保留相对目录结构上传
+        find . -type f | while read file; do
+          # 获取相对目录（去掉前导"./"）
+          rel_dir=$(dirname "$file" | sed 's#^\./##')
+          # 拼接目标路径: Cloudreve 已设定的 TARGET_DIR 下新建 packages/目录
+          remote_path="${TARGET_DIR}/packages/${rel_dir}"
+          echo "处理文件: $file，目标路径: $remote_path"
+          # 检查目标目录是否存在，若不存在则创建目录
+          if ! curl -u "${{ secrets.WEBDAV_USERNAME }}:${{ secrets.WEBDAV_PASSWORD }}" --head "${{ secrets.WEBDAV_URL }}/${remote_path}" | grep -q "200 OK"; then
+            echo "目录不存在，正在创建: $remote_path"
+            curl -u "${{ secrets.WEBDAV_USERNAME }}:${{ secrets.WEBDAV_PASSWORD }}" -X MKCOL "${{ secrets.WEBDAV_URL }}/${remote_path}"
+          else
+            echo "目录已存在: $remote_path"
+          fi
+          # 上传当前文件到对应目录
+          curl --http1.1 -u "${{ secrets.WEBDAV_USERNAME }}:${{ secrets.WEBDAV_PASSWORD }}" -T "$file" "${{ secrets.WEBDAV_URL }}/${remote_path}/$(basename "$file")"
         done
 
     - name: 删除工作目录

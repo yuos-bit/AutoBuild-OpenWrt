@@ -684,7 +684,7 @@ endef
 TARGET_DEVICES += zbt-wg3526-32M
 
 define Device/e8820v2
-  DTS := ZTE_E8820V2
+  DTS := E8820V2
   $(Device/dsa-migration)
   $(Device/uimage-lzma-loader)
   IMAGE_SIZE := 16064k

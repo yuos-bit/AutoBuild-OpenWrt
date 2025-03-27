@@ -34,6 +34,6 @@ sed -i 's/dnsmasq/dnsmasq-full luci/g' include/target.mk
 sed -i 's/ppp-mod-pppoe/ppp-mod-pppoe default-settings luci curl/g' include/target.mk
 
 # 单独拉取软件包
-git clone -b Lienol-default-settings https://github.com/yuos-bit/other package/default-settings
+git clone -b 19.07 https://github.com/yuos-bit/other package/19.07
 git clone -b main --single-branch https://github.com/yuos-bit/other package/yuos
 git clone -b debug https://github.com/yuos-bit/luci-theme-edge2 package/luci-theme-edge2

@@ -278,9 +278,9 @@ jobs:
           remote_path="${TARGET_DIR}/packages/${rel_dir}"
           echo "处理文件: $file，目标路径: $remote_path"
           # 检查目标目录是否存在，若不存在则创建目录
-          if ! curl -u "${{ secrets.WEBDAV_USERNAME }}:${{ secrets.WEBDAV_PASSWORD }}" --head "${{ secrets.WEBDAV_URL }}/${remote_path}" | grep -q "200 OK"; then
+          if ! curl --http1.1 -u "${{ secrets.WEBDAV_USERNAME }}:${{ secrets.WEBDAV_PASSWORD }}" --head "${{ secrets.WEBDAV_URL }}/${remote_path}" | grep -q "200 OK"; then
             echo "目录不存在，正在创建: $remote_path"
-            curl -u "${{ secrets.WEBDAV_USERNAME }}:${{ secrets.WEBDAV_PASSWORD }}" -X MKCOL "${{ secrets.WEBDAV_URL }}/${remote_path}"
+            curl --http1.1 -u "${{ secrets.WEBDAV_USERNAME }}:${{ secrets.WEBDAV_PASSWORD }}" -X MKCOL "${{ secrets.WEBDAV_URL }}/${remote_path}"
           else
             echo "目录已存在: $remote_path"
           fi

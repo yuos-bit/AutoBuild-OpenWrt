@@ -685,8 +685,6 @@ TARGET_DEVICES += zbt-wg3526-32M
 
 define Device/e8820v2
   DTS := E8820V2
-  $(Device/dsa-migration)
-  $(Device/uimage-lzma-loader)
   IMAGE_SIZE := 16064k
   DEVICE_TITLE := ZTE E8820V2
   DEVICE_PACKAGES := kmod-mt7603 kmod-mt76x2 kmod-usb3 \

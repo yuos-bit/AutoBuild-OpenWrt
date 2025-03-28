@@ -275,14 +275,14 @@ jobs:
           remote_path="${TARGET_DIR}/packages/${rel_dir}"
           echo "处理文件: $file，目标路径: $remote_path"
           # 检查目标目录是否存在，若不存在则创建目录
-          if ! curl --http1.1 -u "${{ secrets.WEBDAV_USERNAME }}:${{ secrets.WEBDAV_PASSWORD }}" --head "${{ secrets.WEBDAV_URL }}/${remote_path}" | grep -q "200 OK"; then
+          if ! curl --retry 3 --http1.1 -u "${{ secrets.WEBDAV_USERNAME }}:${{ secrets.WEBDAV_PASSWORD }}" --head "${{ secrets.WEBDAV_URL }}/${remote_path}" | grep -q "200 OK"; then
             echo "目录不存在，正在创建: $remote_path"
-            curl --http1.1 -u "${{ secrets.WEBDAV_USERNAME }}:${{ secrets.WEBDAV_PASSWORD }}" -X MKCOL "${{ secrets.WEBDAV_URL }}/${remote_path}"
+            curl --retry 3 --http1.1 -u "${{ secrets.WEBDAV_USERNAME }}:${{ secrets.WEBDAV_PASSWORD }}" -X MKCOL "${{ secrets.WEBDAV_URL }}/${remote_path}"
           else
             echo "目录已存在: $remote_path"
           fi
           # 上传当前文件到对应目录
-          curl --http1.1 -u "${{ secrets.WEBDAV_USERNAME }}:${{ secrets.WEBDAV_PASSWORD }}" -T "$file" "${{ secrets.WEBDAV_URL }}/${remote_path}/$(basename "$file")"
+          curl --retry 3 --http1.1 -u "${{ secrets.WEBDAV_USERNAME }}:${{ secrets.WEBDAV_PASSWORD }}" -T "$file" "${{ secrets.WEBDAV_URL }}/${remote_path}/$(basename "$file")"
         done
 
     - name: 删除工作流程运行

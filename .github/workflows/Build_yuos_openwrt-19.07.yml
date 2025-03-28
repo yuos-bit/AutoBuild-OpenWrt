@@ -26,6 +26,7 @@ on:
           - 'miwifi-4c'
           - 'cmcc-l1-1'
           - 'E8820v2'
+          - 'pbr-m1'
           - 'x86'
       UPLOAD_BIN_DIR:
         type: boolean

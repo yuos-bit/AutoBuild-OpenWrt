@@ -33,4 +33,3 @@ sed -i '$a src-git small8 https://github.com/kenzok8/small-package.git;main' fee
 # 单独拉取软件包
 git clone -b 19.07 https://github.com/yuos-bit/other package/19.07
 git clone -b main --single-branch https://github.com/yuos-bit/other package/yuos
-git clone -b debug https://github.com/yuos-bit/luci-theme-edge2 package/luci-theme-edge2

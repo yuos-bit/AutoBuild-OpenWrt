@@ -66,8 +66,8 @@ on:
   #   types: [started]                  # 点击 star 之后
   
 env:
-  REPO_URL: https://github.com/Lienol/openwrt
-  REPO_BRANCH: 19.07
+  REPO_URL: https://github.com/yuos-bit/openwrt
+  REPO_BRANCH: openwrt-19.07
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: config/19.07/Yuos_${{ github.event.inputs.model }}.config
   DIY_P1_SH: diy-part4.sh

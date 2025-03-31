@@ -123,14 +123,11 @@ jobs:
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P1_SH
 
-    - name: 更新插件
+    - name: 更新安装插件
       run: |
         cd openwrt
+        ./scripts/feeds clean
         ./scripts/feeds update -a
-
-    - name: 安装插件
-      run: |
-        cd openwrt
         ./scripts/feeds install -a
 
     - name: 定义第二脚本

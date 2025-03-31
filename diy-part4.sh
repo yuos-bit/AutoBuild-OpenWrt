@@ -10,11 +10,11 @@
 # Description: OpenWrt DIY script part 1 (Before Update feeds)
 #
 # 复制小米路由配置文件到编译目录
-cp -rf $GITHUB_WORKSPACE/patchs/4.14/dts/* $GITHUB_WORKSPACE/openwrt/target/linux/ramips/dts/
-cp -rf $GITHUB_WORKSPACE/patchs/4.14/mt76x8/mt76x8.mk $GITHUB_WORKSPACE/openwrt/target/linux/ramips/image/mt76x8.mk
-cp -rf $GITHUB_WORKSPACE/patchs/4.14/mt7621/mt7621.mk $GITHUB_WORKSPACE/openwrt/target/linux/ramips/image/mt7621.mk
-cp -rf $GITHUB_WORKSPACE/patchs/4.14/public/01_leds $GITHUB_WORKSPACE/openwrt/target/linux/ramips/base-files/etc/board.d/01_leds
-cp -rf $GITHUB_WORKSPACE/patchs/4.14/public/02_network $GITHUB_WORKSPACE/openwrt/target/linux/ramips/base-files/etc/board.d/02_network
+# cp -rf $GITHUB_WORKSPACE/patchs/4.14/dts/* $GITHUB_WORKSPACE/openwrt/target/linux/ramips/dts/
+# cp -rf $GITHUB_WORKSPACE/patchs/4.14/mt76x8/mt76x8.mk $GITHUB_WORKSPACE/openwrt/target/linux/ramips/image/mt76x8.mk
+# cp -rf $GITHUB_WORKSPACE/patchs/4.14/mt7621/mt7621.mk $GITHUB_WORKSPACE/openwrt/target/linux/ramips/image/mt7621.mk
+# cp -rf $GITHUB_WORKSPACE/patchs/4.14/public/01_leds $GITHUB_WORKSPACE/openwrt/target/linux/ramips/base-files/etc/board.d/01_leds
+# cp -rf $GITHUB_WORKSPACE/patchs/4.14/public/02_network $GITHUB_WORKSPACE/openwrt/target/linux/ramips/base-files/etc/board.d/02_network
 
 # 增加软件包
 sed -i '$a src-git helloworld https://github.com/fw876/helloworld.git;master' feeds.conf.default

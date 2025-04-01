@@ -1,0 +1,289 @@
+name: 云编译Openwrt官方21.02固件+插件-DIY
+
+on:
+  repository_dispatch:
+  workflow_dispatch:
+    inputs:
+      model:
+        description: '选择机型'
+        required: true
+        default: 'Redmi_AC2100' 
+        type: choice
+        options:
+          - 'miwifi-4'
+          - 'MI-R3G'
+          - 'Redmi_AC2100'
+          - 'Xiaomi_AC2100'
+          - 'K2P'
+          - 'miwifi-3'
+          - 'miwifi-3x'
+          - 'miwifi-3a'
+          - 'miwifi-4c'
+          - 'miwifi-4a-G'
+          - 'cmcc-l1'
+      UPLOAD_BIN_DIR:
+        type: boolean
+        description: '上传bin文件夹'
+        required: false
+        default: 'false'
+      UPLOAD_FIRMWARE:
+        type: boolean
+        description: '上传固件'
+        required: false
+        default: 'true'
+      UPLOAD_RELEASE:
+        type: boolean
+        description: '上传RELEASE'
+        required: false
+        default: 'true'
+      UPLOAD_CLOUDREVE:
+        type: boolean
+        description: '上传固件和日志到Cloudreve'
+        required: false
+        default: 'true'  # 默认上传到Cloudreve
+      ssh:
+        description: 'SSH connection to Actions'
+        required: false
+        default: 'false'
+        type: boolean
+
+env:
+  REPO_URL: https://github.com/yuos-bit/openwrt
+  REPO_BRANCH: openwrt-21.02
+  FEEDS_CONF: feeds.conf.default
+  CONFIG_FILE: config/21.02/Yuos_${{ github.event.inputs.model }}.config
+  DIY_P1_SH: diy-part8-diy.sh
+  DIY_P2_SH: diy-part9.sh
+  UPLOAD_RELEASE: true
+  TZ: Asia/Shanghai
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    steps:
+    - name: 检查工作流
+      uses: actions/checkout@main
+
+    - name: 初始化环境
+      env:
+        DEBIAN_FRONTEND: noninteractive
+      run: |
+        sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
+        sudo -E apt-get -qq update
+        sudo -E apt-get -qq install \
+            ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential \
+            bzip2 ccache cmake cpio curl device-tree-compiler fastjar flex gawk gettext \
+            gcc-multilib g++-multilib git gperf haveged help2man intltool libc6-dev-i386 \
+            libelf-dev libglib2.0-dev libgmp3-dev libltdl-dev libmpc-dev libmpfr-dev \
+            libip4tc2 libncurses5-dev libncursesw5-dev libreadline-dev libssl-dev libtool \
+            lrzsz mkisofs msmtp nano ninja-build p7zip p7zip-full patch pkgconf python2.7 \
+            python3 python3-pyelftools libpython3-dev qemu-utils rsync scons squashfs-tools \
+            subversion swig texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev \
+            python3-setuptools clang \
+            libxml2-dev zlib1g-dev libedit-dev libdeflate-dev
+        sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+        sudo add-apt-repository ppa:ubuntu-toolchain-r/ppa
+        sudo apt-get install -y gcc-13
+        sudo apt-get install -y g++-13
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 60 --slave /usr/bin/g++ g++ /usr/bin/g++-13
+        sudo timedatectl set-timezone "$TZ"
+        sudo mkdir -p /workdir
+        sudo chown $USER:$GROUPS /workdir
+
+    - name: 拉取源码
+      working-directory: /workdir
+      run: |
+        df -hT $PWD
+        git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
+        ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
+
+    - name: 运行第一脚本
+      run: |
+        [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
+        chmod +x $DIY_P1_SH
+        cd openwrt
+        $GITHUB_WORKSPACE/$DIY_P1_SH
+
+    - name: 更新插件
+      run: |
+        cd openwrt
+        ./scripts/feeds update -a
+        rm -rf feeds/packages/libs/libfido2/Makefile
+        cp -rf $GITHUB_WORKSPACE/patchs/immortalwrt-mt798x/libfido2/Makefile $GITHUB_WORKSPACE/openwrt/feeds/packages/libs/libfido2/Makefile
+        chmod -R +755 feeds/
+
+    - name: 安装插件
+      run: |
+        cd openwrt
+        ./scripts/feeds install -a
+
+    - name: 运行第二脚本
+      run: |
+        [ -e files ] && mv files openwrt/files
+        [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
+        chmod +x $DIY_P2_SH
+        cd openwrt
+        $GITHUB_WORKSPACE/$DIY_P2_SH
+
+    - name: 云编译设置
+      uses: P3TERX/ssh2actions@v1.0.0
+      if: (github.event.inputs.ssh == 'true' && github.event.inputs.ssh  != 'false') || contains(github.event.action, 'ssh')
+      env:
+        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+
+    - name: 下载插件环境包
+      id: package
+      run: |
+        cd openwrt
+        make defconfig
+        make download -j8 V=s
+        find dl -size -1024c -exec ls -l {} \;
+        find dl -size -1024c -exec rm -f {} \;
+    
+    - name: 编译固件中
+      id: compile
+      run: |
+        cd openwrt
+        echo -e "$(nproc) thread compile"
+        make -j$(nproc) || make -j1 || make -j1 V=s
+        echo "status=success" >> $GITHUB_OUTPUT
+        grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
+        [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
+        echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
+
+    - name: 检查打包环境
+      if: (!cancelled())
+      run: | 
+        df -hT
+        
+    - name: 上传文件
+      uses: actions/upload-artifact@main
+      if: steps.compile.outputs.status == 'success' && github.event.inputs.UPLOAD_BIN_DIR == 'true' && !cancelled()
+      with:
+        name: OpenWrt_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
+        path: openwrt/bin
+
+    - name: 更新文件
+      id: organize
+      if: steps.compile.outputs.status == 'success' && !cancelled()
+      run: |
+        cd openwrt/bin/targets/*/*
+        rm -rf packages
+        echo "FIRMWARE=$PWD" >> $GITHUB_ENV
+        echo "status=success" >> $GITHUB_OUTPUT
+        
+    - name: 打包固件
+      uses: actions/upload-artifact@main
+      if: steps.organize.outputs.status == 'success' && github.event.inputs.UPLOAD_FIRMWARE == 'true' && !cancelled()
+      with:
+        name: OpenWrt_firmware${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
+        path: ${{ env.FIRMWARE }}
+
+    - name: 创建标签
+      id: tag
+      if: github.event.inputs.UPLOAD_RELEASE == 'true' && !cancelled()
+      run: |
+        echo "release_tag=$(date +"%Y.%m.%d-%H%M")-${{ github.event.inputs.model }}" >> $GITHUB_OUTPUT
+        touch release.txt
+        echo "status=success" >> $GITHUB_OUTPUT
+
+    - name: 上传固件至Github
+      uses: softprops/action-gh-release@v2.0.4
+      if: steps.tag.outputs.status == 'success' && !cancelled()
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.tag.outputs.release_tag }}
+        body_path: release.txt
+        files: | 
+          ${{ env.FIRMWARE }}/*
+          ${{ runner.workspace }}/logs/*
+
+    - name: 设置WebDAV目标目录
+      run: |
+        if [[ "${{ github.event.inputs.UPLOAD_CLOUDREVE }}" == "true" ]]; then
+          # 获取当前日期并格式化为 YYYYMMDD
+          CURRENT_DATE=$(date +"%Y%m%d")
+          # 获取设备型号
+          DEVICE_MODEL="${{ github.event.inputs.model }}"
+          # 组合目录格式：20250220/miwifi-4c
+          TARGET_DIR="${CURRENT_DATE}/${DEVICE_MODEL}"
+
+          # 检查目标目录是否存在
+          echo "检查WebDAV目标目录: $TARGET_DIR"
+          if ! curl -u "${{ secrets.WEBDAV_USERNAME }}:${{ secrets.WEBDAV_PASSWORD }}" --head "${{ secrets.WEBDAV_URL }}/${TARGET_DIR}" | grep -q "200 OK"; then
+            echo "目标目录不存在，正在创建..."
+            curl -u "${{ secrets.WEBDAV_USERNAME }}:${{ secrets.WEBDAV_PASSWORD }}" -X MKCOL "${{ secrets.WEBDAV_URL }}/${TARGET_DIR}"
+            echo "目录已创建: $TARGET_DIR"
+          else
+            echo "目标目录已存在: $TARGET_DIR"
+          fi
+
+          echo "TARGET_DIR=${TARGET_DIR}" >> $GITHUB_ENV
+        fi
+
+    - name: 上传文件至Cloudreve
+      if: steps.organize.outputs.status == 'success' && github.event.inputs.UPLOAD_CLOUDREVE == 'true' && !cancelled()
+      run: |
+        UPLOAD_PATH="${{ env.FIRMWARE }}/*"
+        README_FILE="$GITHUB_WORKSPACE/readme/README.md"
+        
+        # 上传固件文件
+        echo "开始上传固件文件到Cloudreve..."
+        for file in $UPLOAD_PATH; do
+          if [[ -f $file ]]; then
+            echo "上传文件: $file"
+            curl -u "${{ secrets.WEBDAV_USERNAME }}:${{ secrets.WEBDAV_PASSWORD }}" -T "$file" "${{ secrets.WEBDAV_URL }}/${TARGET_DIR}/$(basename $file)"
+          else
+            echo "未找到文件: $file"
+          fi
+        done
+        
+        # 上传 README 文件
+        echo "开始上传 README 文件到Cloudreve..."
+        if [[ -f $README_FILE ]]; then
+          echo "上传文件: $README_FILE"
+          curl -u "${{ secrets.WEBDAV_USERNAME }}:${{ secrets.WEBDAV_PASSWORD }}" -T "$README_FILE" "${{ secrets.WEBDAV_URL }}/${TARGET_DIR}/README.md"
+        else
+            echo "未找到 README 文件: $README_FILE"
+          fi
+
+    - name: 上传 packages 文件到 Cloudreve
+      if: steps.organize.outputs.status == 'success' && github.event.inputs.UPLOAD_CLOUDREVE == 'true' && !cancelled()
+      run: |
+        echo "开始上传 packages 文件到 Cloudreve..."
+        cd openwrt/bin/packages
+        # 遍历当前目录下所有文件，保留相对目录结构上传
+        find . -type f | while read file; do
+          # 获取相对目录（去掉前导"./"）
+          rel_dir=$(dirname "$file" | sed 's#^\./##')
+          # 拼接目标路径: Cloudreve 已设定的 TARGET_DIR 下新建 packages/目录
+          remote_path="${TARGET_DIR}/packages/${rel_dir}"
+          echo "处理文件: $file，目标路径: $remote_path"
+          # 检查目标目录是否存在，若不存在则创建目录
+          if ! curl --http1.1 -u "${{ secrets.WEBDAV_USERNAME }}:${{ secrets.WEBDAV_PASSWORD }}" --head "${{ secrets.WEBDAV_URL }}/${remote_path}" | grep -q "200 OK"; then
+            echo "目录不存在，正在创建: $remote_path"
+            curl --http1.1 -u "${{ secrets.WEBDAV_USERNAME }}:${{ secrets.WEBDAV_PASSWORD }}" -X MKCOL "${{ secrets.WEBDAV_URL }}/${remote_path}"
+          else
+            echo "目录已存在: $remote_path"
+          fi
+          # 上传当前文件到对应目录
+          curl --http1.1 -u "${{ secrets.WEBDAV_USERNAME }}:${{ secrets.WEBDAV_PASSWORD }}" -T "$file" "${{ secrets.WEBDAV_URL }}/${remote_path}/$(basename "$file")"
+        done
+
+    - name: 删除工作目录
+      uses: Mattraks/delete-workflow-runs@main
+      with:
+        retain_days: 7
+        keep_minimum_runs: 4
+
+    - name: 删除历史固件
+      uses: dev-drprasad/delete-older-releases@master
+      if: env.UPLOAD_RELEASE == 'true' && !cancelled()
+      with:
+        keep_latest: 8
+        delete_tags: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

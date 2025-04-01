@@ -1,4 +1,4 @@
-name: 云编译Openwrt官方21.02固件+插件-DIY
+name: 云编译Openwrt官方21.02固件-DIY
 
 on:
   repository_dispatch:

@@ -20,7 +20,6 @@ on:
           - 'miwifi-3a'
           - 'miwifi-4c'
           - 'miwifi-4a-G'
-          - 'cmcc-l1'
       UPLOAD_BIN_DIR:
         type: boolean
         description: '上传bin文件夹'

@@ -39,9 +39,9 @@ cp -rf $GITHUB_WORKSPACE/patchs/xiaomi_mi-router/mt7620/path/platform.sh $GITHUB
 # MT7621
 cp -rf $GITHUB_WORKSPACE/patchs/xiaomi_mi-router/mt7621_xiaomi_mi-router-4a-gigabit.dts $GITHUB_WORKSPACE/openwrt/target/linux/ramips/dts/mt7621_xiaomi_mi-router-4a-gigabit.dts
 # CMCC
-cp -rf $GITHUB_WORKSPACE/patchs/cmcc/mt7628an_cmcc-l1.dts $GITHUB_WORKSPACE/openwrt/target/linux/ramips/dts/mt7628an_cmcc-l1.dts
-cp -rf $GITHUB_WORKSPACE/patchs/cmcc/mt76x8.mk $GITHUB_WORKSPACE/openwrt/target/linux/ramips/image/mt76x8.mk
-cp -rf $GITHUB_WORKSPACE/patchs/cmcc/02_network $GITHUB_WORKSPACE/openwrt/target/linux/ramips/mt76x8/base-files/etc/board.d/02_network
+cp -rf $GITHUB_WORKSPACE/patchs/mt76x8/dts/* $GITHUB_WORKSPACE/openwrt/target/linux/ramips/dts/
+cp -rf $GITHUB_WORKSPACE/patchs/mt76x8/mt76x8.mk $GITHUB_WORKSPACE/openwrt/target/linux/ramips/image/mt76x8.mk
+cp -rf $GITHUB_WORKSPACE/patchs/mt76x8/02_network $GITHUB_WORKSPACE/openwrt/target/linux/ramips/mt76x8/base-files/etc/board.d/02_network
 #备用方案
 sed -i 's/git.openwrt.org\/project\/luci.git;openwrt-21.02/github.com\/coolsnowwolf\/luci.git;master/g' feeds.conf.default
 sed -i 's/git.openwrt.org\feed\/packages.git;openwrt-21.02/github.com\/coolsnowwolf\/packages.git;master/g' feeds.conf.default

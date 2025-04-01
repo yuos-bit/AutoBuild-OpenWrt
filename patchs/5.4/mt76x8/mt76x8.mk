@@ -806,6 +806,14 @@ define Device/xiaomi_mi-router-4c
 endef
 TARGET_DEVICES += xiaomi_mi-router-4c
 
+define Device/xiaomi_mi-router-3a
+  IMAGE_SIZE := 14976k
+  DEVICE_VENDOR := Xiaomi
+  DEVICE_TITLE := Mi Router 3A
+  DEVICE_PACKAGES := kmod-mt76x2
+endef
+TARGET_DEVICES += xiaomi_mi-router-3a
+
 define Device/xiaomi_miwifi-nano
   IMAGE_SIZE := 16064k
   DEVICE_VENDOR := Xiaomi

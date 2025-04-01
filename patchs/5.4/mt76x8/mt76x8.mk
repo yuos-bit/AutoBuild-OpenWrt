@@ -828,7 +828,7 @@ define Device/cmcc_l1
   DEVICE_VENDOR := CMCC
   DEVICE_MODEL := L1
   DEVICE_PACKAGES := uboot-envtools
-  SUPPORTED_DEVICES += cmcc-l1
+  SUPPORTED_DEVICES += l1
 endef
 TARGET_DEVICES += cmcc_l1
 

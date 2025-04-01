@@ -824,7 +824,7 @@ endef
 TARGET_DEVICES += xiaomi_miwifi-nano
 
 define Device/cmcc_l1
-  IMAGE_SIZE := 16064k
+  IMAGE_SIZE := 7872k
   DEVICE_VENDOR := CMCC
   DEVICE_MODEL := L1
   DEVICE_PACKAGES := uboot-envtools

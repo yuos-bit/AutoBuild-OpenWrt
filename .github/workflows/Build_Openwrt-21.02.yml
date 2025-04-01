@@ -17,6 +17,8 @@ on:
           - 'K2P'
           - 'miwifi-3'
           - 'miwifi-3x'
+          - 'miwifi-3a'
+          - 'miwifi-4c'
           - 'miwifi-4a-G'
           - 'cmcc-l1'
       UPLOAD_BIN_DIR:

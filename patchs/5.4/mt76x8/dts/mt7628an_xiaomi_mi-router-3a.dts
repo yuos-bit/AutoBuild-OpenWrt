@@ -67,7 +67,7 @@
 	m25p80@0 {
 		compatible = "jedec,spi-nor";
 		reg = <0>;
-		spi-max-frequency = <10000000>;
+		spi-max-frequency = <40000000>;
 		/*闪存大小16M*/
 		partitions {
 			compatible = "fixed-partitions";

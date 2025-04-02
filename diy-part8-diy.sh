@@ -61,8 +61,9 @@ sed -i 's/ppp-mod-pppoeipset ip-full ppp-mod-pppoe default-settings luci curl ca
 # 修改默认红米AC2100 wifi驱动为闭源驱动
 sed -i 's/kmod-mt7603 kmod-mt7615e kmod-mt7615-firmware/kmod-mt7603e kmod-mt7615d luci-app-mtwifi -wpad-openssl/g' target/linux/ramips/image/mt7621.mk
 
-# 修改默认小米路由4A千兆版 wifi驱动为闭源驱动
+# 修改默认小米路由4A千兆版 wifi驱动为闭源驱动，更改闪存分区大小
 sed -i 's/kmod-mt7603 kmod-mt76x2/kmod-mt7603e kmod-mt76x2e luci-app-mtwifi -wpad-openssl/g' target/linux/ramips/image/mt7621.mk
+sed -i '1509s/IMAGE_SIZE := 14848k/IMAGE_SIZE := 16064k/' target/linux/ramips/image/mt7621.mk
 
 # 设置闭源驱动开机自启
 sed -i '2a ifconfig rai0 up\nifconfig ra0 up\nbrctl addif br-lan rai0\nbrctl addif br-lan ra0' package/base-files/files/etc/rc.local

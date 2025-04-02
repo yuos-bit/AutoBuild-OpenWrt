@@ -71,7 +71,7 @@ sed -i '2a ifconfig rai0 up\nifconfig ra0 up\nbrctl addif br-lan rai0\nbrctl add
 git clone -b Lienol-default-settings https://github.com/yuos-bit/other package/default-settings
 git clone -b lua5.4 https://github.com/yuos-bit/other package/lua5.4
 git clone -b debug https://github.com/yuos-bit/luci-theme-edge2 package/luci-theme-edge2
-git clone -b passwall https://github.com/yuos-bit/other package/passwall
+git clone -b mipsle-xray https://github.com/yuos-bit/other package/passwall
 git clone -b main https://github.com/yuos-bit/other package/main
 
 # 更改默认wifi

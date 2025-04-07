@@ -21,6 +21,7 @@ on:
           - 'miwifi-4c'
           - 'miwifi-4a-G'
           - 'cmcc-l1'
+          - 'E8820v2'
           - 'X86'
       UPLOAD_BIN_DIR:
         type: boolean

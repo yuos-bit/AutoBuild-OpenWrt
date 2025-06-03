@@ -20,6 +20,7 @@ on:
         type: choice
         options:
           - 'X86'
+          - 'rpi-4b'
       UPLOAD_BIN_DIR:
         type: boolean
         description: '上传bin文件夹'

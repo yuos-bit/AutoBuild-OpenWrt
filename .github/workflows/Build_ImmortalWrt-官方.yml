@@ -21,6 +21,7 @@ on:
         options:
           - 'X86'
           - 'rpi-4b'
+          - 'Xiaomi_AC2100'
       UPLOAD_BIN_DIR:
         type: boolean
         description: '上传bin文件夹'

@@ -38,6 +38,10 @@ cp -rf $GITHUB_WORKSPACE/patchs/xiaomi_mi-router/mt7620/path/ramips $GITHUB_WORK
 cp -rf $GITHUB_WORKSPACE/patchs/xiaomi_mi-router/mt7620/path/platform.sh $GITHUB_WORKSPACE/openwrt/target/linux/ramips/mt7620/base-files/lib/upgrade/platform.sh
 # MT7621
 cp -rf $GITHUB_WORKSPACE/patchs/xiaomi_mi-router/mt7621_xiaomi_mi-router-4a-gigabit.dts $GITHUB_WORKSPACE/openwrt/target/linux/ramips/dts/mt7621_xiaomi_mi-router-4a-gigabit.dts
+# zte8820v2
+cp -rf $GITHUB_WORKSPACEE/patchs/5.4/ZTE/dts/mt7621_zte_e8820v2.dts $GITHUB_WORKSPACE/openwrt/target/linux/ramips/dts/mt7621_zte_e8820v2.dts
+cp -rf $GITHUB_WORKSPACEE/patchs/5.4/ZTE/image/mt7621.mk $GITHUB_WORKSPACE/openwrt/target/linux/ramips/image/mt7621.mk
+cp -rf $GITHUB_WORKSPACEE/patchs/5.4/ZTE/board.d/01_leds $GITHUB_WORKSPACE/openwrt/target/linux/ramips/mt7621/base-files/etc/board.d/01_leds
 # MT76X8
 cp -rf $GITHUB_WORKSPACE/patchs/5.4/mt76x8/dts/* $GITHUB_WORKSPACE/openwrt/target/linux/ramips/dts/
 cp -rf $GITHUB_WORKSPACE/patchs/5.4/mt76x8/mt76x8.mk $GITHUB_WORKSPACE/openwrt/target/linux/ramips/image/mt76x8.mk

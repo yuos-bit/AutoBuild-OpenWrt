@@ -122,8 +122,12 @@
     };
 };
 
-&switch0 {
+// 修改为引用gsw节点而非switch0
+&gsw {
     ports {
+        #address-cells = <1>;
+        #size-cells = <0>;
+
         port@4 {
             status = "okay";
             label = "wan";
@@ -157,10 +161,10 @@
 };
 
 &pinctrl {
-	state_default: pinctrl0 {
-		gpio {
-			ralink,group = "i2c", "uart2", "uart3", "wdt";
-			ralink,function = "gpio";
-		};
-	};
+    state_default: pinctrl0 {
+        gpio {
+            ralink,group = "i2c", "uart2", "uart3", "wdt";
+            ralink,function = "gpio";
+        };
+    };
 };

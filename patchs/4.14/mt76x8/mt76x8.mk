@@ -487,6 +487,14 @@ define Device/zyxel_keenetic-extra-ii
 endef
 TARGET_DEVICES += zyxel_keenetic-extra-ii
 
+define Device/miwifi-3a
+  DTS := MIWIFI-3A
+  IMAGE_SIZE := 16064k
+  DEVICE_TITLE := Xiaomi MiWiFi 3a
+  DEVICE_PACKAGES := uboot-envtools kmod-mt76x2
+endef
+TARGET_DEVICES += miwifi-3a
+
 define Device/miwifi-3c
   DTS := MIWIFI-3C
   IMAGE_SIZE := 16064k

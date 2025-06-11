@@ -89,7 +89,8 @@ jobs:
         DEBIAN_FRONTEND: noninteractive
       run: |
         sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
-        sudo sed -i 's@azure.archive.ubuntu.com@mirrors.aliyun.com@g' /etc/apt/sources.list
+        sudo sed -i 's@http://azure.archive.ubuntu.com@http://mirrors.aliyun.com@g' /etc/apt/sources.list
+        sudo find /etc/apt/sources.list.d/ -type f -name "*.list" -exec sudo sed -i 's@http://azure.archive.ubuntu.com@http://mirrors.aliyun.com@g' {} +
         sudo apt clean
         sudo apt update
         sudo -E apt -qq clean

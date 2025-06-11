@@ -10,6 +10,7 @@ sed -i '$a src-git kenzo https://github.com/kenzok8/openwrt-packages.git;master'
 sed -i '$a src-git small https://github.com/kenzok8/small.git;master' feeds.conf.default
 sed -i '$a src-git small8 https://github.com/kenzok8/small-package.git;main' feeds.conf.default
 # 单独拉取软件包
+rm -rf package/default-settings
 git clone -b default-settings-19.07 https://github.com/yuos-bit/other package/19.07
 git clone -b main --single-branch https://github.com/yuos-bit/other package/yuos
 # 覆盖源码

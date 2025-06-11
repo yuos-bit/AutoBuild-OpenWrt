@@ -103,11 +103,9 @@ jobs:
         EOF
 
         sudo rm -rf /etc/apt/sources.list.d/*
-        sudo apt clean
-        sudo apt update
-        sudo -E apt -qq clean
-        sudo apt update -y
-        sudo apt full-upgrade -y
+        sudo apt-get clean
+        sudo apt-get update -y
+        sudo apt-get full-upgrade -y
         sudo apt-get install -y software-properties-common
         sudo apt install -y ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential \
         bzip2 ccache clang cmake cpio curl device-tree-compiler flex gawk gcc-multilib g++-multilib gettext \

@@ -253,23 +253,37 @@ jobs:
       run: |
         echo "开始上传 packages 文件到 Cloudreve..."
         cd openwrt/bin/packages
-        # 遍历当前目录下所有文件，保留相对目录结构上传
-        find . -type f | while read file; do
-          # 获取相对目录（去掉前导"./"）
-          rel_dir=$(dirname "$file" | sed 's#^\./##')
-          # 拼接目标路径: Cloudreve 已设定的 TARGET_DIR 下新建 packages/目录
+          
+        # 先创建所有需要的目录
+        echo "创建所有需要的目录..."
+        find . -type d | while read dir; do
+          rel_dir=$(echo "$dir" | sed 's#^\./##')
           remote_path="${TARGET_DIR}/packages/${rel_dir}"
-          echo "处理文件: $file，目标路径: $remote_path"
-          # 检查目标目录是否存在，若不存在则创建目录
-          if ! curl --http1.1 -u "${{ secrets.WEBDAV_USERNAME }}:${{ secrets.WEBDAV_PASSWORD }}" --head "${{ secrets.WEBDAV_URL }}/${remote_path}" | grep -q "200 OK"; then
-            echo "目录不存在，正在创建: $remote_path"
-            curl --http1.1 -u "${{ secrets.WEBDAV_USERNAME }}:${{ secrets.WEBDAV_PASSWORD }}" -X MKCOL "${{ secrets.WEBDAV_URL }}/${remote_path}"
-          else
-            echo "目录已存在: $remote_path"
-          fi
-          # 上传当前文件到对应目录
-          curl --http1.1 -u "${{ secrets.WEBDAV_USERNAME }}:${{ secrets.WEBDAV_PASSWORD }}" -T "$file" "${{ secrets.WEBDAV_URL }}/${remote_path}/$(basename "$file")"
+          echo "创建目录: $remote_path"
+          curl --http1.1 -u "${{ secrets.WEBDAV_USERNAME }}:${{ secrets.WEBDAV_PASSWORD }}" -X MKCOL "${{ secrets.WEBDAV_URL }}/${remote_path}" || true
         done
+          
+        # 上传所有文件，添加重试机制
+        echo "开始上传文件..."
+        find . -type f | xargs -P 2 -I {} bash -c '
+          file="{}"
+          rel_dir=$(dirname "$file" | sed "s#^\./##")
+          remote_path="${TARGET_DIR}/packages/${rel_dir}"
+          filename=$(basename "$file")
+          echo "上传文件: $file -> ${remote_path}/${filename}"
+          
+          # 添加超时和重试设置
+          curl --http1.1 \
+               --connect-timeout 30 \
+               --max-time 300 \
+               --retry 3 \
+               --retry-delay 5 \
+               -u "${{ secrets.WEBDAV_USERNAME }}:${{ secrets.WEBDAV_PASSWORD }}" \
+               -T "$file" "${{ secrets.WEBDAV_URL }}/${remote_path}/${filename}" || {
+            echo "错误: 上传文件 $file 失败，HTTP错误码 $?"
+            exit 1
+          }
+        '
 
     - name: 删除工作目录
       uses: Mattraks/delete-workflow-runs@main

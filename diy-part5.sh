@@ -30,3 +30,8 @@ sed -i '/luciversion/d' feeds/luci/modules/luci-base/luasrc/version.lua
 find . -type d -name "cmake" -exec rm -r {} +
 mkdir -p tools/cmake/
 cp -rf $GITHUB_WORKSPACE/patchs/4.14/tools/cmake/* tools/cmake/
+
+#升级golang
+find . -type d -name "golang" -exec rm -r {} +
+rm -rf feeds/packages/lang/golang
+git clone https://github.com/sbwml/packages_lang_golang -b 24.x feeds/packages/lang/golang

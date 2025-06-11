@@ -89,8 +89,20 @@ jobs:
         DEBIAN_FRONTEND: noninteractive
       run: |
         sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
-        sudo sed -i 's@http://azure.archive.ubuntu.com@http://mirrors.aliyun.com@g' /etc/apt/sources.list
-        sudo find /etc/apt/sources.list.d/ -type f -name "*.list" -exec sudo sed -i 's@http://azure.archive.ubuntu.com@http://mirrors.aliyun.com@g' {} +
+        sudo tee /etc/apt/sources.list > /dev/null <<EOF
+        deb http://mirrors.aliyun.com/ubuntu/ jammy main restricted universe multiverse
+        deb-src http://mirrors.aliyun.com/ubuntu/ jammy main restricted universe multiverse
+        deb http://mirrors.aliyun.com/ubuntu/ jammy-security main restricted universe multiverse
+        deb-src http://mirrors.aliyun.com/ubuntu/ jammy-security main restricted universe multiverse
+        deb http://mirrors.aliyun.com/ubuntu/ jammy-updates main restricted universe multiverse
+        deb-src http://mirrors.aliyun.com/ubuntu/ jammy-updates main restricted universe multiverse
+        deb http://mirrors.aliyun.com/ubuntu/ jammy-proposed main restricted universe multiverse
+        deb-src http://mirrors.aliyun.com/ubuntu/ jammy-proposed main restricted universe multiverse
+        deb http://mirrors.aliyun.com/ubuntu/ jammy-backports main restricted universe multiverse
+        deb-src http://mirrors.aliyun.com/ubuntu/ jammy-backports main restricted universe multiverse
+        EOF
+
+        sudo rm -rf /etc/apt/sources.list.d/*
         sudo apt clean
         sudo apt update
         sudo -E apt -qq clean

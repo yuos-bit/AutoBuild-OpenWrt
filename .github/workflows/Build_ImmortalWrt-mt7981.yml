@@ -261,7 +261,7 @@ jobs:
       if: steps.organize.outputs.status == 'success' && github.event.inputs.UPLOAD_CLOUDREVE == 'true' && !cancelled()
       run: |
         echo "开始上传 packages 文件到 Cloudreve..."
-        cd openwrt/bin/packages
+        cd immortalwrt/bin/packages
           
         # 先创建所有需要的目录
         echo "创建所有需要的目录..."

@@ -132,6 +132,7 @@ jobs:
         cd openwrt
         ./scripts/feeds clean
         ./scripts/feeds update -a
+        find . -type d -name "luci-app-turboacc" -exec rm -r {} +
         ./scripts/feeds install -a
 
     - name: 定义第二脚本

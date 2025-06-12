@@ -106,6 +106,11 @@ detect_mac80211() {
 			dev_id="set wireless.radio${devidx}.macaddr=$(cat /sys/class/ieee80211/${dev}/macaddress)"
 		fi
 
+		# 从 /tmp/sysinfo/model 获取设备型号（请根据实际情况修改路径）
+		DEVICE_MODEL=$(cat /tmp/sysinfo/model 2>/dev/null)
+		[ -z "$DEVICE_MODEL" ] && DEVICE_MODEL="OpenWrt"  # 若获取失败则使用默认值
+		NEW_SSID="${DEVICE_MODEL}_$(cat /sys/class/ieee80211/${dev}/macaddress|awk -F ":" '{print $2""$3""$7 }'| tr a-z A-Z)"
+		
 		uci -q batch <<-EOF
 			set wireless.radio${devidx}=wifi-device
 			set wireless.radio${devidx}.type=mac80211
@@ -119,11 +124,11 @@ detect_mac80211() {
 			set wireless.default_radio${devidx}.device=radio${devidx}
 			set wireless.default_radio${devidx}.network=lan
 			set wireless.default_radio${devidx}.mode=ap
-			set wireless.default_radio0.ssid=Xiaoyu_$(cat /sys/class/ieee80211/${dev}/macaddress|awk -F ":" '{print $2""$3""$7 }'| tr a-z A-Z)_2.4G
+			set wireless.default_radio0.ssid=${NEW_SSID}_2.4G
 			set wireless.default_radio0.encryption=psk2
 			set wireless.default_radio0.key=1234567890
 			set wireless.default_radio0.encryption=psk2
-			set wireless.default_radio1.ssid=Xiaoyu_$(cat /sys/class/ieee80211/${dev}/macaddress|awk -F ":" '{print $2""$3""$7 }'| tr a-z A-Z)_5G
+			set wireless.default_radio1.ssid=${NEW_SSID}_5G
 			set wireless.default_radio1.key=1234567890
 			set wireless.default_radio1.encryption=psk2
 EOF

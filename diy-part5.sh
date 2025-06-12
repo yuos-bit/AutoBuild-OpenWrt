@@ -11,8 +11,8 @@
 #=================================================
 
 # 单独拉取软件包
-git clone -b default-settings-19.07 https://github.com/yuos-bit/other package/19.07
-git clone -b main https://github.com/yuos-bit/other package/main
+git clone -b default-settings-19.07 https://github.com/yuos-bit/other package/default-settings
+git clone -b main-19.07 https://github.com/yuos-bit/other package/yuos
 
 # nft-fullcone
 git clone -b main --single-branch https://github.com/fullcone-nat-nftables/nftables-1.0.5-with-fullcone package/nftables
@@ -38,4 +38,4 @@ cp -rf $GITHUB_WORKSPACE/patchs/4.14/tools/cmake/* tools/cmake/
 #升级golang
 find . -type d -name "golang" -exec rm -r {} +
 rm -rf feeds/packages/lang/golang
-git clone https://github.com/sbwml/packages_lang_golang -b 23.x feeds/packages/lang/golang
+git clone https://github.com/sbwml/packages_lang_golang -b 20.x feeds/packages/lang/golang

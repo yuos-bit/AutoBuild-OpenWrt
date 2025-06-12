@@ -9,10 +9,7 @@ sed -i '$a src-git helloworld https://github.com/fw876/helloworld.git;master' fe
 sed -i '$a src-git kenzo https://github.com/kenzok8/openwrt-packages.git;master' feeds.conf.default
 sed -i '$a src-git small https://github.com/kenzok8/small.git;master' feeds.conf.default
 sed -i '$a src-git small8 https://github.com/kenzok8/small-package.git;main' feeds.conf.default
-# 单独拉取软件包
-rm -rf package/default-settings
-git clone -b default-settings-19.07 https://github.com/yuos-bit/other package/19.07
-git clone -b main https://github.com/yuos-bit/other package/main
+
 # 覆盖源码
 cp -rf $GITHUB_WORKSPACE/patchs/4.14/dts/* $GITHUB_WORKSPACE/openwrt/target/linux/ramips/dts/
 cp -rf $GITHUB_WORKSPACE/patchs/4.14/mt76x8/* $GITHUB_WORKSPACE/openwrt/target/linux/ramips/image/

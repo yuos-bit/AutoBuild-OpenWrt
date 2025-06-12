@@ -4,6 +4,7 @@
 #
 # This is free software, licensed under the MIT License.
 # See /LICENSE for more information.
+sed -i 's|https://github.com/Lienol/openwrt-luci.git;17.01|https://github.com/coolsnowwolf/luci.git;master|' feeds.conf.default
 # 增加软件包
 sed -i '$a src-git helloworld https://github.com/fw876/helloworld.git;master' feeds.conf.default
 sed -i '$a src-git kenzo https://github.com/kenzok8/openwrt-packages.git;master' feeds.conf.default

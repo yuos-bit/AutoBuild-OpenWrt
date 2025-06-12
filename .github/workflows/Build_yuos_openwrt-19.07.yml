@@ -155,8 +155,8 @@ jobs:
     - name: 清洗插件库
       run: |
         cd openwrt
-        find . -type d -name "luci-app-turboacc" -exec rm -r {} +
-#        #删除多余硬件加速
+        find . -type d -name "luci-app-turboacc" -exec rm -r {} + 
+        find . -type d -name "tailscale" -exec rm -r {} +
 
     - name: 安装插件
       run: |

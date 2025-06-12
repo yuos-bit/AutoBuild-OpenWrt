@@ -146,12 +146,21 @@ jobs:
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P1_SH
 
-    - name: 更新安装插件
+    - name: 更新插件
       run: |
         cd openwrt
         ./scripts/feeds clean
         ./scripts/feeds update -a
+
+    - name: 清洗插件库
+      run: |
+        cd openwrt
         find . -type d -name "luci-app-turboacc" -exec rm -r {} +
+#        #删除多余硬件加速
+
+    - name: 安装插件
+      run: |
+        cd openwrt
         ./scripts/feeds install -a
 
     - name: 定义第二脚本

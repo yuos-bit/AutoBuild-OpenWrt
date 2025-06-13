@@ -157,7 +157,7 @@ jobs:
         cd openwrt
         find . -type d -name "luci-app-turboacc" -exec rm -r {} +
         find . -type d -name "tailscale" -exec rm -r {} +
-        find . -type d -name "default-settings" -exec rm -r {} +
+#        find . -type d -name "default-settings" -exec rm -r {} +
 
     - name: 安装插件
       run: |

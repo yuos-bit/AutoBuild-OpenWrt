@@ -73,7 +73,7 @@ sed -i '1509s/IMAGE_SIZE := 14848k/IMAGE_SIZE := 16064k/' target/linux/ramips/im
 sed -i '2a ifconfig rai0 up\nifconfig ra0 up\nbrctl addif br-lan rai0\nbrctl addif br-lan ra0' package/base-files/files/etc/rc.local
 
 # 单独拉取软件包
-git clone -b Lienol-default-settings https://github.com/yuos-bit/other package/default-settings
+# git clone -b Lienol-default-settings https://github.com/yuos-bit/other package/default-settings
 git clone -b lua5.4 https://github.com/yuos-bit/other package/lua5.4
 git clone -b mipsle-xray https://github.com/yuos-bit/other package/passwall
 git clone -b main https://github.com/yuos-bit/other package/main

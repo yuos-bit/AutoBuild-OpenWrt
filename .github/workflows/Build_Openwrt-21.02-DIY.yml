@@ -10,19 +10,8 @@ on:
         default: 'Redmi_AC2100' 
         type: choice
         options:
-          - 'miwifi-4'
-          - 'MI-R3G'
           - 'Redmi_AC2100'
           - 'Xiaomi_AC2100'
-          - 'K2P'
-          - 'miwifi-3'
-          - 'miwifi-3x'
-          - 'miwifi-3a'
-          - 'miwifi-4c'
-          - 'miwifi-4a-G'
-          - 'cmcc-l1'
-          - 'E8820v2'
-          - 'X86'
       UPLOAD_BIN_DIR:
         type: boolean
         description: '上传bin文件夹'

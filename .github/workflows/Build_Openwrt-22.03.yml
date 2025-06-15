@@ -16,13 +16,10 @@ on:
       model:
         description: '选择机型'
         required: true
-        default: 'miwifi-3c' 
+        default: 'Redmi_AC2100' 
         type: choice
         options:
-          - 'miwifi-3'
-          - 'miwifi-3c'
           - 'Redmi_AC2100'
-          - 'K2P'
       UPLOAD_BIN_DIR:
         type: boolean
         description: '上传bin文件夹'

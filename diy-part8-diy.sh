@@ -60,7 +60,7 @@ sed -i '$a src-git small8 https://github.com/kenzok8/small-package.git;main' fee
 sed -i 's/dnsmasq/dnsmasq-full firewall iptables/g' include/target.mk
 
 # 修改默认编译LUCI进系统
-sed -i 's/ppp-mod-pppoeipset ip-full ppp-mod-pppoe default-settings luci curl ca-certificates/g' include/target.mk
+sed -i 's/ppp-mod-pppoeipset ip-full ppp-mod-pppoe luci curl ca-certificates/g' include/target.mk
 
 # 修改默认红米AC2100 wifi驱动为闭源驱动
 sed -i 's/kmod-mt7603 kmod-mt7615e kmod-mt7615-firmware/kmod-mt7603e kmod-mt7615d luci-app-mtwifi -wpad-openssl/g' target/linux/ramips/image/mt7621.mk
@@ -97,7 +97,7 @@ echo fix over clock
 sed -i 's/-111,49 +111,89/-111,49 +111,93/' ./target/linux/ramips/patches-5.4/102-mt7621-fix-cpu-clk-add-clkdev.patch
 sed -i 's/u32 xtal_clk, cpu_clk, bus_clk;/u32 xtal_clk, cpu_clk, bus_clk,i;/' ./target/linux/ramips/patches-5.4/102-mt7621-fix-cpu-clk-add-clkdev.patch
 sed -i '157i+		pll &= ~(0x7ff);' ./target/linux/ramips/patches-5.4/102-mt7621-fix-cpu-clk-add-clkdev.patch
-sed -i '158i+		pll |=  (0x362);' ./target/linux/ramips/patches-5.4/102-mt7621-fix-cpu-clk-add-clkdev.patch
+sed -i '158i+		pll |=  (0x312);' ./target/linux/ramips/patches-5.4/102-mt7621-fix-cpu-clk-add-clkdev.patch
 sed -i '159i+		rt_memc_w32(pll,MEMC_REG_CPU_PLL);' ./target/linux/ramips/patches-5.4/102-mt7621-fix-cpu-clk-add-clkdev.patch
 sed -i '160i+		for(i=0;i<1024;i++);' ./target/linux/ramips/patches-5.4/102-mt7621-fix-cpu-clk-add-clkdev.patch
 fi

@@ -41,3 +41,7 @@ cp -rf $GITHUB_WORKSPACE/patchs/immortalwrt-mt798x/openssl-module.mk $GITHUB_WOR
 
 # 删除软件包默认设置
 rm -rf package/emortal/default-settings
+
+#升级tailscale
+rm -rf feeds/packages/net/tailscale
+find . -type d -name "tailscale" -prune -exec rm -rf {} \;

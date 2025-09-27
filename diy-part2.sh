@@ -59,7 +59,3 @@ popd
 rm -rf feeds/packages/lang/golang
 find . -type d -name "golang" -prune -exec rm -rf {} \;
 git clone https://github.com/sbwml/packages_lang_golang -b 24.x feeds/packages/lang/golang
-
-#升级tailscale
-rm -rf feeds/packages/net/tailscale
-find . -type d -name "tailscale" -prune -exec rm -rf {} \;

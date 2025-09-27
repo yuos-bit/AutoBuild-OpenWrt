@@ -44,4 +44,4 @@ rm -rf package/emortal/default-settings
 
 #升级tailscale
 rm -rf feeds/packages/net/tailscale
-find . -type d -name "tailscale" -prune -exec rm -rf {} \;
+cp -rf feeds/small8/tailscale feeds/packages/net/

@@ -56,6 +56,10 @@ wget -O- https://raw.githubusercontent.com/LGA1150/fullconenat-fw3-patch/master/
 popd
 
 #升级golang
-find . -type d -name "golang" -exec rm -r {} +
 rm -rf feeds/packages/lang/golang
+find . -type d -name "golang" -prune -exec rm -rf {} \;
 git clone https://github.com/sbwml/packages_lang_golang -b 24.x feeds/packages/lang/golang
+
+#升级tailscale
+rm -rf feeds/packages/net/tailscale
+find . -type d -name "tailscale" -prune -exec rm -rf {} \;

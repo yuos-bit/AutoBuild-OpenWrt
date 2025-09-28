@@ -125,7 +125,7 @@ jobs:
         cd openwrt
         ./scripts/feeds install -a
     
-    - name: 生成配置文件
+    - name: 执行脚本2
       run: |
         [ -e files ] && mv files openwrt/files
         [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config

@@ -82,7 +82,6 @@ sed -i '2a ifconfig rai0 up\nifconfig ra0 up\nbrctl addif br-lan rai0\nbrctl add
 
 # 单独拉取软件包
 git clone -b default-openwrt-21.02 https://github.com/yuos-bit/other package/default-settings
-git clone -b lua5.4 https://github.com/yuos-bit/other package/lua5.4
 git clone -b passwall https://github.com/yuos-bit/other package/passwall
 git clone -b main https://github.com/yuos-bit/other package/main
 

@@ -50,7 +50,7 @@ cp -rf package/firmware/xt_FULLCONENAT.c package/libnftnl/include/linux/netfilte
 cp -rf package/firmware/xt_FULLCONENAT.c package/libs/libnetfilter-conntrack/xt_FULLCONENAT.c
 
 # 测试编译时间
-YUOS_DATE="$(date +%Y.%m.%d)(测试版)"
+YUOS_DATE="$(date +%Y.%m.%d)(公测版)"
 BUILD_STRING=${BUILD_STRING:-$YUOS_DATE}
 echo "Write build date in openwrt : $BUILD_DATE"
 echo -e '\n小渔学长 Build @ '${BUILD_STRING}'\n'  >> package/base-files/files/etc/banner

@@ -31,21 +31,16 @@ on:
         description: '上传固件'
         required: false
         default: 'true'
-      UPLOAD_COWTRANSFER:
-        type: boolean
-        description: '上传COWTRANSFER'
-        required: false
-        default: 'false'
-      UPLOAD_WETRANSFER:
-        type: boolean
-        description: '上传WETRANSFER'
-        required: false
-        default: 'false'
       UPLOAD_RELEASE:
         type: boolean
         description: '上传RELEASE'
         required: false
         default: 'true'
+      UPLOAD_CLOUDREVE:
+        type: boolean
+        description: '上传固件和日志到Cloudreve'
+        required: false
+        default: 'true'  # 默认上传到Cloudreve
       
       ssh:
         description: 'SSH connection to Actions'

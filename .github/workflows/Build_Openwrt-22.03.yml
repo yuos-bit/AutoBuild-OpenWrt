@@ -69,8 +69,8 @@ env:
   REPO_BRANCH: openwrt-22.03
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: config/22.03/Yuos_${{ github.event.inputs.model }}_22.03.config
-  DIY_P1_SH: diy-part6.sh
-  DIY_P2_SH: diy-part7.sh
+  DIY_P1_SH: openwrt22.03-1.sh
+  DIY_P2_SH: openwrt22.03-2.sh
 #  UPLOAD_BIN_DIR: true
 #  UPLOAD_FIRMWARE: true
 #  UPLOAD_COWTRANSFER: false
@@ -83,7 +83,7 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-    - name: Checkout
+    - name: 检查环境
       uses: actions/checkout@main
 
     - name: 初始化环境
@@ -108,46 +108,29 @@ jobs:
         sudo mkdir -p /workdir
         sudo chown $(id -u):$(id -g) /workdir
 
-    - name: Clone source code
+    - name: 拉取源码
       working-directory: /workdir
       run: |
         df -hT $PWD
         git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
 
-    - name: Load custom feeds
+    - name: 执行脚本1
       run: |
         [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
         chmod +x $DIY_P1_SH
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P1_SH
 
-    - name: Update feeds
+    - name: 更新 feeds 插件包
       run: cd openwrt && ./scripts/feeds clean && ./scripts/feeds update -a
-      
-    - name: add luci-theme-netgear
-      run: |
-        cd openwrt
-        git clone -b master https://github.com/yuos-bit/luci-theme-netgear.git feeds/kenzo/luci-theme-netgear
-
-    - name: 更新插件
-      run: |
-        cd openwrt
-        ./scripts/feeds update -a
-        rm -rf feeds/packages/net/{brook,hysteria,xray-core,xray-plugin,haproxy,naiveproxy,shadowsocksr-libev,shadowsocks-rust,shadowsocks-libev,simple-obfs,trojan,trojan-go,trojan-plus,tuic-client,ua2f,v2ray-core,v2ray-geodata,v2ray-geoview,v2ray-plugin,v2raya} \
-               feeds/packages/devel/gn \
-               feeds/packages/libs/libfido2/Makefile \
-        cp -rf $GITHUB_WORKSPACE/patchs/immortalwrt-mt798x/libfido2/Makefile $GITHUB_WORKSPACE/openwrt/feeds/packages/libs/libfido2/Makefile
-
+    
     - name: 安装插件
       run: |
         cd openwrt
-        ./scripts/feeds install -p helloworld shadowsocks-libev
-        ./scripts/feeds install -p kenzo luci-app-dnsfilter luci-app-istorex luci-app-partexp luci-app-store luci-theme-argone luci-theme-atmaterial_new luci-theme-tomato
-        ./scripts/feeds install -p small brook dns2tcp gn lua-neturl luci-app-fchomo luci-app-homeproxy luci-app-passwall luci-app-passwall2 pdnsd-alt edsocks2 shadowsocksr-libev trojan-plus
-        ./scripts/feeds install -p small8 LingTiGameAcc MentoHUST-OpenWrt-ipk UA2F UnblockNeteaseMusic-Go UnblockNeteaseMusic adguardhome airconnect alac alist aliyundrive-fuse aliyundrive-webdav amule aria2 ariang autoshare-ksmbd autoshare-samba autoupdate baidupcs-web base-files btop cdnspeedtest cgroupfs-mount coremark cpulimit cups cxxopts dae daed-next daed ddns-scripts dnsforwardel dnsmasq dnsproxy docker dockerd ffmpeg-remux ffmpeg-static firewall firewall4 floatip frp fullconenat-nft fullconenat gmediarender go-aliyundrive-webdav haproxy headscale homebox homeredirect iptvhelper istoreenhance jpcre2 libcron libdouble-conversion libnftnl libtorrent-rasterbar linkease linkmount lua-ipops lua-maxminddb luci-app-3ginfo-lite luci-app-LingTiGameAcc luci-app-UUGameAcc luci-app-adguardhome luci-app-advanced luci-app-airconnect luci-app-aliddns luci-app-alist luci-app-aliyundrive-fuse luci-app-aliyundrive-webdav luci-app-alpha-config luci-app-amlogic luci-app-ap-modem luci-app-arcadia luci-app-argon-config luci-app-argone-config luci-app-autoipsetaddel luci-app-autorepeater luci-app-autoshell luci-app-autotimeset luci-app-baidupcs-web luci-app-bandwidthd luci-app-beardropper luci-app-bmtedge luci-app-chatgpt-web luci-app-chinesesubfinder luci-app-chongyoung luci-app-chongyoung2.0 luci-app-clouddrive2 luci-app-cloudflarespeedtest luci-app-codeserver luci-app-control-timewol luci-app-control-webrestriction luci-app-control-weburl luci-app-cupsd luci-app-dnscrypt-proxy2 luci-app-dnsmasq-ipset luci-app-dogcom luci-app-drawio luci-app-easytier luci-app-easyupdate luci-app-emby luci-app-eqosplus luci-app-excalidraw luci-app-fakemesh luci-app-feishuvpn luci-app-gecoosac luci-app-godproxy luci-app-gogs luci-app-gowebdav luci-app-guest-wifi luci-app-heimdall luci-app-homeassistant luci-app-homebridge luci-app-htreader luci-app-immich luci-app-internet-detector luci-app-iperf3-server luci-app-ipsec-server luci-app-istoredup luci-app-istorego luci-app-istorepanel luci-app-ittools luci-app-jackett luci-app-jellyfin luci-app-kodexplorel luci-app-koolproxyR luci-app-lanraragi luci-app-mac luci-app-macvlan luci-app-mail luci-app-memos luci-app-mentohust luci-app-mfun luci-app-minieap luci-app-msd_lite luci-app-mtphotos luci-app-multiaccountdia luci-app-mymind luci-app-nastools luci-app-natmap luci-app-natter luci-app-natter2 luci-app-navidrome luci-app-nekobox luci-app-netdata luci-app-netkeeper-interceptior luci-app-netspeedtest luci-app-nextcloud luci-app-nginx-manager luci-app-nginx-pingos luci-app-npc luci-app-oaf luci-app-oled luci-app-oneapi luci-app-onliner luci-app-openvpn-client luci-app-openvpn-server luci-app-openwebui luci-app-ota luci-app-owntone luci-app-packet-capture luci-app-penpot luci-app-photoprism luci-app-plex luci-app-poweroff luci-app-poweroffdevice luci-app-pppoe-relay luci-app-pppoe-server luci-app-pptp-server luci-app-pushbot luci-app-pve luci-app-qbittorrent luci-app-ramfree luci-app-routerdog luci-app-rtbwmon luci-app-rtorrent luci-app-runmynas luci-app-shanligong luci-app-shortcutmenu luci-app-shutdown luci-app-sms-tool luci-app-socat luci-app-softethervpn luci-app-speedtest-web luci-app-ssr-mudb-server luci-app-sunpanel luci-app-supervisord luci-app-suselogin luci-app-syncthing luci-app-systools luci-app-sysuh3c luci-app-tailscale luci-app-tcpdump luci-app-tencentcloud-cos luci-app-tencentddns luci-app-timecontrol luci-app-tinyfilemanager luci-app-torbp luci-app-transmission luci-app-ttnode luci-app-typecho luci-app-ubuntu luci-app-ubuntu2 luci-app-udp2raw luci-app-unblockmusic luci-app-unifi luci-app-unishare luci-app-usb-printel luci-app-usb3disable luci-app-vaultwarden luci-app-verysync luci-app-vlmcsd luci-app-wan-mac luci-app-webd luci-app-webviewdev luci-app-webvirtcloud luci-app-wifidog luci-app-wizard luci-app-wolplus luci-app-wrtbwmon luci-app-wxedge luci-app-xlnetacc luci-app-xray luci-app-xteve luci-app-xunlei luci-app-xunyou luci-lib-fs luci-lib-iform luci-nginxer luci-proto-minieap luci-proto-netkeeper luci-theme-edge luci-theme-inas lucj-theme-kucat luci-themedog mentohust mhz miniupnpd-iptables msd_lite msmtp mwan3 nanohatoled natflow natter natter2 netatalk netkeeper-interception netkeeper netmaker nftables nginx ngroko njitclient nps open-app-filter openvpn-easy-rsa-whisky openwrt-minieap openwrt-minisign opkg oscam pgyvpn phtunnel ppp qt6base qt6tools quickjspp rapidjson rblibtorrent redsocks2 routergo rp-pppoe scutclient shadowsocksr-libe speedtestcli sub-web subconverter sunpanel sysuh3c tailscale tcpping toml11 transmission-web-contro transmission uwsgi upx-static upx unishare verysync vlmcsd vmease vsftpd watchcat webdav2 wireless-regdb wrtbwmon wxbase xray-core xray-plugin xunyou
+        ./scripts/feeds install -a
     
-    - name: Load custom configuration
+    - name: 生成配置文件
       run: |
         [ -e files ] && mv files openwrt/files
         [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
@@ -155,14 +138,14 @@ jobs:
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P2_SH
 
-    - name: SSH connection to Actions
+    - name: SSH 链接工作流
       uses: P3TERX/ssh2actions@v1.0.0
       if: (github.event.inputs.ssh == 'true' && github.event.inputs.ssh  != 'false') || contains(github.event.action, 'ssh')
       env:
         TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
 
-    - name: Download package
+    - name: 下载软件包
       id: package
       run: |
         cd openwrt
@@ -174,7 +157,7 @@ jobs:
 #        sed -i 's/1.6.0/1.5.5/g' feeds/packages/net/xray-core/Makefile
 #        sed -i 's/b65375090a2d48d358a582837d485bfaa9572e4d1f5a649895b9fd83d0f69e43/3f8d04fef82a922c83bab43cac6c86a76386cf195eb510ccf1cc175982693893/g' feeds/packages/net/xray-core/Makefile
 
-    - name: Compile the firmware
+    - name: 固件编译
       id: compile
       run: |
         cd openwrt
@@ -185,19 +168,19 @@ jobs:
         [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
         echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
 
-    - name: Check space usage
+    - name: 检查打包环境
       if: (!cancelled())
       run: | 
         df -hT
         
-    - name: Upload bin directory
+    - name: 上传文件
       uses: actions/upload-artifact@main
       if: steps.compile.outputs.status == 'success' && github.event.inputs.UPLOAD_BIN_DIR == 'true' && !cancelled()
       with:
         name: OpenWrt_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
         path: openwrt/bin
 
-    - name: Organize files
+    - name: 更新文件
       id: organize
       if: steps.compile.outputs.status == 'success' && !cancelled()
       run: |
@@ -206,39 +189,22 @@ jobs:
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         echo "status=success" >> $GITHUB_OUTPUT
         
-    - name: Upload firmware directory
+    - name: 打包固件
       uses: actions/upload-artifact@main
       if: steps.organize.outputs.status == 'success' && github.event.inputs.UPLOAD_FIRMWARE == 'true' && !cancelled()
       with:
         name: OpenWrt_firmware${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
         path: ${{ env.FIRMWARE }}
 
-    - name: Upload firmware to cowtransfer
-      id: cowtransfer
-      if: steps.organize.outputs.status == 'success' && github.event.inputs.UPLOAD_COWTRANSFER == 'true' && !cancelled()
-      run: |
-        curl -fsSL git.io/file-transfer | sh
-        ./transfer cow --block 2621440 -s -p 64 --no-progress ${FIRMWARE} 2>&1 | tee cowtransfer.log
-        echo "::warning file=cowtransfer.com::$(cat cowtransfer.log | grep https)"
-        echo "url=$(cat cowtransfer.log | grep https | cut -f3 -d" ")" >> $GITHUB_OUTPUT
-    - name: Upload firmware to WeTransfer
-      id: wetransfer
-      if: steps.organize.outputs.status == 'success' && github.event.inputs.UPLOAD_WETRANSFER == 'true' && !cancelled()
-      run: |
-        curl -fsSL git.io/file-transfer | sh
-        ./transfer wet -s -p 16 --no-progress ${FIRMWARE} 2>&1 | tee wetransfer.log
-        echo "::warning file=wetransfer.com::$(cat wetransfer.log | grep https)"
-        echo "url=$(cat wetransfer.log | grep https | cut -f3 -d" ")" >> $GITHUB_OUTPUT
-    - name: Generate release tag
+    - name: 创建标签
       id: tag
       if: github.event.inputs.UPLOAD_RELEASE == 'true' && !cancelled()
       run: |
         echo "release_tag=$(date +"%Y.%m.%d-%H%M")-${{ github.event.inputs.model }}" >> $GITHUB_OUTPUT
         touch release.txt
-        [ $UPLOAD_COWTRANSFER = true ] && echo "🔗 [Cowtransfer](${{ steps.cowtransfer.outputs.url }})" >> release.txt
-        [ $UPLOAD_WETRANSFER = true ] && echo "🔗 [WeTransfer](${{ steps.wetransfer.outputs.url }})" >> release.txt
         echo "status=success" >> $GITHUB_OUTPUT
-    - name: Upload firmware to release
+
+    - name: 上传固件至Github
       uses: softprops/action-gh-release@v2.0.4
       if: steps.tag.outputs.status == 'success' && !cancelled()
       env:
@@ -246,15 +212,103 @@ jobs:
       with:
         tag_name: ${{ steps.tag.outputs.release_tag }}
         body_path: release.txt
-        files: ${{ env.FIRMWARE }}/*
+        files: | 
+          ${{ env.FIRMWARE }}/*
+          ${{ runner.workspace }}/logs/*
 
-    - name: Delete workflow runs
+    - name: 设置WebDAV目标目录
+      run: |
+        if [[ "${{ github.event.inputs.UPLOAD_CLOUDREVE }}" == "true" ]]; then
+          # 获取当前日期并格式化为 YYYYMMDD
+          CURRENT_DATE=$(date +"%Y%m%d")
+          # 获取设备型号
+          DEVICE_MODEL="${{ github.event.inputs.model }}"
+          # 组合目录格式：20250220/miwifi-4c
+          TARGET_DIR="${CURRENT_DATE}/${DEVICE_MODEL}"
+
+          # 检查目标目录是否存在
+          echo "检查WebDAV目标目录: $TARGET_DIR"
+          if ! curl -u "${{ secrets.WEBDAV_USERNAME }}:${{ secrets.WEBDAV_PASSWORD }}" --head "${{ secrets.WEBDAV_URL }}/${TARGET_DIR}" | grep -q "200 OK"; then
+            echo "目标目录不存在，正在创建..."
+            curl -u "${{ secrets.WEBDAV_USERNAME }}:${{ secrets.WEBDAV_PASSWORD }}" -X MKCOL "${{ secrets.WEBDAV_URL }}/${TARGET_DIR}"
+            echo "目录已创建: $TARGET_DIR"
+          else
+            echo "目标目录已存在: $TARGET_DIR"
+          fi
+
+          echo "TARGET_DIR=${TARGET_DIR}" >> $GITHUB_ENV
+        fi
+
+    - name: 上传文件至Cloudreve
+      if: steps.organize.outputs.status == 'success' && github.event.inputs.UPLOAD_CLOUDREVE == 'true' && !cancelled()
+      run: |
+        UPLOAD_PATH="${{ env.FIRMWARE }}/*"
+        README_FILE="$GITHUB_WORKSPACE/readme/README.md"
+        
+        # 上传固件文件
+        echo "开始上传固件文件到Cloudreve..."
+        for file in $UPLOAD_PATH; do
+          if [[ -f $file ]]; then
+            echo "上传文件: $file"
+            curl -u "${{ secrets.WEBDAV_USERNAME }}:${{ secrets.WEBDAV_PASSWORD }}" -T "$file" "${{ secrets.WEBDAV_URL }}/${TARGET_DIR}/$(basename $file)"
+          else
+            echo "未找到文件: $file"
+          fi
+        done
+        
+        # 上传 README 文件
+        echo "开始上传 README 文件到Cloudreve..."
+        if [[ -f $README_FILE ]]; then
+          echo "上传文件: $README_FILE"
+          curl -u "${{ secrets.WEBDAV_USERNAME }}:${{ secrets.WEBDAV_PASSWORD }}" -T "$README_FILE" "${{ secrets.WEBDAV_URL }}/${TARGET_DIR}/README.md"
+        else
+            echo "未找到 README 文件: $README_FILE"
+          fi
+
+    - name: 上传 packages 文件到 Cloudreve
+      if: steps.organize.outputs.status == 'success' && github.event.inputs.UPLOAD_CLOUDREVE == 'true' && !cancelled()
+      run: |
+        echo "开始上传 packages 文件到 Cloudreve..."
+        cd openwrt/bin/packages
+          
+        # 先创建所有需要的目录
+        echo "创建所有需要的目录..."
+        find . -type d | while read dir; do
+          rel_dir=$(echo "$dir" | sed 's#^\./##')
+          remote_path="${TARGET_DIR}/packages/${rel_dir}"
+          echo "创建目录: $remote_path"
+          curl --http1.1 -u "${{ secrets.WEBDAV_USERNAME }}:${{ secrets.WEBDAV_PASSWORD }}" -X MKCOL "${{ secrets.WEBDAV_URL }}/${remote_path}" || true
+        done
+          
+        # 上传所有文件，添加重试机制
+        echo "开始上传文件..."
+        find . -type f | xargs -P 2 -I {} bash -c '
+          file="{}"
+          rel_dir=$(dirname "$file" | sed "s#^\./##")
+          remote_path="${TARGET_DIR}/packages/${rel_dir}"
+          filename=$(basename "$file")
+          echo "上传文件: $file -> ${remote_path}/${filename}"
+          
+          # 添加超时和重试设置
+          curl --http1.1 \
+               --connect-timeout 30 \
+               --max-time 300 \
+               --retry 3 \
+               --retry-delay 5 \
+               -u "${{ secrets.WEBDAV_USERNAME }}:${{ secrets.WEBDAV_PASSWORD }}" \
+               -T "$file" "${{ secrets.WEBDAV_URL }}/${remote_path}/${filename}" || {
+            echo "错误: 上传文件 $file 失败，HTTP错误码 $?"
+            exit 1
+          }
+        '
+
+    - name: 删除工作目录
       uses: Mattraks/delete-workflow-runs@main
       with:
         retain_days: 7
         keep_minimum_runs: 4
 
-    - name: Remove old Releases
+    - name: 删除历史固件
       uses: dev-drprasad/delete-older-releases@master
       if: env.UPLOAD_RELEASE == 'true' && !cancelled()
       with:

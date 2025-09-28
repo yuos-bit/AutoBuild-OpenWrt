@@ -37,8 +37,6 @@ sed -i 's/git.openwrt.org\/project\/luci.git;openwrt-22.03/github.com\/coolsnoww
 
 # 增加软件包
 sed -i '$a src-git helloworld https://github.com/fw876/helloworld.git;master' feeds.conf.default
-sed -i '$a src-git kenzo https://github.com/kenzok8/openwrt-packages.git;master' feeds.conf.default
-sed -i '$a src-git small https://github.com/kenzok8/small.git;master' feeds.conf.default
 sed -i '$a src-git small8 https://github.com/kenzok8/small-package.git;main' feeds.conf.default
 
 # 修改默认第一排插件
@@ -72,39 +70,7 @@ git clone -b main https://github.com/yuos-bit/other package/lean
 sed -i '2a ifconfig rai0 up\nifconfig ra0 up\nbrctl addif br-lan rai0\nbrctl addif br-lan ra0' package/base-files/files/etc/rc.local
 
 ##补充包##
-### 硬件加速
-# 全锥形NAT修复
-# mkdir -p turboacc_tmp ./package/turboacc
-# cd turboacc_tmp 
-# git clone https://github.com/chenmozhijin/turboacc -b package
-# cd ../package/turboacc
-# git clone https://github.com/fullcone-nat-nftables/nft-fullcone
-# git clone https://github.com/chenmozhijin/turboacc
-# mv ./turboacc/luci-app-turboacc ./luci-app-turboacc
-# rm -rf ./turboacc
-# cd ../..
-# cp -f turboacc_tmp/turboacc/hack-5.10/952-net-conntrack-events-support-multiple-registrant.patch ./target/linux/generic/hack-5.10/952-net-conntrack-events-support-multiple-registrant.patch
-# cp -f turboacc_tmp/turboacc/hack-5.10/953-net-patch-linux-kernel-to-support-shortcut-fe.patch ./target/linux/generic/hack-5.10/953-net-patch-linux-kernel-to-support-shortcut-fe.patch
-# cp -f turboacc_tmp/turboacc/pending-5.10/613-netfilter_optional_tcp_window_check.patch ./target/linux/generic/hack-5.10/613-netfilter_optional_tcp_window_check.patch
-# rm -rf ./package/libs/libnftnl ./package/network/config/firewall4 ./package/network/utils/nftables
-# mkdir -p ./package/network/config/firewall4 ./package/libs/libnftnl ./package/network/utils/nftables
-# cp -r ./turboacc_tmp/turboacc/shortcut-fe ./package/turboacc
-# cp -RT ./turboacc_tmp/turboacc/firewall4-$(grep -o 'FIREWALL4_VERSION=.*' ./turboacc_tmp/turboacc/version | cut -d '=' -f 2)/firewall4 ./package/network/config/firewall4
-# cp -RT ./turboacc_tmp/turboacc/libnftnl-$(grep -o 'LIBNFTNL_VERSION=.*' ./turboacc_tmp/turboacc/version | cut -d '=' -f 2)/libnftnl ./package/libs/libnftnl
-# cp -RT ./turboacc_tmp/turboacc/nftables-$(grep -o 'NFTABLES_VERSION=.*' ./turboacc_tmp/turboacc/version | cut -d '=' -f 2)/nftables ./package/network/utils/nftables
-# rm -rf turboacc_tmp
-# echo "# CONFIG_NF_CONNTRACK_CHAIN_EVENTS is not set" >> target/linux/generic/config-5.10
-# echo "# CONFIG_SHORTCUT_FE is not set" >> target/linux/generic/config-5.10
-# ./scripts/feeds update -a
-# ./scripts/feeds install -a
-### 硬件加速
-## 其他补丁
-
-# 测试编译时间
-YUOS_DATE="$(date +%Y.%m.%d)(新春贺岁版)"
-BUILD_STRING=${BUILD_STRING:-$YUOS_DATE}
-echo "Write build date in openwrt : $BUILD_DATE"
-echo -e '\n小渔学长 Build @ '${BUILD_STRING}'\n'  >> package/base-files/files/etc/banner
-sed -i '/DISTRIB_REVISION/d' package/base-files/files/etc/openwrt_release
-echo "DISTRIB_REVISION=''" >> package/base-files/files/etc/openwrt_release
-sed -i '/DISTRIB_DESCRIPTION/d' package/base-files/files/etc/openwrt_release
+# 单独拉取软件包
+git clone -b default-imwrt-mt7981 https://github.com/yuos-bit/other package/default-settings
+git clone -b debug https://github.com/yuos-bit/luci-theme-edge2 package/luci-theme-edge2
+git clone -b passwall https://github.com/yuos-bit/other package/passwall

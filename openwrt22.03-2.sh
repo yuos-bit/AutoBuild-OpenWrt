@@ -40,3 +40,28 @@ sed -i 's/OpenWrt/Yuos/g' package/base-files/files/bin/config_generate
 #sed -i 's/FtSupport=0/FtSupport=1/g' package/kernel/mt-drivers/mt_wifi/files/mt7615.1.5G.dat
 #echo 'WNMEnable=1' >> package/kernel/mt-drivers/mt_wifi/files/mt7615.1.2G.dat
 #echo 'WNMEnable=1' >> package/kernel/mt-drivers/mt_wifi/files/mt7615.1.5G.dat
+
+# 测试编译时间
+YUOS_DATE="$(date +%Y.%m.%d)(openwrt-22.03开发版)"
+BUILD_STRING=${BUILD_STRING:-$YUOS_DATE}
+echo "Write build date in openwrt : $BUILD_DATE"
+echo -e '\n 小渔学长 Build @ '${BUILD_STRING}'\n'  >> package/base-files/files/etc/banner
+sed -i '/DISTRIB_REVISION/d' package/base-files/files/etc/openwrt_release
+echo "DISTRIB_REVISION=''" >> package/base-files/files/etc/openwrt_release
+sed -i '/DISTRIB_DESCRIPTION/d' package/base-files/files/etc/openwrt_release
+echo "DISTRIB_DESCRIPTION='小渔学长 Build @ ${BUILD_STRING}'" >> package/base-files/files/etc/openwrt_release
+
+#FullCone Patch
+git clone -b master --single-branch https://github.com/QiuSimons/openwrt-fullconenat package/fullconenat
+# Patch FireWall for fullcone
+mkdir package/network/config/firewall/patches
+wget -P package/network/config/firewall/patches/ https://raw.githubusercontent.com/LGA1150/fullconenat-fw3-patch/master/fullconenat.patch
+
+pushd feeds/luci
+wget -O- https://raw.githubusercontent.com/LGA1150/fullconenat-fw3-patch/master/luci.patch | git apply
+popd
+
+#升级golang
+rm -rf feeds/packages/lang/golang
+find . -type d -name "golang" -prune -exec rm -rf {} \;
+git clone https://github.com/sbwml/packages_lang_golang -b 24.x feeds/packages/lang/golang

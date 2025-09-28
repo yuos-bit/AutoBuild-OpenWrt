@@ -184,7 +184,7 @@ jobs:
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         echo "status=success" >> $GITHUB_OUTPUT
 
-    - name: 重命名固件文件
+    - name: 重命名固件名
       if: steps.organize.outputs.status == 'success' && !cancelled()
       run: |
         cd $FIRMWARE

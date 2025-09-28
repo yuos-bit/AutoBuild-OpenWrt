@@ -220,6 +220,16 @@ jobs:
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         echo "status=success" >> $GITHUB_OUTPUT
 
+    - name: 重命名固件名
+      if: steps.organize.outputs.status == 'success' && !cancelled()
+      run: |
+        cd $FIRMWARE
+        for file in openwrt-*; do
+          new_name="$(echo "$file" | sed "s/^openwrt-/${REPO_BRANCH}-/")"
+          echo "重命名: $file -> $new_name"
+          mv "$file" "$new_name"
+        done
+
     - name: 打包上传固件
       uses: actions/upload-artifact@main
       if: steps.organize.outputs.status == 'success' && github.event.inputs.UPLOAD_FIRMWARE == 'true' && !cancelled()

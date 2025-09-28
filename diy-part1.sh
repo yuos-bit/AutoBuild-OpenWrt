@@ -27,8 +27,8 @@ sed -i '2a ifconfig rai0 up\nifconfig ra0 up\nbrctl addif br-lan rai0\nbrctl add
 # sed -i 's/ +libopenssl-legacy//g' feeds/small/shadowsocksr-libev/Makefile
 
 # 单独拉取软件包
-git clone -b default-settings-imwrt https://github.com/yuos-bit/other package/default-settings
-git clone -b lua5.4 https://github.com/yuos-bit/other package/lua5.4
+git clone -b default-imwrt-mt7981 https://github.com/yuos-bit/other package/default-settings
+git clone -b mian https://github.com/yuos-bit/other package/lua5.4
 git clone -b debug https://github.com/yuos-bit/luci-theme-edge2 package/luci-theme-edge2
 git clone -b passwall https://github.com/yuos-bit/other package/passwall
 # 更改默认wifi

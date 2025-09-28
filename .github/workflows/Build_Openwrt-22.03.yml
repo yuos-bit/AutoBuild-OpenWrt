@@ -163,12 +163,12 @@ jobs:
         [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
         echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
 
-    - name: 检查打包环境
+    - name: 检查空间使用情况
       if: (!cancelled())
       run: | 
         df -hT
-        
-    - name: 上传文件
+
+    - name: 上传bin目录
       uses: actions/upload-artifact@main
       if: steps.compile.outputs.status == 'success' && github.event.inputs.UPLOAD_BIN_DIR == 'true' && !cancelled()
       with:

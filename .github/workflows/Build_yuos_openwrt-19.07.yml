@@ -28,7 +28,6 @@ on:
           - 'cmcc-l1-1'
           - 'E8820v2'
           - 'pbr-m1'
-          - 'x86'
       UPLOAD_BIN_DIR:
         type: boolean
         description: '上传bin文件夹'
@@ -71,8 +70,8 @@ env:
   REPO_BRANCH: openwrt-19.07
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: config/19.07/Yuos_${{ github.event.inputs.model }}.config
-  DIY_P1_SH: diy-part4.sh
-  DIY_P2_SH: diy-part5.sh
+  DIY_P1_SH: openwrt19.07-1.sh
+  DIY_P2_SH: openwrt19.07-2.sh
   UPLOAD_RELEASE: true
   TZ: Asia/Shanghai
 
@@ -89,44 +88,19 @@ jobs:
         DEBIAN_FRONTEND: noninteractive
       run: |
         sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
-        sudo tee /etc/apt/sources.list > /dev/null <<EOF
-        deb http://mirrors.aliyun.com/ubuntu/ jammy main restricted universe multiverse
-        deb-src http://mirrors.aliyun.com/ubuntu/ jammy main restricted universe multiverse
-        deb http://mirrors.aliyun.com/ubuntu/ jammy-security main restricted universe multiverse
-        deb-src http://mirrors.aliyun.com/ubuntu/ jammy-security main restricted universe multiverse
-        deb http://mirrors.aliyun.com/ubuntu/ jammy-updates main restricted universe multiverse
-        deb-src http://mirrors.aliyun.com/ubuntu/ jammy-updates main restricted universe multiverse
-        deb http://mirrors.aliyun.com/ubuntu/ jammy-proposed main restricted universe multiverse
-        deb-src http://mirrors.aliyun.com/ubuntu/ jammy-proposed main restricted universe multiverse
-        deb http://mirrors.aliyun.com/ubuntu/ jammy-backports main restricted universe multiverse
-        deb-src http://mirrors.aliyun.com/ubuntu/ jammy-backports main restricted universe multiverse
-        EOF
-
-        sudo rm -rf /etc/apt/sources.list.d/*
-        sudo apt-get clean
-        sudo apt-get update -y
-        sudo apt-get full-upgrade -y
-        # 添加 gcc-13 的 PPA
+        sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+        sudo add-apt-repository ppa:ubuntu-toolchain-r/ppa
+        sudo apt update -y
+        sudo apt full-upgrade -y
         sudo apt-get install -y software-properties-common
-        sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
-        sudo apt-get update -y
-        sudo apt-get install -y ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential \
+        sudo apt install -y ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential \
         bzip2 ccache clang cmake cpio curl device-tree-compiler flex gawk gcc-multilib g++-multilib gettext \
         genisoimage git gperf haveged help2man intltool libc6-dev-i386 libelf-dev libfuse-dev libglib2.0-dev \
         libgmp3-dev libltdl-dev libmpc-dev libmpfr-dev libncurses5-dev libncursesw5-dev libpython3-dev \
         libreadline-dev libssl-dev libtool llvm lrzsz msmtp ninja-build p7zip p7zip-full patch pkgconf \
-        python3 python3-pyelftools python3-setuptools qemu-utils rsync scons \
-        squashfs-tools subversion swig texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev \
-        gcc-13 g++-13
-        sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
-        sudo apt-get update -y
-
-        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 60 \
-          --slave /usr/bin/g++ g++ /usr/bin/g++-13
-        sudo apt-get install -y python2
-        sudo ln -sf /usr/bin/python2 /usr/bin/python
-        sudo update-alternatives --install /usr/bin/python python /usr/bin/python2 10
-        sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 20
+        python3 python3-pyelftools python3-setuptools qemu-utils rsync scons squashfs-tools subversion \
+        swig texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev gcc-13 g++-13
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 60 --slave /usr/bin/g++ g++ /usr/bin/g++-13
         sudo timedatectl set-timezone "$TZ"
         sudo mkdir -p /workdir
         sudo chown $(id -u):$(id -g) /workdir
@@ -138,7 +112,7 @@ jobs:
         git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
 
-    - name: 定义第一脚本
+    - name: 运行第一脚本
       run: |
         chmod -R +755 openwrt
         [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
@@ -152,19 +126,12 @@ jobs:
         ./scripts/feeds clean
         ./scripts/feeds update -a
 
-    - name: 清洗插件库
-      run: |
-        cd openwrt
-        find . -type d -name "luci-app-turboacc" -exec rm -r {} +
-        find . -type d -name "tailscale" -exec rm -r {} +
-        find . -type d -name "default-settings" -exec rm -r {} +
-
     - name: 安装插件
       run: |
         cd openwrt
         ./scripts/feeds install -a
 
-    - name: 定义第二脚本
+    - name: 运行第二脚本
       run: |
         [ -e files ] && mv files openwrt/files
         [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config

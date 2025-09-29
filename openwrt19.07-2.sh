@@ -13,7 +13,7 @@
 sed -i 's/luci-theme-bootstrap/luci-theme-edge/g' openwrt/feeds/luci/collections/luci/Makefile
 
 # 单独拉取软件包
-git clone -b default-settings-19.07 https://github.com/yuos-bit/other package/default-settings
+git clone -b default-openwrt-19.07 https://github.com/yuos-bit/other package/default-settings
 git clone -b main-19.07 https://github.com/yuos-bit/other package/yuos
 
 # nft-fullcone

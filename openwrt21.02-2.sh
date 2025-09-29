@@ -68,4 +68,4 @@ cp -rf $GITHUB_WORKSPACE/patchs/5.4/dnsmasq/* $GITHUB_WORKSPACE/openwrt/package/
 #升级golang
 rm -rf feeds/packages/lang/golang
 find . -type d -name "golang" -prune -exec rm -rf {} \;
-git clone https://github.com/sbwml/packages_lang_golang -b 24.x feeds/packages/lang/golang
+git clone https://github.com/sbwml/packages_lang_golang -b 25.x feeds/packages/lang/golang

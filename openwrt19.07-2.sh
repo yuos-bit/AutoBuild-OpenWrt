@@ -9,6 +9,8 @@
 # File name: diy-part2.sh
 # Description: OpenWrt DIY script part 2 (After Update feeds)
 #=================================================
+# 修改 edge 为默认主题,可根据你喜欢的修改成其他的（不选择那些会自动改变为默认主题的主题才有效果）
+sed -i 's/luci-theme-bootstrap/luci-theme-edge/g' openwrt/feeds/luci/collections/luci/Makefile
 
 # 单独拉取软件包
 git clone -b default-settings-19.07 https://github.com/yuos-bit/other package/default-settings

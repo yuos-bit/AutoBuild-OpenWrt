@@ -85,6 +85,9 @@ git clone -b default-openwrt-21.02 https://github.com/yuos-bit/other package/def
 git clone -b passwall https://github.com/yuos-bit/other package/passwall
 git clone -b main https://github.com/yuos-bit/other package/main
 
+# 测试 tailscale
+git clone -b tailscale https://github.com/yuos-bit/other package/tailscale
+
 # 更改默认wifi
 # cp -rf $GITHUB_WORKSPACE/patchs/NX30Pro/mtwifi.sh package/mtk/applications/mtwifi-cfg/files/mtwifi.sh
 

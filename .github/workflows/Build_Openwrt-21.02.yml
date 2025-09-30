@@ -7,7 +7,7 @@ on:
       model:
         description: '选择机型'
         required: true
-        default: 'Redmi_AC2100' 
+        default: 'miwifi-4' 
         type: choice
         options:
           - 'miwifi-4'
@@ -17,6 +17,7 @@ on:
           - 'miwifi-3'
           - 'miwifi-3x'
           - 'miwifi-4a-G'
+          - 'X86'
       UPLOAD_BIN_DIR:
         type: boolean
         description: '上传bin文件夹'

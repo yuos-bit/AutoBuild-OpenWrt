@@ -26,6 +26,25 @@
 
 ## 更新日志
 
+### 20250930
+
+* ,参阅[MT7621超频1100Mhz](https://github.com/yuos-bit/openwrt/commit/9cc5e7a9d3e3adcfeb8128abdd66e56e28ce85d8)
+新增4.14内核红米AC2100、小米AC2100适配以及云编译
+
+* 调整固件自动打包命名，命名格式`openwrt-分支名称`代码如下：
+
+```shell
+    - name: 重命名固件名
+      if: steps.organize.outputs.status == 'success' && !cancelled()
+      run: |
+        cd $FIRMWARE
+        for file in openwrt-*; do
+          new_name="$(echo "$file" | sed "s/^openwrt-/${REPO_BRANCH}-/")"
+          echo "重命名: $file -> $new_name"
+          mv "$file" "$new_name"
+        done
+```
+
 ### 20250611
 
 * 修复编译插件上传偶发性失败的问题，代码如下：

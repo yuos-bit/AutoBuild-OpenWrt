@@ -28,7 +28,7 @@ on:
         default: 'false'
       UPLOAD_FIRMWARE:
         type: boolean
-        description: '上传固件'
+        description: '打包固件'
         required: false
         default: 'true'
       UPLOAD_RELEASE:

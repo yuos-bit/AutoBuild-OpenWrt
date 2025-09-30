@@ -17,7 +17,7 @@ on:
       model:
         description: '选择机型'
         required: true
-        default: 'cmcc-l1-1' 
+        default: 'miwifi-nano' 
         type: choice
         options:
           - 'miwifi-nano'
@@ -25,6 +25,8 @@ on:
           - 'miwifi-3a'
           - 'miwifi-3c'
           - 'miwifi-4c'
+          - 'Redmi_AC2100'
+          - 'Xiaomi_AC2100'
           - 'cmcc-l1-1'
           - 'E8820v2'
           - 'pbr-m1'
@@ -35,7 +37,7 @@ on:
         default: 'false'
       UPLOAD_FIRMWARE:
         type: boolean
-        description: '上传固件'
+        description: '打包固件'
         required: false
         default: 'true'
       UPLOAD_RELEASE:

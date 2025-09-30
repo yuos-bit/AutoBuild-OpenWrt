@@ -98,16 +98,16 @@ git clone -b openssl https://github.com/yuos-bit/other package/openssl
 cp -rf $GITHUB_WORKSPACE/patchs/immortalwrt-mt798x/openssl-module.mk $GITHUB_WORKSPACE/openwrt/include/openssl-module.mk
 
 #超频 
-#0x362=1100MHz
-#0x312=1000MHz
-#0x3B2=1200MHz
-grep "rt_memc_w32(pll,MEMC_REG_CPU_PLL);" ./target/linux/ramips/patches-5.4/102-mt7621-fix-cpu-clk-add-clkdev.patch
-if [ $? -ne 0 ]; then
-echo fix over clock
-sed -i 's/-111,49 +111,89/-111,49 +111,93/' ./target/linux/ramips/patches-5.4/102-mt7621-fix-cpu-clk-add-clkdev.patch
-sed -i 's/u32 xtal_clk, cpu_clk, bus_clk;/u32 xtal_clk, cpu_clk, bus_clk,i;/' ./target/linux/ramips/patches-5.4/102-mt7621-fix-cpu-clk-add-clkdev.patch
-sed -i '157i+		pll &= ~(0x7ff);' ./target/linux/ramips/patches-5.4/102-mt7621-fix-cpu-clk-add-clkdev.patch
-sed -i '158i+		pll |=  (0x362);' ./target/linux/ramips/patches-5.4/102-mt7621-fix-cpu-clk-add-clkdev.patch
-sed -i '159i+		rt_memc_w32(pll,MEMC_REG_CPU_PLL);' ./target/linux/ramips/patches-5.4/102-mt7621-fix-cpu-clk-add-clkdev.patch
-sed -i '160i+		for(i=0;i<1024;i++);' ./target/linux/ramips/patches-5.4/102-mt7621-fix-cpu-clk-add-clkdev.patch
-fi
+# #0x362=1100MHz
+# #0x312=1000MHz
+# #0x3B2=1200MHz
+# grep "rt_memc_w32(pll,MEMC_REG_CPU_PLL);" ./target/linux/ramips/patches-5.4/102-mt7621-fix-cpu-clk-add-clkdev.patch
+# if [ $? -ne 0 ]; then
+# echo fix over clock
+# sed -i 's/-111,49 +111,89/-111,49 +111,93/' ./target/linux/ramips/patches-5.4/102-mt7621-fix-cpu-clk-add-clkdev.patch
+# sed -i 's/u32 xtal_clk, cpu_clk, bus_clk;/u32 xtal_clk, cpu_clk, bus_clk,i;/' ./target/linux/ramips/patches-5.4/102-mt7621-fix-cpu-clk-add-clkdev.patch
+# sed -i '157i+		pll &= ~(0x7ff);' ./target/linux/ramips/patches-5.4/102-mt7621-fix-cpu-clk-add-clkdev.patch
+# sed -i '158i+		pll |=  (0x362);' ./target/linux/ramips/patches-5.4/102-mt7621-fix-cpu-clk-add-clkdev.patch
+# sed -i '159i+		rt_memc_w32(pll,MEMC_REG_CPU_PLL);' ./target/linux/ramips/patches-5.4/102-mt7621-fix-cpu-clk-add-clkdev.patch
+# sed -i '160i+		for(i=0;i<1024;i++);' ./target/linux/ramips/patches-5.4/102-mt7621-fix-cpu-clk-add-clkdev.patch
+# fi

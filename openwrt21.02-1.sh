@@ -9,24 +9,24 @@
 # File name: diy-part1.sh
 # Description: OpenWrt DIY script part 1 (Before Update feeds)
 #patches
-wget https://github.com/quintus-lab/openwrt-rockchip/raw/21.02/patches/1001-dnsmasq-add-filter-aaaa-option.patch
-wget https://github.com/quintus-lab/openwrt-rockchip/raw/21.02/patches/1003-luci-app-firewall_add_fullcone.patch
-wget https://github.com/quintus-lab/openwrt-rockchip/raw/21.02/patches/1002-add-fullconenat-support.patch
+# wget https://github.com/quintus-lab/openwrt-rockchip/raw/21.02/patches/1001-dnsmasq-add-filter-aaaa-option.patch
+# wget https://github.com/quintus-lab/openwrt-rockchip/raw/21.02/patches/1003-luci-app-firewall_add_fullcone.patch
+# wget https://github.com/quintus-lab/openwrt-rockchip/raw/21.02/patches/1002-add-fullconenat-support.patch
 
-patch -p1 < ./1002-add-fullconenat-support.patch
-patch -p1 < ./1003-luci-app-firewall_add_fullcone.patch
-cp ./1001-dnsmasq-add-filter-aaaa-option.patch package/network/services/dnsmasq/patches/
+# patch -p1 < ./1002-add-fullconenat-support.patch
+# patch -p1 < ./1003-luci-app-firewall_add_fullcone.patch
+# cp ./1001-dnsmasq-add-filter-aaaa-option.patch package/network/services/dnsmasq/patches/
 
-pushd feeds/luci
-wget -O- https://github.com/LGA1150/fullconenat-fw3-patch/raw/master/luci.patch | git apply
-popd
+# pushd feeds/luci
+# wget -O- https://github.com/LGA1150/fullconenat-fw3-patch/raw/master/luci.patch | git apply
+# popd
 
-# SFE kernel patch
-pushd target/linux/generic/hack-5.4
-wget https://raw.githubusercontent.com/coolsnowwolf/lede/master/target/linux/generic/hack-5.4/999-shortcut-fe-support.patch
-popd
-svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/shortcut-fe package/new/shortcut-fe
-svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/fast-classifier package/new/fast-classifier
+# # SFE kernel patch
+# pushd target/linux/generic/hack-5.4
+# wget https://raw.githubusercontent.com/coolsnowwolf/lede/master/target/linux/generic/hack-5.4/999-shortcut-fe-support.patch
+# popd
+# svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/shortcut-fe package/new/shortcut-fe
+# svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/fast-classifier package/new/fast-classifier
 
 # MT7620
 cp -rf $GITHUB_WORKSPACE/patchs/xiaomi_mi-router/mt7620a_xiaomi_mi-router-3x.dts $GITHUB_WORKSPACE/openwrt/target/linux/ramips/dts/mt7620a_xiaomi_mi-router-3x.dts
@@ -81,7 +81,7 @@ sed -i '1509s/IMAGE_SIZE := 14848k/IMAGE_SIZE := 16064k/' target/linux/ramips/im
 sed -i '2a ifconfig rai0 up\nifconfig ra0 up\nbrctl addif br-lan rai0\nbrctl addif br-lan ra0' package/base-files/files/etc/rc.local
 
 # 单独拉取软件包
-git clone -b default-openwrt-21.02 https://github.com/yuos-bit/other package/default-settings
+# git clone -b default-openwrt-21.02 https://github.com/yuos-bit/other package/default-settings
 git clone -b passwall https://github.com/yuos-bit/other package/passwall
 git clone -b main https://github.com/yuos-bit/other package/main
 
@@ -93,9 +93,6 @@ git clone -b tailscale https://github.com/yuos-bit/other package/tailscale
 
 
 # 更新openssl3.0
-rm -rf package/libs/openssl
-git clone -b openssl https://github.com/yuos-bit/other package/openssl
-cp -rf $GITHUB_WORKSPACE/patchs/immortalwrt-mt798x/openssl-module.mk $GITHUB_WORKSPACE/openwrt/include/openssl-module.mk
 
 #超频 
 # #0x362=1100MHz

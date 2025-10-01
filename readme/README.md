@@ -26,6 +26,27 @@
 
 ## 更新日志
 
+### 20251001
+
+* 红米、小米AC2100超频1100mhz:CPU Clock: 1100MHz
+  启动日志：
+```shell
+Mon Nov  6 20:30:21 2023 kern.info kernel: [    0.000000] Memory: 120592K/131072K available (5938K kernel code, 202K rwdata, 1264K rodata, 1288K init, 229K bss, 10480K reserved, 0K cma-reserved, 0K highmem)
+Mon Nov  6 20:30:21 2023 kern.info kernel: [    0.000000] SLUB: HWalign=32, Order=0-3, MinObjects=0, CPUs=4, Nodes=1
+Mon Nov  6 20:30:21 2023 kern.info kernel: [    0.000000] rcu: Hierarchical RCU implementation.
+Mon Nov  6 20:30:21 2023 kern.info kernel: [    0.000000] rcu: RCU calculated value of scheduler-enlistment delay is 25 jiffies.
+Mon Nov  6 20:30:21 2023 kern.info kernel: [    0.000000] NR_IRQS: 256
+Mon Nov  6 20:30:21 2023 kern.info kernel: [    0.000000] CPU Clock: 1100MHz
+Mon Nov  6 20:30:21 2023 kern.info kernel: [    0.000000] clocksource: GIC: mask: 0xffffffffffffffff max_cycles: 0xfdb1960d81, max_idle_ns: 440795240157 ns
+Mon Nov  6 20:30:21 2023 kern.info kernel: [    0.000000] clocksource: MIPS: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 3475018995 ns
+Mon Nov  6 20:30:21 2023 kern.info kernel: [    0.000008] sched_clock: 32 bits at 550MHz, resolution 1ns, wraps every 3904515583ns
+Mon Nov  6 20:30:21 2023 kern.info kernel: [    0.007859] Calibrating delay loop... 731.13 BogoMIPS (lpj=1462272)
+Mon Nov  6 20:30:21 2023 kern.info kernel: [    0.042047] pid_max: default: 32768 minimum: 301
+Mon Nov  6 20:30:21 2023 kern.info kernel: [    0.046787] Mount-cache hash table entries: 1024 (order: 0, 4096 bytes, linear)
+Mon Nov  6 20:30:21 2023 kern.info kernel: [    0.054002] Mountpoint-cache hash table entries: 1024 (order: 0, 4096 bytes, linear)
+Mon Nov  6 20:30:21 2023 kern.info kernel: [    0.064234] rcu: Hierarchical SRCU implementation.
+Mon Nov  6 20:30:21 2023 kern.info kernel: [    0.069676] smp: Bringing up secondary CPUs ...
+```
 ### 20250930
 
 * ,参阅[MT7621超频1100Mhz](https://github.com/yuos-bit/openwrt/commit/9cc5e7a9d3e3adcfeb8128abdd66e56e28ce85d8)

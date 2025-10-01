@@ -10,8 +10,6 @@
 # Description: OpenWrt DIY script part 2 (After Update feeds)
 #=================================================
 
-# 修改主机名称
-sed -i 's/OpenWrt/Yuos/g' package/base-files/files/bin/config_generate
 
 # 修改默认wifi名称ssid为Xiaoyu-Wifi
 sed -i 's/ssid=OpenWrt/ssid=Xiaomi-Wifi/g' package/kernel/mac80211/files/lib/wifi/mac80211.sh

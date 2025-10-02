@@ -30,6 +30,8 @@ sed -i '2a ifconfig rai0 up\nifconfig ra0 up\nbrctl addif br-lan rai0\nbrctl add
 git clone -b default-imwrt-official https://github.com/yuos-bit/other package/default-settings
 git clone -b debug https://github.com/yuos-bit/luci-theme-edge2 package/luci-theme-edge2
 git clone -b passwall https://github.com/yuos-bit/other package/passwall
+# 测试 tailscale
+git clone -b tailscale https://github.com/yuos-bit/other package/tailscale
 # 更改默认wifi
 # cp -rf $GITHUB_WORKSPACE/patchs/NX30Pro/mtwifi.sh package/mtk/applications/mtwifi-cfg/files/mtwifi.sh
 

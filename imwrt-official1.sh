@@ -33,10 +33,5 @@ git clone -b passwall https://github.com/yuos-bit/other package/passwall
 # 更改默认wifi
 # cp -rf $GITHUB_WORKSPACE/patchs/NX30Pro/mtwifi.sh package/mtk/applications/mtwifi-cfg/files/mtwifi.sh
 
-# 更新openssl3.0
-rm -rf package/libs/openssl
-git clone -b openssl https://github.com/yuos-bit/other package/openssl
-cp -rf $GITHUB_WORKSPACE/patchs/immortalwrt-mt798x/openssl-module.mk $GITHUB_WORKSPACE/immortalwrt/include/openssl-module.mk
-
 # 删除软件包默认设置
 rm -rf package/emortal/default-settings

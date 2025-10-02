@@ -17,7 +17,6 @@ on:
           - 'miwifi-3'
           - 'miwifi-3x'
           - 'miwifi-4a-G'
-          - 'X86'
       UPLOAD_BIN_DIR:
         type: boolean
         description: '上传bin文件夹'

@@ -291,6 +291,7 @@ jobs:
       with:
         retain_days: 7
         keep_minimum_runs: 4
+        delete_workflow_by_name: true
 
     - name: 删除历史固件
       uses: dev-drprasad/delete-older-releases@master

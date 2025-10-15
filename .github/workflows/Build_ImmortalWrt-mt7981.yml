@@ -23,7 +23,7 @@ on:
           - 'abt_asr3000'
       UPLOAD_BIN_DIR:
         type: boolean
-        description: '上传bin文件夹'
+        description: '上传bin文件夹到Artifacts'
         required: false
         default: 'false'
       UPLOAD_FIRMWARE:

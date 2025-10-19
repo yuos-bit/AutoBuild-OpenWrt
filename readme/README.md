@@ -45,6 +45,7 @@ msgstr ""
 ```
 然后再编译即可，详见：https://github.com/xiaorouji/openwrt-passwall/issues/3051
 * 2.解决passwall和Tailscale同时启用，H3C NX30PRO 内存占用率过高导致Tailscale 掉线或者路由卡死的问题，解决方案，降级xray和Tailscale版本
+![image.png](https://free.picui.cn/free/2025/10/19/68f457e1a012d.png)
 详见：
 https://github.com/yuos-bit/other/commit/bf64f9c9fe2aacbda5b6b54e2694359de87682f1 
 https://github.com/yuos-bit/other/commit/f9d0368be553c506bdf8ab0b3a68dafe91fec6e5

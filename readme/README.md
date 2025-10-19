@@ -28,7 +28,7 @@
 
 ### 20251019
 * 1.修复passwall 中文汉化的问题
-
+![image.png](https://free.picui.cn/free/2025/10/19/68f4583912794.png)
 解决办法：先将目录`zh_cn`改成`zh_Hans`
 ![image.png](https://free.picui.cn/free/2025/10/19/68f45421c7e7e.png)
  再在 passwall.po抬头加上

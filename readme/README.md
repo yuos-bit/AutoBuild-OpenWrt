@@ -26,6 +26,29 @@
 
 ## 更新日志
 
+### 20251019
+* 1.修复passwall 中文汉化的问题
+
+解决办法：先将目录`zh_cn`改成`zh_Hans`
+![image.png](https://free.picui.cn/free/2025/10/19/68f45421c7e7e.png)
+ 再在 passwall.po抬头加上
+```shell
+msgid ""
+msgstr ""
+"openwrt/luciapplicationspasswall/zh_Hans/>\n"
+"Language: zh_Hans\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 5.5-dev\n"
+```
+然后再编译即可，详见：https://github.com/xiaorouji/openwrt-passwall/issues/3051
+* 2.解决passwall和Tailscale同时启用，H3C NX30PRO 内存占用率过高导致Tailscale 掉线或者路由卡死的问题，解决方案，降级xray和Tailscale版本
+详见：
+https://github.com/yuos-bit/other/commit/bf64f9c9fe2aacbda5b6b54e2694359de87682f1 
+https://github.com/yuos-bit/other/commit/f9d0368be553c506bdf8ab0b3a68dafe91fec6e5
+
 ### 20251001
 
 * 红米、小米AC2100超频1100mhz:CPU Clock: 1100MHz

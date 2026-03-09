@@ -86,7 +86,7 @@ jobs:
         DEBIAN_FRONTEND: noninteractive
       run: |
         # 新增：创建交换文件（解决内存不足+权限问题）
-        sudo fallocate -l 64G /swapfile
+        sudo fallocate -l 32G /swapfile
         sudo chmod 600 /swapfile
         sudo mkswap /swapfile
         sudo swapon /swapfile

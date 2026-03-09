@@ -85,6 +85,12 @@ jobs:
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
+        # 新增：创建交换文件（解决内存不足+权限问题）
+        sudo fallocate -l 32G /swapfile
+        sudo chmod 600 /swapfile
+        sudo mkswap /swapfile
+        sudo swapon /swapfile
+        sudo swapon --show
         sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
         sudo add-apt-repository ppa:ubuntu-toolchain-r/test
         sudo add-apt-repository ppa:ubuntu-toolchain-r/ppa

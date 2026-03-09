@@ -85,8 +85,17 @@ jobs:
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
-        # 新增：创建交换文件（解决内存不足+权限问题）
-        sudo fallocate -l 32G /swapfile
+        # 安全创建交换文件（先清理已有文件/挂载）
+        if sudo swapon --show | grep -q '/swapfile'; then
+          echo "发现已挂载的/swapfile，先关闭..."
+          sudo swapoff /swapfile
+        fi
+        if [ -f "/swapfile" ]; then
+          echo "删除已有/swapfile文件..."
+          sudo rm -f /swapfile
+        fi
+        echo "创建16G交换文件..."
+        sudo dd if=/dev/zero of=/swapfile bs=1G count=16
         sudo chmod 600 /swapfile
         sudo mkswap /swapfile
         sudo swapon /swapfile

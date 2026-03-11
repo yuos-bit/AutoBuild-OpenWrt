@@ -25,12 +25,12 @@
 
         led_sys:sys {
             label = "e8820v2:white:sys";
-            gpios = <&gpio0 29 GPIO_ACTIVE_LOW>;
+            gpios = <&gpio0 31 GPIO_ACTIVE_LOW>;
         };   
 
         led_power:power {
             label = "e8820v2:white:power";
-            gpios = <&gpio0 31 GPIO_ACTIVE_LOW>;            
+            gpios = <&gpio0 29 GPIO_ACTIVE_LOW>;            
         };
     };
 
@@ -98,7 +98,7 @@
 
 &pcie0 {
     reset-gpios = <&gpio0 19 GPIO_ACTIVE_LOW>;
-    
+
     mt76@0,0 {
         reg = <0x0000 0 0 0 0>;
         mediatek,mtd-eeprom = <&factory 0x0000>;

@@ -97,6 +97,8 @@
 };
 
 &pcie0 {
+    reset-gpios = <&gpio0 19 GPIO_ACTIVE_LOW>;
+    
     mt76@0,0 {
         reg = <0x0000 0 0 0 0>;
         mediatek,mtd-eeprom = <&factory 0x0000>;
@@ -109,6 +111,8 @@
 };
 
 &pcie1 {
+    reset-gpios = <&gpio0 26 GPIO_ACTIVE_LOW>;
+
     mt76@0,0 {
         reg = <0x0000 0 0 0 0>;
         mediatek,mtd-eeprom = <&factory 0x8000>;
@@ -118,7 +122,6 @@
             led-sources = <2>;
             led-active-low;
         };
-
     };
 };
 
@@ -163,7 +166,7 @@
 &pinctrl {
     state_default: pinctrl0 {
         gpio {
-            ralink,group = "i2c", "uart2", "uart3", "wdt";
+            ralink,group = "i2c", "uart2", "uart3", "wdt", "pcie";
             ralink,function = "gpio";
         };
     };

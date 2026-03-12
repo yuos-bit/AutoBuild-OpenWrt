@@ -106,13 +106,18 @@ detect_mac80211() {
 			dev_id="set wireless.radio${devidx}.macaddr=$(cat /sys/class/ieee80211/${dev}/macaddress)"
 		fi
 		
-# 获取网口 MAC 地址
-MAC=$(cat /sys/class/net/br-lan/address 2>/dev/null)
-if [ -n "$MAC" ]; then
-    MAC_LAST4=$(echo ${MAC//:/} | tail -c 5 | tr 'a-z' 'A-Z')
-else
-    MAC_LAST4="XXXX"
-fi
+		# 获取网口 MAC 地址
+		WAN_IF=$(uci -q get network.wan.device)
+		[ -z "$WAN_IF" ] && WAN_IF=$(uci -q get network.wan.ifname)
+		[ -z "$WAN_IF" ] && WAN_IF="eth0"
+
+		MAC=$(cat /sys/class/net/${WAN_IF}/address 2>/dev/null)
+
+		if [ -n "$MAC" ]; then
+		    MAC_LAST4=$(echo ${MAC//:/} | tr a-z A-Z | sed 's/.*\(....\)$/\1/')
+		else
+		    MAC_LAST4="888"
+		fi
 
 		uci -q batch <<-EOF
 			set wireless.radio${devidx}=wifi-device

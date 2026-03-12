@@ -683,11 +683,20 @@ define Device/zbt-wg3526-32M
 endef
 TARGET_DEVICES += zbt-wg3526-32M
 
+# define Device/e8820v2
+#   DTS := E8820V2
+#   IMAGE_SIZE := 16064k
+#   DEVICE_TITLE := ZTE E8820V2
+#   DEVICE_PACKAGES := kmod-mt7603 kmod-mt76x2 kmod-usb3 \
+# 	kmod-usb-ledtrig-usbport wpad-basic
+# endef
+# TARGET_DEVICES += e8820v2
+
 define Device/e8820v2
   DTS := E8820V2
   IMAGE_SIZE := 16064k
   DEVICE_TITLE := ZTE E8820V2
-  DEVICE_PACKAGES := kmod-mt7603 kmod-mt76x2 kmod-usb3 \
-	kmod-usb-ledtrig-usbport wpad-basic
+  DEVICE_PACKAGES := kmod-mt7603 kmod-mt76x2 \
+	wpad-basic
 endef
 TARGET_DEVICES += e8820v2

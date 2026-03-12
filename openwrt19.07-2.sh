@@ -21,6 +21,9 @@ git clone -b main-19.07 https://github.com/yuos-bit/other package/yuos
 git clone -b main --single-branch https://github.com/fullcone-nat-nftables/nftables-1.0.5-with-fullcone package/nftables
 git clone -b master --single-branch https://github.com/fullcone-nat-nftables/libnftnl-1.2.4-with-fullcone package/libnftnl
 
+# 最新主题
+git clone -b master https://github.com/eamonxg/luci-theme-bootstrap package/yuos
+
 # 
 # 测试编译时间
 YUOS_DATE="$(date +%Y.%m.%d)(Development)"

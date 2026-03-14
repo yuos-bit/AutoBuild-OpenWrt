@@ -26,7 +26,8 @@ find feeds/luci -type d -name "luci-theme-bootstrap" -exec rm -rf {} +
 rm -rf package/yuos/luci-theme-bootstrap
 # git clone -b master https://github.com/eamonxg/luci-theme-bootstrap package/yuos
 
-cp -rf $GITHUB_WORKSPACE/patchs/xiaomi_mi-router/mt76x8/mac80211.sh package/kernel/mac80211/files/lib/wifi/mac80211.sh
+cp -rf $GITHUB_WORKSPACE/patchs/4.14/themes/* packages/
+cp -rf $GITHUB_WORKSPACE/patchs/4.14/themes/* feeds/packages/
 
 # 
 # 测试编译时间

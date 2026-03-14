@@ -22,9 +22,11 @@ git clone -b main --single-branch https://github.com/fullcone-nat-nftables/nftab
 git clone -b master --single-branch https://github.com/fullcone-nat-nftables/libnftnl-1.2.4-with-fullcone package/libnftnl
 
 # 最新主题
-# find feeds/luci -type d -name "luci-theme-bootstrap" -exec rm -rf {} +
-# rm -rf package/yuos/luci-theme-bootstrap
+find feeds/luci -type d -name "luci-theme-bootstrap" -exec rm -rf {} +
+rm -rf package/yuos/luci-theme-bootstrap
 # git clone -b master https://github.com/eamonxg/luci-theme-bootstrap package/yuos
+
+cp -rf $GITHUB_WORKSPACE/patchs/xiaomi_mi-router/mt76x8/mac80211.sh package/kernel/mac80211/files/lib/wifi/mac80211.sh
 
 # 
 # 测试编译时间

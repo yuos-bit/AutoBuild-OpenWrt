@@ -43,7 +43,7 @@ cp -rf $GITHUB_WORKSPACE/patchs/5.4/mt76x8/dts/* $GITHUB_WORKSPACE/openwrt/targe
 cp -rf $GITHUB_WORKSPACE/patchs/5.4/mt76x8/mt76x8.mk $GITHUB_WORKSPACE/openwrt/target/linux/ramips/image/mt76x8.mk
 cp -rf $GITHUB_WORKSPACE/patchs/5.4/mt76x8/02_network $GITHUB_WORKSPACE/openwrt/target/linux/ramips/mt76x8/base-files/etc/board.d/02_network
 #备用方案
-sed -i 's/git.openwrt.org\/project\/luci.git;openwrt-21.02/github.com\/coolsnowwolf\/luci.git;master/g' feeds.conf.default
+sed -i 's|https://git.openwrt.org/project/luci.git;openwrt-21.02|https://github.com/immortalwrt/luci.git;openwrt-21.02|' feeds.conf.default
 sed -i 's/git.openwrt.org\feed\/packages.git;openwrt-21.02/github.com\/coolsnowwolf\/packages.git;master/g' feeds.conf.default
 
 # 增加软件包

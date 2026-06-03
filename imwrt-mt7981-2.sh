@@ -31,4 +31,4 @@ echo "luciversion = '${BUILD_STRING}'" >> feeds/luci/modules/luci-base/luasrc/ve
 #升级golang
 rm -rf feeds/packages/lang/golang
 find . -type d -name "golang" -prune -exec rm -rf {} \;
-git clone https://github.com/sbwml/packages_lang_golang -b 26.x feeds/packages/lang/golang
+git clone https://github.com/sbwml/packages_lang_golang -b 24.x feeds/packages/lang/golang

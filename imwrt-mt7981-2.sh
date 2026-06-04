@@ -16,10 +16,13 @@ sed -i 's/ +libopenssl-legacy//g' package/passwall/shadowsocksr-libev/Makefile
 # 测试编译时间
 YUOS_DATE="$(date +%Y.%m.%d)(月更版)"
 BUILD_STRING=${BUILD_STRING:-$YUOS_DATE}
-echo "Write build date in openwrt : $BUILD_DATE"
-echo -e '\n 小渔学长 Build @ '${BUILD_STRING}'\n'  >> package/base-files/files/etc/banner
+echo "Write build date in openwrt : $BUILD_STRING"
+echo -e '\n 小渔学长 Build @ '${BUILD_STRING}'\n' >> package/base-files/files/etc/banner
+
+# 清理并重新写入 openwrt_release 的核心变量（给 LuCI 网页读取的）
 sed -i '/DISTRIB_REVISION/d' package/base-files/files/etc/openwrt_release
 echo "DISTRIB_REVISION=''" >> package/base-files/files/etc/openwrt_release
+
 sed -i '/DISTRIB_DESCRIPTION/d' package/base-files/files/etc/openwrt_release
 echo "DISTRIB_DESCRIPTION='小渔学长 Build @ ${BUILD_STRING}'" >> package/base-files/files/etc/openwrt_release
 

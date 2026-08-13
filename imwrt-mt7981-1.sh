@@ -50,6 +50,11 @@ PKG_LICENSE:=GPL-2.0
 
 include $(INCLUDE_DIR)/package.mk
 
+# 纯元包无需编译，覆盖默认的 make 动作，避免在空目录中报 "No makefile found"
+define Build/Compile
+	true
+endef
+
 # --- iptables-mod-socket userspace stub ---
 define Package/iptables-mod-socket
   SECTION:=net

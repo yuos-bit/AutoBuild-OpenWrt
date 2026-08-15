@@ -84,7 +84,8 @@ sed -i '2a ifconfig rai0 up\nifconfig ra0 up\nbrctl addif br-lan rai0\nbrctl add
 git clone -b default-openwrt-21.02 https://github.com/yuos-bit/other package/default-settings
 git clone -b mipsle-xray https://github.com/yuos-bit/other package/passwall
 git clone -b main https://github.com/yuos-bit/other package/main
-
+# 测试 tailscale
+git clone -b tailscale https://github.com/yuos-bit/other package/tailscale
 # 更新openssl3.0
 
 #超频 

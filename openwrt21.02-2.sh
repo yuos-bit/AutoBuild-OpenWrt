@@ -56,7 +56,7 @@ rm -rf package/main/mt/luci-app-mtwifi-cfg/
 rm -rf package/main/mt/luci-app-mtwifi/
 rm -rf package/main/mt/drivers/mt_wifi
 cp -rf "$GITHUB_WORKSPACE/patchs/21.02/mtk/drivers/"* package/main/mt/drivers/
-# 2) 应用：覆盖/补充 applications
-cp -rf "$GITHUB_WORKSPACE/patchs/21.02/mtk/applications/"* package/main/mt/applications/
+# 2) 应用：覆盖/补充 applications（mt 目录是扁平结构，应用直接放在 mt/ 顶层，原地覆盖避免同名包重复）
+cp -rf "$GITHUB_WORKSPACE/patchs/21.02/mtk/applications/"* package/main/mt/
 
 

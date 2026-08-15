@@ -59,7 +59,7 @@ sed -i 's/dnsmasq/dnsmasq-full firewall iptables block-mount coremark kmod-nf-na
 sed -i 's/ppp-mod-pppoe/iptables-mod-tproxy iptables-mod-extra ipset ip-full ppp ppp-mod-pppoe default-settings luci curl ca-certificates/g' include/target.mk
 
 # 修改默认红米AC2100 wifi驱动为闭源驱动
-sed -i 's/kmod-mt7603 kmod-mt7615e kmod-mt7615-firmware/kmod-mt7603e kmod-mt7615d luci-app-mtwifi -wpad-openssl/g' target/linux/ramips/image/mt7621.mk
+sed -i 's/kmod-mt7603 kmod-mt7615e kmod-mt7615-firmware/kmod-mt7603e kmod-mt7615d -wpad-openssl/g' target/linux/ramips/image/mt7621.mk
 
 # 修改默认小米路由4A千兆版 wifi驱动为闭源驱动，更改闪存分区大小
 sed -i 's/kmod-mt7603 kmod-mt76x2/kmod-mt7603e kmod-mt76x2e luci-app-mtwifi -wpad-openssl/g' target/linux/ramips/image/mt7621.mk

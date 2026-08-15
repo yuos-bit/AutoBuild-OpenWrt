@@ -50,3 +50,8 @@ echo "luciversion = '${BUILD_STRING}'" >> feeds/luci/modules/luci-base/luasrc/ve
 rm -rf feeds/packages/lang/golang
 find . -type d -name "golang" -prune -exec rm -rf {} \;
 git clone https://github.com/sbwml/packages_lang_golang -b 25.x feeds/packages/lang/golang
+
+# 1) 驱动：覆盖 drivers（注意 mt_wifi 目录名冲突，见下）
+rm -rf package/mtk/drivers/mt_wifi
+cp -rf "$GITHUB_WORKSPACE/patchs/21.02/mtk/"* package/mtk/
+

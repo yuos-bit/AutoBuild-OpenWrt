@@ -52,11 +52,16 @@ find . -type d -name "golang" -prune -exec rm -rf {} \;
 git clone https://github.com/sbwml/packages_lang_golang -b 25.x feeds/packages/lang/golang
 
 # 1) 驱动：覆盖 drivers（注意 mt_wifi 目录名冲突，见下）
-rm -rf package/main/mt/luci-app-mtwifi-cfg/
-rm -rf package/main/mt/luci-app-mtwifi/
 rm -rf package/main/mt/drivers/mt_wifi
 cp -rf "$GITHUB_WORKSPACE/patchs/21.02/mtk/drivers/"* package/main/mt/drivers/
-# 2) 应用：覆盖/补充 applications（mt 目录是扁平结构，应用直接放在 mt/ 顶层，原地覆盖避免同名包重复）
-cp -rf "$GITHUB_WORKSPACE/patchs/21.02/mtk/applications/"* package/main/mt/
+
+# 2) 应用：覆盖/补充 applications（other 仓库里 applications/ 与 mt/ 顶层存在同名包，构建实际用的是
+#    applications/，所以补丁要覆盖 applications/，并清掉 mt/ 顶层的同名旧副本，避免同名包冲突）
+rm -rf package/main/mt/8021xd \
+      package/main/mt/datconf \
+      package/main/mt/mtwifi-cfg \
+      package/main/mt/luci-app-mtwifi-cfg \
+      package/main/mt/luci-app-mtwifi
+cp -rf "$GITHUB_WORKSPACE/patchs/21.02/mtk/applications/"* package/main/applications/
 
 

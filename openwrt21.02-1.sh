@@ -91,14 +91,14 @@ git clone -b tailscale https://github.com/yuos-bit/other package/tailscale
 # 说明：OpenWrt 21.02 用 fw3/iptables（非 nftables），全锥形 NAT 走 xt_FULLCONENAT + fw3 补丁。
 # 所有包/补丁都在 diy-part1（feeds update 之前）就位，编译时自动应用，无需 feeds 介入。
 # 1) 用配套版本替换 package/main 里的旧 fast-classifier（避免重名，且与 shortcut-fe 版本匹配）
-rm -rf package/main/fast-classifier
-mkdir -p package/turboacc
-# 2) 前端 + 依赖包：luci-app-turboacc-mtk / fullconenat / shortcut-fe / fast-classifier
-cp -rf "$GITHUB_WORKSPACE/patchs/21.02/turboacc/packages/"* package/turboacc/
-# 3) 内核补丁：SFE 支持(953) + conntrack 多注册者(952，fullcone 与 SFE 共存需要)
-cp -rf "$GITHUB_WORKSPACE/patchs/21.02/turboacc/kernel-patches/"* target/linux/generic/hack-5.4/
-# 4) fw3 补丁：fullcone 选项（fw3 生成 FULLCONENAT 规则替代 MASQUERADE）
-cp -rf "$GITHUB_WORKSPACE/patchs/21.02/turboacc/firewall/"* package/network/config/firewall/patches/
+#  rm -rf package/main/fast-classifier
+#  mkdir -p package/turboacc
+#  # 2) 前端 + 依赖包：luci-app-turboacc-mtk / fullconenat / shortcut-fe / fast-classifier
+#  cp -rf "$GITHUB_WORKSPACE/patchs/21.02/turboacc/packages/"* package/turboacc/
+#  # 3) 内核补丁：SFE 支持(953) + conntrack 多注册者(952，fullcone 与 SFE 共存需要)
+#  cp -rf "$GITHUB_WORKSPACE/patchs/21.02/turboacc/kernel-patches/"* target/linux/generic/hack-5.4/
+#  # 4) fw3 补丁：fullcone 选项（fw3 生成 FULLCONENAT 规则替代 MASQUERADE）
+#  cp -rf "$GITHUB_WORKSPACE/patchs/21.02/turboacc/firewall/"* package/network/config/firewall/patches/
 # 更新openssl3.0
 
 #超频 

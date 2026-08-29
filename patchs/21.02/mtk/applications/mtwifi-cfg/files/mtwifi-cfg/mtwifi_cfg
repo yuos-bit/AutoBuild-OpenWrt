@@ -176,12 +176,20 @@ function vif_count(cfg)
     return vif_num, ap_num, apcli_num
 end
 
+-- 兼容不同 netifd 输出：interfaces 键可能是 "0"/"1"（单字符）或 "00"/"01"（补齐两位）。
+-- 若按固定 "%02d" 取键，netifd 实际给 "0" 时会取到 nil 导致崩溃，配置无法应用。
+local function lookup_vif(cfg, idx)
+    local ifs = cfg.interfaces
+    if not ifs then return nil end
+    return ifs[string.format("%02d", idx)] or ifs[tostring(idx)] or ifs[idx]
+end
+
 function mtwifi_cfg_foreach_vif(cfg, mode, func)
     if cfg == nil or func == nil then return end
 
     local vif_num,_,_ = vif_count(cfg)
     for idx=0,vif_num-1 do
-        local v = cfg.interfaces[string.format("%02d", idx)]
+        local v = lookup_vif(cfg, idx)
         if v.config.mode and v.config.mode == mode then
             func(v)
         end
@@ -550,7 +558,7 @@ function mtwifi_cfg_setup(argv)
     -- setup vif cfgs
     local apidx = 1
     for idx = 0,vif_num-1 do
-        v = cfg.interfaces[string.format("%02d", idx)]
+        v = lookup_vif(cfg, idx)
         if v.config.mode == "ap" then
             set_idx_dat(dats, apidx, "SSID", v.config.ssid)
             set_idx_dat(dats, apidx, "WPAPSK", v.config.key or "")

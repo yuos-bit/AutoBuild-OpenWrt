@@ -1,5 +1,13 @@
 #!/bin/sh
 
+# 首次开机确定性生成 /etc/config/wireless（不依赖 10-mtwifi-detect hotplug 时序）。
+# 缺省会导致 LuCI「网络→无线」菜单因 depends uci.wireless.@wifi-device 为空而隐藏，
+# 且 mt_wifi 驱动会退回自身默认配置（SSID 变成 Xiaomi-<MAC>）而非 UCI 里的配置。
+if [ ! -e /etc/config/wireless ]; then
+	/sbin/wifi config
+	[ -e /etc/config/wireless ] && uci -q commit wireless
+fi
+
 if [ -d /www/luci-static/resources/view/network ]; then
 	mv -f /usr/share/luci-app-mtwifi-cfg/wireless-mtk.js /www/luci-static/resources/view/network/wireless.js
 fi

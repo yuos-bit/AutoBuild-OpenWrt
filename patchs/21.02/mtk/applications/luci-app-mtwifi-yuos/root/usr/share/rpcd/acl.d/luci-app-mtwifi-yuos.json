@@ -1,0 +1,18 @@
+{
+	"luci-app-mtwifi-yuos": {
+		"description": "Grant access to luci-app-mtwifi-yuos (MTK mtwifi wireless panel)",
+		"read": {
+			"ubus": {
+				"luci.mtwifi": [ "getFeatures", "getStatus", "getAssocList", "scan" ],
+				"iwinfo": [ "info", "assoclist", "freqlist", "txpowerlist", "countrylist" ]
+			},
+			"uci": [ "wireless" ]
+		},
+		"write": {
+			"ubus": {
+				"luci.mtwifi": [ "kick" ]
+			},
+			"uci": [ "wireless" ]
+		}
+	}
+}

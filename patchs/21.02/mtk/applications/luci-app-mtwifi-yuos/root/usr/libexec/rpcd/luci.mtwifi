@@ -1,0 +1,411 @@
+#!/usr/bin/env lua
+-- luci.mtwifi - rpcd status/control plugin for luci-app-mtwifi-yuos
+--
+-- Exposes mtwifi closed-driver status that iwinfo cannot see on all bands:
+--   getFeatures  - radio inventory (band / phy / apcli ifnames)
+--   getStatus    - per-radio runtime status (channel, txpower, bitrate, clients, apcli)
+--   getAssocList - associated stations (iwinfo on 5G, mtwifi-sta ioctl on 2.4G)
+--   scan         - SiteSurvey via iwpriv on the apcli interface
+--   kick         - deauth a client via iwpriv DisConnectSta
+--
+-- License: GPL-2.0
+
+local json = require "luci.jsonc"
+local util = require "luci.util"
+local sys  = require "luci.sys"
+
+local uci = require "uci".cursor()
+local ok_iwinfo, iwinfo = pcall(require, "iwinfo")
+
+string.trim = util.trim
+
+local function readstr(path)
+	local f = io.open(path, "r")
+	if not f then return nil end
+	local s = f:read("*a") or ""
+	f:close()
+	return s:gsub("%s+$", "")
+end
+
+local function shell(cmd)
+	local f = io.popen(cmd .. " 2>/dev/null")
+	if not f then return "" end
+	local s = f:read("*a") or ""
+	f:close()
+	return s
+end
+
+local function if_up(ifname)
+	local flags = readstr("/sys/class/net/" .. ifname .. "/flags")
+	return (flags ~= nil and tonumber(flags) ~= nil and (tonumber(flags) % 2) == 1)
+end
+
+-- ---------------------------------------------------------------- radios
+
+local function get_radios()
+	local rv = {}
+	uci:foreach("wireless", "wifi-device", function(s)
+		if s.type ~= "mtwifi" then return end
+		local phy = s.phy or s[".name"]
+		local entry = {
+			name  = s[".name"],
+			band  = s.band or "",
+			phy   = phy,
+			ext   = phy:gsub("%d+$", ""),          -- "rax0" -> "rax"
+			apcli = "apcli" .. phy:gsub("^ra", "", 1)  -- "rax0" -> "apclix0"
+		}
+		-- AP vifs in uci order; ifnames are ext_prefix .. 0,1,2... (MBSSID order)
+		entry.ap_vifs = {}
+		local idx = 0
+		uci:foreach("wireless", "wifi-iface", function(v)
+			if v.device ~= entry.name then return end
+			if (v.mode or "ap") == "ap" then
+				entry.ap_vifs[idx] = { section = v[".name"], ifname = entry.ext .. idx, ssid = v.ssid }
+				idx = idx + 1
+			end
+		end)
+		entry.ap_count = idx
+		rv[s[".name"]] = entry
+	end)
+	return rv
+end
+
+-- ---------------------------------------------------------------- iwconfig fallback (2.4G: no cfg80211)
+
+local function iwconfig_info(ifname)
+	local out = shell("iwconfig " .. ifname)
+	local info = {}
+	local ch, freq, br, txp = out:match("Frequency[:=]%s*([%d%.]+)%s*GHz%s*%(Channel%s*(%d+)%)")
+	if ch then
+		info.channel = tonumber(ch)
+		info.frequency = tonumber(freq)
+	end
+	br = out:match("Bit Rate[:=]%s*([%d%.]+)")
+	if br then info.bitrate = tonumber(br) * 1000 end
+	txp = out:match("Tx%-Power[:=]%s*(%d+)")
+	if txp then info.txpower = tonumber(txp) end
+	if info.channel and info.channel > 0 then return info end
+	return nil
+end
+
+local function radio_info(ifname)
+	if ok_iwinfo and iwinfo.type and iwinfo.type(ifname) then
+		local t = iwinfo[iwinfo.type(ifname)]
+		if t and t.info then
+			local i = t.info(ifname)
+			if i and i.channel and i.channel > 0 then return i end
+		end
+	end
+	return iwconfig_info(ifname)
+end
+
+-- apcli association state: "Access Point: xx:xx:..." when associated
+local function apcli_assoc(ifname)
+	local out = shell("iwconfig " .. ifname)
+	local bssid = out:match("Access Point:%s*(%x%x:%x%x:%x%x:%x%x:%x%x:%x%x)")
+	return (bssid ~= nil and bssid ~= "00:00:00:00:00:00") and bssid or nil
+end
+
+-- ---------------------------------------------------------------- assoclist
+
+local function assoclist_5g(ifname)
+	if not (ok_iwinfo and iwinfo.type and iwinfo.type(ifname)) then return nil end
+	local t = iwinfo[iwinfo.type(ifname)]
+	if not (t and t.assoclist) then return nil end
+	local ok, list = pcall(t.assoclist, ifname)
+	if not ok or type(list) ~= "table" then return nil end
+	return list
+end
+
+local function assoclist_2g(ifname)
+	local out = shell("/usr/bin/mtwifi-sta " .. ifname)
+	if out == "" then return {} end
+	local list = {}
+	for line in out:gmatch("[^\r\n]+") do
+		local obj = json.parse(line)
+		if type(obj) == "table" and obj.mac then
+			-- mtwifi-sta reports a single rssi value and raw kbit/s rates;
+			-- normalize into the iwinfo-style shape used below
+			obj.signal = obj.rssi
+			obj.uptime = obj.uptime
+			obj.rx = { rate = obj.rx_kbits }
+			obj.tx = { rate = obj.tx_kbits }
+			list[#list + 1] = obj
+		end
+	end
+	return list
+end
+
+local function collect_assoc(radios)
+	local all = {}
+	for _, r in pairs(radios) do
+		if if_up(r.phy) then
+			for bss_idx, vif in pairs(r.ap_vifs) do
+				local raw = nil
+				if r.band == "2g" then
+					raw = assoclist_2g(vif.ifname)
+				else
+					raw = assoclist_5g(vif.ifname) or assoclist_2g(vif.ifname)
+				end
+				if raw then
+					for _, e in ipairs(raw) do
+						all[#all + 1] = {
+							radio   = r.name,
+							band    = r.band,
+							ifname  = vif.ifname,
+							section = vif.section,
+							ssid    = vif.ssid,
+							mac     = e.mac,
+							aid     = e.aid,
+							signal  = e.signal,
+							uptime  = e.uptime or e.connected_time or 0,
+							mode    = e.mode,
+							mcs     = e.mcs,
+							bw      = e.bw,
+							sgi     = e.sgi,
+							rx_kbits = (e.rx and e.rx.rate) or e.rx_kbits or 0,
+							tx_kbits = (e.tx and e.tx.rate) or e.tx_kbits or 0
+						}
+					end
+				end
+			end
+		end
+	end
+	table.sort(all, function(a, b)
+		if a.band ~= b.band then return (a.band or "") < (b.band or "") end
+		return (a.signal or 0) > (b.signal or 0)
+	end)
+	return all
+end
+
+-- ---------------------------------------------------------------- site survey
+
+-- column layout of "iwpriv <apcli> get_site_survey" (1-based, see
+-- mt7615d cmm_info.c RTMPCommSiteSurveyData: %-4d no | %-4d ch | %-33s ssid |
+-- bssid(17)+3sp | %-23s security | %-9d signal% | %-7s wmode | ...)
+local SS_COLS = { ch = {5, 8}, ssid = {9, 41}, bssid = {42, 58}, sec = {62, 84}, sig = {85, 93} }
+
+local function sec2enc(sec)
+	if not sec then return nil end
+	local auth = sec:match("^([^/]+)") or sec
+	local enc = sec:match("/(.+)") or ""
+	if auth == "OPEN" and enc == "NONE" then return "none" end
+	if auth == "WPA2PSKWPA3PSK" then return "sae-mixed" end
+	if auth == "WPA3PSK" then return "sae" end
+	if auth == "WPA1WPA2" or auth == "WPAPSKWPA2PSK" then return "psk-mixed" end
+	if auth == "WPA2PSK" then return "psk2" end
+	if auth == "WPAPSK" then return "psk" end
+	if auth == "OWE" then return "owe" end
+	return nil
+end
+
+local function parse_site_survey(out)
+	local list = {}
+	for line in out:gmatch("[^\r\n]+") do
+		if #line > 93 then
+			local no = line:sub(1, 4):trim()
+			-- data rows start with the row number; header/garbage does not parse as number
+			if no:match("^%d+$") then
+				local ch  = tonumber(line:sub(SS_COLS.ch[1], SS_COLS.ch[2]):trim())
+				local ssid = line:sub(SS_COLS.ssid[1], SS_COLS.ssid[2]):trim()
+				local bssid = line:sub(SS_COLS.bssid[1], SS_COLS.bssid[2]):trim()
+				local sec = line:sub(SS_COLS.sec[1], SS_COLS.sec[2]):trim()
+				local sig = tonumber(line:sub(SS_COLS.sig[1], SS_COLS.sig[2]):trim())
+				if ch and ch > 0 then
+					list[#list + 1] = {
+						ch = ch,
+						ssid = (ssid ~= "" and ssid ~= "0x") and ssid or nil,
+						bssid = bssid,
+						security = sec,
+						enc = sec2enc(sec),
+						signal_pct = sig or 0
+					}
+				end
+			end
+		end
+	end
+	table.sort(list, function(a, b) return a.signal_pct > b.signal_pct end)
+	if #list > 64 then
+		for i = 65, #list do list[i] = nil end
+	end
+	return list
+end
+
+local function count_site_survey_rows(out)
+	local n = 0
+	for line in out:gmatch("[^\r\n]+") do
+		if #line > 93 and line:sub(1, 4):trim():match("^%d+$") then
+			n = n + 1
+		end
+	end
+	return n
+end
+
+-- ---------------------------------------------------------------- methods
+
+local methods = {}
+
+methods.getFeatures = {
+	call = function()
+		local radios = get_radios()
+		local rv = { mtwifi = true, radios = {} }
+		for name, r in pairs(radios) do
+			rv.radios[name] = {
+				band = r.band, phy = r.phy, ext = r.ext, apcli = r.apcli,
+				hwtype = "mtwifi"
+			}
+		end
+		return rv
+	end
+}
+
+methods.getStatus = {
+	call = function()
+		local radios = get_radios()
+		local assoc = collect_assoc(radios)
+		local counts = {}
+		for _, e in ipairs(assoc) do
+			counts[e.radio] = (counts[e.radio] or 0) + 1
+		end
+
+		local rv = {}
+		for name, r in pairs(radios) do
+			local up = if_up(r.phy)
+			local info = up and radio_info(r.phy) or nil
+			local entry = {
+				up = up,
+				band = r.band,
+				ifname = r.phy,
+				clients = counts[name] or 0
+			}
+			if info then
+				entry.channel  = info.channel
+				entry.freq_mhz = info.frequency
+				entry.txpower  = info.txpower
+				entry.bitrate  = info.bitrate and info.bitrate / 1000 or nil
+				entry.noise    = info.noise
+			end
+			if if_up(r.apcli) then
+				entry.apcli = {
+					ifname = r.apcli,
+					up = true,
+					assoc = apcli_assoc(r.apcli) ~= nil
+				}
+			else
+				entry.apcli = { ifname = r.apcli, up = false, assoc = false }
+			end
+			rv[name] = entry
+		end
+		return rv
+	end
+}
+
+methods.getAssocList = {
+	call = function()
+		return { list = collect_assoc(get_radios()) }
+	end
+}
+
+methods.scan = {
+	args = { device = "string" },
+	call = function(args)
+		local r = get_radios()[args.device]
+		if not r then return { error = "Unknown radio" } end
+		local apcli = r.apcli
+
+		if not if_up(apcli) then
+			os.execute(string.format("ifconfig %s up", apcli))
+		end
+
+		-- trigger a scan; empty argument = scan all channels
+		shell(string.format("iwpriv %s set SiteSurvey=", apcli))
+
+		-- the first dump may return "No BssInfo" while the scan is running
+		local out = ""
+		for _ = 1, 4 do
+			os.execute("sleep 2")
+			out = shell(string.format("iwpriv %s get_site_survey", apcli))
+			if out:match("Total=%d+") or count_site_survey_rows(out) > 0 then break end
+		end
+
+		return { list = parse_site_survey(out) }
+	end
+}
+
+methods.kick = {
+	args = { ifname = "string", mac = "string" },
+	call = function(args)
+		if not args.ifname:match("^[%w%.%-]+$") then
+			return { ok = false, error = "Invalid interface" }
+		end
+		if not args.mac:match("^%x%x:%x%x:%x%x:%x%x:%x%x:%x%x$") then
+			return { ok = false, error = "Invalid MAC address" }
+		end
+		local rc = os.execute(string.format("iwpriv %s set DisConnectSta=%s",
+			args.ifname, args.mac))
+		return { ok = (rc == 0 or rc == true) }
+	end
+}
+
+-- ---------------------------------------------------------------- dispatch
+
+local function parseInput()
+	local parse = json.new()
+	local done, err
+
+	while true do
+		local chunk = io.read(4096)
+		if not chunk then
+			break
+		elseif not done and not err then
+			done, err = parse:parse(chunk)
+		end
+	end
+
+	if not done then
+		print(json.stringify({ error = err or "Incomplete input" }))
+		os.exit(1)
+	end
+
+	return parse:get()
+end
+
+local function validateArgs(func, uargs)
+	local method = methods[func]
+	if not method then
+		print(json.stringify({ error = "Method not found" }))
+		os.exit(1)
+	end
+
+	if type(uargs) ~= "table" then
+		print(json.stringify({ error = "Invalid arguments" }))
+		os.exit(1)
+	end
+
+	uargs.ubus_rpc_session = nil
+
+	local k, v
+	local margs = method.args or {}
+	for k, v in pairs(uargs) do
+		if margs[k] == nil or
+		   (v ~= nil and type(v) ~= type(margs[k]))
+		then
+			print(json.stringify({ error = "Invalid arguments" }))
+			os.exit(1)
+		end
+	end
+
+	return method
+end
+
+if arg[1] == "list" then
+	local _, method, rv = nil, nil, {}
+	for _, method in pairs(methods) do rv[_] = method.args or {} end
+	print((json.stringify(rv):gsub(":%[%]", ":{}")))
+elseif arg[1] == "call" then
+	local args = parseInput()
+	local method = validateArgs(arg[2], args)
+	local result, code = method.call(args)
+	print((json.stringify(result):gsub("^%[%]$", "{}")))
+	os.exit(code or 0)
+end

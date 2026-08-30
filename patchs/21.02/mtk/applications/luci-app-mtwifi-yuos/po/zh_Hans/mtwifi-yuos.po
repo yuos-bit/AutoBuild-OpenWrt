@@ -1,0 +1,426 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: Chinese (Simplified)\n"
+"Language: zh_Hans\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgid "2.4 GHz stations are queried through the driver ioctl (mtwifi-sta), 5 GHz stations through nl80211. Click \"Kick\" to disconnect a client."
+msgstr "2.4GHz 客户端通过驱动 ioctl（mtwifi-sta）查询，5GHz 通过 nl80211 查询。点击「剔除」可断开对应客户端。"
+
+msgid "802.11k RRM"
+msgstr "802.11k 无线资源测量"
+
+msgid "A maximum of 16 MBSSID interfaces is supported."
+msgstr "最多支持 16 个 MBSSID 接口。"
+
+msgid "A-MSDU aggregation"
+msgstr "A-MSDU 聚合"
+
+msgid "Access Control"
+msgstr "接入控制"
+
+msgid "Access Point"
+msgstr "接入点 (AP)"
+
+msgid "Add"
+msgstr "添加"
+
+msgid "Advanced Settings"
+msgstr "高级设置"
+
+msgid "Allow all except listed"
+msgstr "仅允许列表外的客户端"
+
+msgid "Allow listed only"
+msgstr "仅允许列表内的客户端"
+
+msgid "Always use 40MHz channels even if the secondary channel overlaps. Using this option does not comply with IEEE 802.11n-2009!"
+msgstr "即使副信道重叠也强制使用 40MHz 频宽。使用此选项不符合 IEEE 802.11n-2009 规范！"
+
+msgid "Associated Stations"
+msgstr "已连接设备"
+
+msgid "Association RSSI threshold (dBm)"
+msgstr "关联信号阈值 (dBm)"
+
+msgid "Association requests with a signal below this threshold are rejected (0 = off)."
+msgstr "信号低于该阈值的关联请求将被拒绝（0 = 关闭）。"
+
+msgid "At least one Access Point interface must be kept on each radio (MBSSID limit)."
+msgstr "每个无线电必须至少保留一个接入点接口（MBSSID 限制）。"
+
+msgid "Auto Block ACK"
+msgstr "自动 Block ACK"
+
+msgid "Automatic Block ACK"
+msgstr "自动 Block ACK"
+
+msgid "Beacon Interval"
+msgstr "Beacon 间隔"
+
+msgid "Bitrate"
+msgstr "速率"
+
+msgid "BSSID"
+msgstr "BSSID"
+
+msgid "Channel"
+msgstr "信道"
+
+msgid "Client"
+msgstr "客户端"
+
+msgid "Client interface \"%s\" configured - check the WPA key below and apply."
+msgstr "客户端接口「%s」已配置 - 请检查下方的 WPA 密钥并应用。"
+
+msgid "Clients"
+msgstr "客户端"
+
+msgid "Collecting data..."
+msgstr "正在收集数据…"
+
+msgid "Continue"
+msgstr "继续"
+
+msgid "Country Code"
+msgstr "国家/地区代码"
+
+msgid "DBDC main band"
+msgstr "DBDC 主频段"
+
+msgid "DTIM Interval"
+msgstr "DTIM 间隔"
+
+msgid "Database of associated stations is being refreshed"
+msgstr "正在刷新已连接设备列表"
+
+msgid "Device Configuration"
+msgstr "设备配置"
+
+msgid "Device is not active"
+msgstr "设备未启用"
+
+msgid "Device is restarting…"
+msgstr "设备正在重启…"
+
+msgid "Dismiss"
+msgstr "关闭"
+
+msgid "Disable"
+msgstr "停用"
+
+msgid "Disable this network"
+msgstr "停用此网络"
+
+msgid "Edit"
+msgstr "编辑"
+
+msgid "Edit this device"
+msgstr "编辑此设备"
+
+msgid "Edit this network"
+msgstr "编辑此网络"
+
+msgid "Enable"
+msgstr "启用"
+
+msgid "Enable this network"
+msgstr "启用此网络"
+
+msgid "Encryption"
+msgstr "加密"
+
+msgid "Failed to disconnect the client"
+msgstr "断开客户端失败"
+
+msgid "Force 40MHz mode"
+msgstr "强制 40MHz 频宽"
+
+msgid "Fragmentation Threshold"
+msgstr "分片阈值"
+
+msgid "General Setup"
+msgstr "基本设置"
+
+msgid "Host"
+msgstr "主机"
+
+msgid "Interface Configuration"
+msgstr "接口配置"
+
+msgid "Isolate Clients"
+msgstr "客户端隔离"
+
+msgid "Isolation, client-to-client traffic is blocked"
+msgstr "隔离，阻止客户端之间的通信"
+
+msgid "Key"
+msgstr "密钥"
+
+msgid "Kick"
+msgstr "剔除"
+
+msgid "Kick low-RSSI clients below (dBm)"
+msgstr "剔除信号弱于 (dBm) 的客户端"
+
+msgid "MAC Address Filter"
+msgstr "MAC 地址过滤"
+
+msgid "MAC-List"
+msgstr "MAC 列表"
+
+msgid "MU-MIMO beamformer"
+msgstr "MU-MIMO 波束赋形"
+
+msgid "MU-MIMO downlink"
+msgstr "MU-MIMO 下行"
+
+msgid "MU-MIMO uplink"
+msgstr "MU-MIMO 上行"
+
+msgid "Maximum transmit power"
+msgstr "最大发射功率"
+
+msgid "Mode"
+msgstr "模式"
+
+msgid "Network"
+msgstr "网络"
+
+msgid "No Encryption (open network)"
+msgstr "无加密（开放网络）"
+
+msgid "No clients associated"
+msgstr "没有已关联的客户端"
+
+msgid "No information available"
+msgstr "无可用信息"
+
+msgid "No networks found - the interface may be busy or the band has no nearby APs"
+msgstr "未发现网络 - 接口可能正忙，或该频段附近没有可用 AP"
+
+msgid "OFDMA downlink"
+msgstr "OFDMA 下行"
+
+msgid "OFDMA uplink"
+msgstr "OFDMA 上行"
+
+msgid "Only associate with the given BSSID (client mode)"
+msgstr "仅关联到指定的 BSSID（客户端模式）"
+
+msgid "Operating width"
+msgstr "工作频宽"
+
+msgid "Prevents client-to-client communication"
+msgstr "阻止客户端之间的相互通信"
+
+msgid "Provide new network"
+msgstr "创建新网络"
+
+msgid "RTS/CTS Threshold"
+msgstr "RTS/CTS 阈值"
+
+msgid "Repeater"
+msgstr "中继"
+
+msgid "Repeater Scan"
+msgstr "中继扫描"
+
+msgid "Repeater Scan: %s"
+msgstr "中继扫描：%s"
+
+msgid "Remove"
+msgstr "移除"
+
+msgid "Restart"
+msgstr "重启"
+
+msgid "Repeater (%s)"
+msgstr "中继 (%s)"
+
+msgid "disabled"
+msgstr "已停用"
+
+msgid "Join Network"
+msgstr "连接网络"
+
+msgid "HT mode"
+msgstr "HT 模式"
+
+msgid "Delete this network"
+msgstr "删除此网络"
+
+msgid "<abbr title=\"Extended Service Set Identifier\">ESSID</abbr>"
+msgstr "<abbr title=\"扩展服务集标识符\">ESSID</abbr>"
+
+msgid "<abbr title=\"Basic Service Set Identifier\">BSSID</abbr>"
+msgstr "<abbr title=\"基本服务集标识符\">BSSID</abbr>"
+
+msgid "Choose the network(s) you want to attach to this wireless interface or fill out the <em>custom</em> field to define a new network."
+msgstr "选择要绑定到此无线接口的网络，或在 <em>custom</em> 字段中填入名称以新建网络。"
+
+msgid "Enables radio resource measurements for assisted roaming."
+msgstr "启用无线资源测量以辅助漫游。"
+
+msgid "Restart radio interface"
+msgstr "重启无线电"
+
+msgid "RSSI threshold for joining"
+msgstr "加入网络的 RSSI 阈值"
+
+msgid "RX Rate / TX Rate"
+msgstr "接收速率 / 发送速率"
+
+msgid "Scan failed"
+msgstr "扫描失败"
+
+msgid "Scan for networks…"
+msgstr "扫描网络…"
+
+msgid "Scan for upstream networks and set up a repeater link"
+msgstr "扫描上级网络并建立中继链路"
+
+msgid "Security mode"
+msgstr "安全模式"
+
+msgid "Select the upstream network to connect to. The AP-Client interface will bridge it into the selected network."
+msgstr "选择要连接的上级网络。AP-Client 接口会将其桥接到所选网络。"
+
+msgid "Short GI"
+msgstr "Short GI"
+
+msgid "Signal"
+msgstr "信号"
+
+msgid "SSID"
+msgstr "SSID"
+
+msgid "Stations with an average signal below this threshold are disconnected (0 = off)."
+msgstr "平均信号低于该阈值的客户端将被断开（0 = 关闭）。"
+
+msgid "Status"
+msgstr "状态"
+
+msgid "The existing wireless configuration needs to be changed for LuCI to function properly."
+msgstr "现有的无线配置需要调整后 LuCI 才能正常工作。"
+
+msgid "This radio does not support AP-Client mode"
+msgstr "该无线电不支持 AP-Client 模式"
+
+msgid "Time interval for rekeying GTK"
+msgstr "GTK 密钥更新间隔"
+
+msgid "Transmit power in percent (0-100), 100 = driver default / maximum."
+msgstr "发射功率百分比（0-100），100 = 驱动默认/最大值。"
+
+msgid "Tx-Power"
+msgstr "发射功率"
+
+msgid "U-APSD power saving"
+msgstr "U-APSD 省电模式"
+
+msgid "Up to 129 entries are supported. Changes take effect after the wireless is reloaded."
+msgstr "最多支持 129 条。更改在无线重新加载后生效。"
+
+msgid "Uptime"
+msgstr "在线时长"
+
+msgid "Use the \"Repeater Scan\" button on the radio row to discover upstream networks. Only one client interface per radio is supported."
+msgstr "请使用无线电行内的「中继扫描」按钮发现上级网络。每个无线电仅支持一个客户端接口。"
+
+msgid "WMM Mode"
+msgstr "WMM 模式"
+
+msgid "Where Wi-Fi Multimedia (WMM) Mode QoS is disabled, clients may be limited to 802.11a/802.11g rates."
+msgstr "禁用 WMM QoS 时，客户端速率可能被限制在 802.11a/802.11g。"
+
+msgid "Hide <abbr title=\"Extended Service Set Identifier\">ESSID</abbr>"
+msgstr "隐藏 <abbr title=\"扩展服务集标识符\">ESSID</abbr>"
+
+msgid "Where the ESSID is hidden, clients may fail to roam and airtime efficiency may be significantly reduced."
+msgstr "隐藏 ESSID 时客户端可能无法漫游，且空口时间效率会显著下降。"
+
+msgid "Wireless Networks"
+msgstr "无线网络"
+
+msgid "Wireless Status"
+msgstr "无线状态"
+
+msgid "Wireless Security"
+msgstr "无线安全"
+
+msgid "Wireless configuration migration"
+msgstr "无线配置迁移"
+
+msgid "Wireless hardware NAT (HWNAT)"
+msgstr "无线硬件 NAT (HWNAT)"
+
+msgid "Wireless network is disabled"
+msgstr "无线网络已停用"
+
+msgid "Wireless network is enabled"
+msgstr "无线网络已启用"
+
+msgid "Wireless scan is running…"
+msgstr "无线扫描进行中…"
+
+msgid "Upon pressing \"Continue\", anonymous \"wifi-iface\" sections will be assigned with a name in the form <em>wifinet#</em> and the network will be restarted to apply the updated configuration."
+msgstr "点击「继续」后，匿名「wifi-iface」节将被命名为 <em>wifinet#</em> 的形式，并重启网络以应用更新后的配置。"
+
+msgid "Ad-Hoc"
+msgstr "点对点 (Ad-Hoc)"
+
+msgid "Auto"
+msgstr "自动"
+
+msgid "auto"
+msgstr "自动"
+
+msgid "connected"
+msgstr "已连接"
+
+msgid "dBm"
+msgstr "dBm"
+
+msgid "devices"
+msgstr "台设备"
+
+msgid "disable"
+msgstr "关闭"
+
+msgid "hidden"
+msgstr "隐藏"
+
+msgid "inactive"
+msgstr "未连接"
+
+msgid "isolated"
+msgstr "已隔离"
+
+msgid "running"
+msgstr "运行中"
+
+msgid "sec"
+msgstr "秒"
+
+msgid "unnamed"
+msgstr "未命名"
+
+msgid "Mbit/s"
+msgstr "Mbit/s"
+
+msgid "MHz"
+msgstr "MHz"
+
+msgid "open network"
+msgstr "开放网络"
+
+msgid "mtwifi status backend (luci.mtwifi) is not available - is mtwifi-cfg installed?"
+msgstr "mtwifi 状态后端 (luci.mtwifi) 不可用 - 请确认 mtwifi-cfg 已安装？"

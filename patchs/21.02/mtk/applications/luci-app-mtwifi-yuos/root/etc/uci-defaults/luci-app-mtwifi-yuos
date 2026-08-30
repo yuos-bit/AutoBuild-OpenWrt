@@ -1,0 +1,49 @@
+#!/bin/sh
+# uci-defaults for luci-app-mtwifi-yuos
+
+# 1) 首次开机确定性生成 /etc/config/wireless（不依赖 10-mtwifi-detect hotplug 时序）。
+#    缺省会导致「网络→无线」菜单因 depends uci.wireless.@wifi-device 为空而隐藏，
+#    且 mt_wifi 驱动会退回自身默认配置而非 UCI 里的配置。
+if [ ! -e /etc/config/wireless ]; then
+	/sbin/wifi config
+	[ -e /etc/config/wireless ] && uci -q commit wireless
+fi
+
+# 2) 生成后默认开启安全加密（psk2 + 1234567890），避免出现开放网络。
+if [ -e /etc/config/wireless ]; then
+	uci -q show wireless | sed -n 's/^wireless\.\([^.]*\)=wifi-iface$/\1/p' | while read _wifi_iface; do
+		[ "$(uci -q get wireless.$_wifi_iface.mode)" = "ap" ] || continue
+		uci -q set wireless.$_wifi_iface.encryption="psk2"
+		uci -q set wireless.$_wifi_iface.key="1234567890"
+	done
+	uci -q commit wireless
+fi
+
+# 3) 用重写后的视图替换「网络→无线」页面（luci-mod-network 原文件保留，
+#    卸载本包后把 /rom 的原版拷回即可恢复）。
+if [ -d /www/luci-static/resources/view/network ] && \
+   [ -f /www/luci-static/resources/view/mtwifi/wireless.js ]; then
+	mv -f /www/luci-static/resources/view/mtwifi/wireless.js \
+	      /www/luci-static/resources/view/network/wireless.js
+fi
+
+# 4) 让 luci network.js 识别闭源驱动的 ra*/apcli* 接口名（幂等）。
+luci_network_js="/www/luci-static/resources/network.js"
+if [ -f "$luci_network_js" ]; then
+	if ! grep -sq 'ra\[xiyez\]' "$luci_network_js"; then
+		sed -i 's#/^wlan\\d+/,#/^wlan\\d+/,/^ra[xiyez]?\\d+/,/^apcli[xiyez]?\\d+/,#' "$luci_network_js"
+	fi
+fi
+
+# 5) 无 mac80211 无线电时隐藏 状态→信道分析 菜单（幂等的目标式修改，
+#    取代旧包对 luci-mod-status.json 的整文件替换）。
+msj=/usr/share/luci/menu.d/luci-mod-status.json
+if [ -f "$msj" ] && grep -q '"admin/status/channel_analysis"' "$msj"; then
+	sed -i 's/"@wifi-device": true/"@wifi-device": { "type": "mac80211" }/' "$msj"
+fi
+
+# 6) 清理旧包 luci-app-mtwifi-cfg 的残留（原地升级路径）。
+rm -rf /usr/share/luci-app-mtwifi-cfg
+rm -f /etc/uci-defaults/luci-app-mtwifi-cfg.default
+
+exit 0

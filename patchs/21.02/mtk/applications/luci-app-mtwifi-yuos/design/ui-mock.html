@@ -1,0 +1,355 @@
+<title>无线面板 Mock</title>
+<style>
+  :root {
+    --bg: #f2f4f7;
+    --panel: #ffffff;
+    --panel-2: #f7f9fb;
+    --line: #dfe3ea;
+    --text: #1c2733;
+    --muted: #5b6b7c;
+    --accent: #0a7ec2;
+    --accent-soft: rgba(10, 126, 194, 0.10);
+    --ok: #1f8a4c;
+    --ok-soft: rgba(31, 138, 76, 0.12);
+    --danger: #d64541;
+    --warn: #b9770e;
+    --warn-soft: rgba(185, 119, 14, 0.12);
+    --bar-empty: #d7dde5;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #14181f;
+      --panel: #1d242d;
+      --panel-2: #232b36;
+      --line: #2e3844;
+      --text: #e4ebf2;
+      --muted: #90a1b3;
+      --accent: #4aa3dd;
+      --accent-soft: rgba(74, 163, 221, 0.16);
+      --ok: #46b364;
+      --ok-soft: rgba(70, 179, 100, 0.16);
+      --danger: #ef6a60;
+      --warn: #d29922;
+      --warn-soft: rgba(210, 153, 34, 0.16);
+      --bar-empty: #37424f;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #14181f;
+    --panel: #1d242d;
+    --panel-2: #232b36;
+    --line: #2e3844;
+    --text: #e4ebf2;
+    --muted: #90a1b3;
+    --accent: #4aa3dd;
+    --accent-soft: rgba(74, 163, 221, 0.16);
+    --ok: #46b364;
+    --ok-soft: rgba(70, 179, 100, 0.16);
+    --danger: #ef6a60;
+    --warn: #d29922;
+    --warn-soft: rgba(210, 153, 34, 0.16);
+    --bar-empty: #37424f;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 14px/1.55 system-ui, "Segoe UI", "Microsoft YaHei", "PingFang SC", sans-serif;
+  }
+  .mono { font-family: ui-monospace, Consolas, "Courier New", monospace; font-variant-numeric: tabular-nums; }
+
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 24px 20px 60px; }
+
+  .pagehead { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 4px; }
+  .crumb { color: var(--muted); font-size: 12px; }
+  h1 { font-size: 22px; margin: 0; font-weight: 650; letter-spacing: 0.2px; }
+  .pagehead .spacer { flex: 1; }
+  .btn {
+    border: 1px solid var(--line); background: var(--panel); color: var(--text);
+    border-radius: 4px; padding: 5px 12px; font-size: 13px; cursor: pointer;
+  }
+  .btn:hover { border-color: var(--accent); color: var(--accent); }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn.danger { color: var(--danger); }
+
+  .zone-label { font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: 0.08em; margin: 28px 0 10px; }
+  .zone-label:first-of-type { margin-top: 22px; }
+
+  /* ---------- radio dashboard ---------- */
+  .radio-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 14px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; }
+
+  .radio-card { padding: 16px 18px 14px; }
+  .radio-top { display: flex; align-items: center; gap: 10px; }
+  .band-pill {
+    font-size: 12px; font-weight: 700; padding: 2px 9px; border-radius: 20px;
+    background: var(--accent-soft); color: var(--accent);
+  }
+  .ifname { color: var(--muted); font-size: 12px; }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; margin-left: auto; }
+  .status-dot.on { background: var(--ok); box-shadow: 0 0 0 3px var(--ok-soft); }
+  .status-dot.off { background: var(--bar-empty); }
+  .status-word { font-size: 12px; color: var(--muted); }
+
+  .ssid-line { display: flex; align-items: center; gap: 8px; margin: 12px 0 2px; }
+  .ssid { font-size: 18px; font-weight: 650; }
+  .chip {
+    font-size: 11px; font-weight: 600; padding: 1px 8px; border-radius: 3px;
+    background: var(--panel-2); border: 1px solid var(--line); color: var(--muted); white-space: nowrap;
+  }
+  .chip.sec { color: var(--ok); background: var(--ok-soft); border-color: transparent; }
+  .chip.warn { color: var(--warn); background: var(--warn-soft); border-color: transparent; }
+
+  .stat-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 12px;
+  }
+  .stat { background: var(--panel-2); border-radius: 6px; padding: 8px 10px; min-width: 0; }
+  .stat .k { font-size: 11px; color: var(--muted); margin-bottom: 2px; white-space: nowrap; }
+  .stat .v { font-size: 15px; font-weight: 650; white-space: nowrap; }
+  .stat .v small { font-size: 11px; font-weight: 400; color: var(--muted); margin-left: 2px; }
+  .stat .v.link { color: var(--accent); cursor: pointer; }
+  .stat.repeater .v { color: var(--muted); font-size: 13px; }
+  .stat.repeater .v.up { color: var(--ok); }
+
+  .radio-actions { display: flex; gap: 8px; margin-top: 14px; }
+
+  /* ---------- iface rows ---------- */
+  .iface-card { padding: 10px 18px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .iface-card + .iface-card { margin-top: 8px; }
+  .iface-card .wifi-ico { width: 18px; height: 18px; flex: none; }
+  .iface-name { font-weight: 650; }
+  .iface-meta { color: var(--muted); font-size: 12px; }
+  .iface-card .grow { flex: 1; }
+  .iface-act { display: flex; gap: 6px; }
+  .btn.sm { padding: 3px 9px; font-size: 12px; }
+
+  /* ---------- assoclist ---------- */
+  .table-card { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; min-width: 760px; }
+  th {
+    text-align: left; font-size: 11px; font-weight: 700; color: var(--muted);
+    letter-spacing: 0.06em; padding: 10px 14px; border-bottom: 1px solid var(--line); background: var(--panel-2);
+    white-space: nowrap;
+  }
+  td { padding: 9px 14px; border-bottom: 1px solid var(--line); vertical-align: middle; white-space: nowrap; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--accent-soft); }
+  td .host small { display: block; color: var(--muted); }
+  .net-cell { display: inline-flex; align-items: center; gap: 6px; }
+  .net-cell .ifn { font-size: 11px; color: var(--muted); background: var(--panel-2); border: 1px solid var(--line); border-radius: 3px; padding: 0 5px; }
+
+  .sig { display: inline-flex; align-items: center; gap: 7px; }
+  .sig svg { display: block; }
+
+  .kick { border: none; background: none; color: var(--danger); cursor: pointer; font-size: 12px; padding: 3px 7px; border-radius: 3px; }
+  .kick:hover { background: var(--danger); color: #fff; }
+
+  /* ---------- scan modal ---------- */
+  .modal-mask {
+    position: fixed; inset: 0; background: rgba(10, 16, 24, 0.55);
+    display: none; align-items: flex-start; justify-content: center; padding: 6vh 16px;
+  }
+  .modal-mask.open { display: flex; }
+  .modal {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+    width: min(860px, 100%); max-height: 84vh; overflow: auto; padding: 16px 18px;
+  }
+  .modal h2 { margin: 0 0 12px; font-size: 16px; }
+  .modal .right { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; }
+  .spin { color: var(--accent); }
+
+  footer.note { margin-top: 34px; color: var(--muted); font-size: 12px; }
+</style>
+
+<div class="wrap">
+  <div class="pagehead">
+    <h1>无线</h1>
+    <span class="crumb">网络 · Xiaomi AC2100 (MT7621 · mt_wifi)</span>
+    <span class="spacer"></span>
+    <button class="btn" onclick="document.getElementById('scanModal').classList.add('open')">演示：中继扫描弹窗</button>
+    <button class="btn">重启全部无线电</button>
+  </div>
+
+  <!-- ============ Zone 1: dashboard ============ -->
+  <div class="zone-label">无线状态</div>
+  <div class="radio-grid">
+
+    <!-- 2.4G -->
+    <div class="card radio-card">
+      <div class="radio-top">
+        <span class="band-pill">2.4 GHz</span>
+        <span class="ifname mono">ra0 · mt7603e</span>
+        <span class="status-dot on"></span><span class="status-word">运行中</span>
+      </div>
+      <div class="ssid-line">
+        <span class="ssid">Xiaomi-A3F2</span>
+        <span class="chip sec">WPA2-PSK</span>
+        <span class="chip">隐藏 SSID 关闭</span>
+      </div>
+      <div class="stat-grid">
+        <div class="stat"><div class="k">信道</div><div class="v mono">6 <small>HT40</small></div></div>
+        <div class="stat"><div class="k">速率</div><div class="v mono">144.4 <small>Mbit/s</small></div></div>
+        <div class="stat"><div class="k">发射功率</div><div class="v mono">20 <small>dBm</small></div></div>
+        <div class="stat"><div class="k">已连接</div><div class="v mono link" onclick="location.hash='assoc'">3 <small>台设备</small></div></div>
+      </div>
+      <div class="radio-actions">
+        <button class="btn sm">重启</button>
+        <button class="btn sm">编辑设备</button>
+        <button class="btn sm">添加 SSID</button>
+      </div>
+    </div>
+
+    <!-- 5G -->
+    <div class="card radio-card">
+      <div class="radio-top">
+        <span class="band-pill">5 GHz</span>
+        <span class="ifname mono">rax0 · mt7615d</span>
+        <span class="status-dot on"></span><span class="status-word">运行中</span>
+      </div>
+      <div class="ssid-line">
+        <span class="ssid">Xiaomi-A3F2-5G</span>
+        <span class="chip sec">WPA2/WPA3 混合</span>
+      </div>
+      <div class="stat-grid">
+        <div class="stat"><div class="k">信道</div><div class="v mono">149 <small>VHT80</small></div></div>
+        <div class="stat"><div class="k">速率</div><div class="v mono">866.7 <small>Mbit/s</small></div></div>
+        <div class="stat"><div class="k">发射功率</div><div class="v mono">23 <small>dBm</small></div></div>
+        <div class="stat"><div class="k">已连接</div><div class="v mono link" onclick="location.hash='assoc'">5 <small>台设备</small></div></div>
+      </div>
+      <div class="stat-grid" style="grid-template-columns: repeat(2, 1fr); margin-top:8px">
+        <div class="stat repeater"><div class="k">中继 (apclix0)</div><div class="v">未启用</div></div>
+        <div class="stat repeater"><div class="k">MU-MIMO / OFDMA</div><div class="v mono" style="font-size:13px">DL ✓ · UL ✓</div></div>
+      </div>
+      <div class="radio-actions">
+        <button class="btn sm">重启</button>
+        <button class="btn sm">编辑设备</button>
+        <button class="btn sm">添加 SSID</button>
+        <button class="btn sm primary">中继扫描</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ Zone 2: ifaces ============ -->
+  <div class="zone-label">接口配置</div>
+  <div class="card iface-card">
+    <svg class="wifi-ico" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1" fill="var(--accent)"/></svg>
+    <span class="iface-name">Xiaomi-A3F2</span>
+    <span class="iface-meta mono">ra0 · lan · 2.4 GHz</span>
+    <span class="chip sec">psk2</span>
+    <span class="grow"></span>
+    <span class="iface-act">
+      <button class="btn sm">禁用</button>
+      <button class="btn sm">编辑</button>
+      <button class="btn sm danger">删除</button>
+    </span>
+  </div>
+  <div class="card iface-card">
+    <svg class="wifi-ico" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1" fill="var(--accent)"/></svg>
+    <span class="iface-name">Xiaomi-A3F2-5G</span>
+    <span class="iface-meta mono">rax0 · lan · 5 GHz</span>
+    <span class="chip sec">sae-mixed</span>
+    <span class="grow"></span>
+    <span class="iface-act">
+      <button class="btn sm">禁用</button>
+      <button class="btn sm">编辑</button>
+      <button class="btn sm danger">删除</button>
+    </span>
+  </div>
+  <div class="card iface-card" style="opacity:.65">
+    <svg class="wifi-ico" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" stroke-linecap="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1" fill="var(--muted)"/></svg>
+    <span class="iface-name">Guest</span>
+    <span class="iface-meta mono">rax1 · guest · 5 GHz · MBSSID 2</span>
+    <span class="chip warn">访客隔离</span>
+    <span class="chip sec">psk2</span>
+    <span class="grow"></span>
+    <span class="iface-act">
+      <button class="btn sm">启用</button>
+      <button class="btn sm">编辑</button>
+      <button class="btn sm danger">删除</button>
+    </span>
+  </div>
+
+  <!-- ============ Zone 3: assoclist ============ -->
+  <div class="zone-label" id="assoc">已连接设备</div>
+  <div class="card table-card">
+    <table>
+      <thead>
+        <tr>
+          <th>网络</th><th>主机</th><th>信号</th><th>接收速率</th><th>发送速率</th><th>在线时长</th><th style="text-align:right">操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="net-cell">Xiaomi-A3F2-5G <span class="ifn mono">rax0</span></span></td>
+          <td class="host">Xiaomi-Mix4 <small class="mono">F8:8A:3C:1D:5E:90 · 192.168.31.103</small></td>
+          <td><span class="sig"><svg width="20" height="14" viewBox="0 0 20 14"><rect x="0"  y="9" width="3" height="5" rx="1" fill="var(--ok)"/><rect x="5"  y="6" width="3" height="8" rx="1" fill="var(--ok)"/><rect x="10" y="3" width="3" height="11" rx="1" fill="var(--ok)"/><rect x="15" y="0" width="3" height="14" rx="1" fill="var(--bar-empty)"/></svg><span class="mono">-48 dBm</span></span></td>
+          <td class="mono">866.7 Mbit/s <small style="color:var(--muted)">VHT-MCS 9</small></td>
+          <td class="mono">650.0 Mbit/s <small style="color:var(--muted)">VHT-MCS 7</small></td>
+          <td class="mono">2小时13分</td>
+          <td style="text-align:right"><button class="kick">剔除</button></td>
+        </tr>
+        <tr>
+          <td><span class="net-cell">Xiaomi-A3F2 <span class="ifn mono">ra0</span></span></td>
+          <td class="host">iPhone-13 <small class="mono">AC:DE:48:22:71:04 · 192.168.31.118</small></td>
+          <td><span class="sig"><svg width="20" height="14" viewBox="0 0 20 14"><rect x="0"  y="9" width="3" height="5" rx="1" fill="var(--ok)"/><rect x="5"  y="6" width="3" height="8" rx="1" fill="var(--ok)"/><rect x="10" y="3" width="3" height="11" rx="1" fill="var(--bar-empty)"/><rect x="15" y="0" width="3" height="14" rx="1" fill="var(--bar-empty)"/></svg><span class="mono">-62 dBm</span></span></td>
+          <td class="mono">72.2 Mbit/s <small style="color:var(--muted)">MCS 7 SGI</small></td>
+          <td class="mono">72.2 Mbit/s <small style="color:var(--muted)">MCS 7 SGI</small></td>
+          <td class="mono">45分钟</td>
+          <td style="text-align:right"><button class="kick">剔除</button></td>
+        </tr>
+        <tr>
+          <td><span class="net-cell">Xiaomi-A3F2 <span class="ifn mono">ra0</span></span></td>
+          <td class="host">Mi-Scale <small class="mono">58:2D:34:6A:0B:3F · 192.168.31.207</small></td>
+          <td><span class="sig"><svg width="20" height="14" viewBox="0 0 20 14"><rect x="0"  y="9" width="3" height="5" rx="1" fill="var(--warn)"/><rect x="5"  y="6" width="3" height="8" rx="1" fill="var(--bar-empty)"/><rect x="10" y="3" width="3" height="11" rx="1" fill="var(--bar-empty)"/><rect x="15" y="0" width="3" height="14" rx="1" fill="var(--bar-empty)"/></svg><span class="mono">-83 dBm</span></span></td>
+          <td class="mono">6.5 Mbit/s <small style="color:var(--muted)">MCS 0</small></td>
+          <td class="mono">1.0 Mbit/s <small style="color:var(--muted)">CCK</small></td>
+          <td class="mono">1天4小时</td>
+          <td style="text-align:right"><button class="kick">剔除</button></td>
+        </tr>
+        <tr>
+          <td><span class="net-cell">Xiaomi-A3F2-5G <span class="ifn mono">rax0</span></span></td>
+          <td class="host">NAS-Home <small class="mono">00:11:32:8C:A4:D2 · 192.168.31.10</small></td>
+          <td><span class="sig"><svg width="20" height="14" viewBox="0 0 20 14"><rect x="0"  y="9" width="3" height="5" rx="1" fill="var(--ok)"/><rect x="5"  y="6" width="3" height="8" rx="1" fill="var(--ok)"/><rect x="10" y="3" width="3" height="11" rx="1" fill="var(--ok)"/><rect x="15" y="0" width="3" height="14" rx="1" fill="var(--ok)"/></svg><span class="mono">-40 dBm</span></span></td>
+          <td class="mono">866.7 Mbit/s <small style="color:var(--muted)">VHT-MCS 9</small></td>
+          <td class="mono">866.7 Mbit/s <small style="color:var(--muted)">VHT-MCS 9</small></td>
+          <td class="mono">6天21小时</td>
+          <td style="text-align:right"><button class="kick">剔除</button></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <footer class="note">luci-app-mtwifi-yuos 界面设计稿 · 数据为演示用 · 明暗两套主题均已定义</footer>
+</div>
+
+<!-- ============ scan modal ============ -->
+<div class="modal-mask" id="scanModal" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal">
+    <h2>中继扫描：选择要连接的无线网络 <span class="spin mono" style="font-size:12px">apclix0</span></h2>
+    <table style="min-width:0">
+      <thead><tr><th>信号</th><th>SSID</th><th>信道</th><th>加密</th><th>BSSID</th><th style="text-align:right">操作</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><span class="sig"><svg width="20" height="14" viewBox="0 0 20 14"><rect x="0" y="9" width="3" height="5" rx="1" fill="var(--ok)"/><rect x="5" y="6" width="3" height="8" rx="1" fill="var(--ok)"/><rect x="10" y="3" width="3" height="11" rx="1" fill="var(--ok)"/><rect x="15" y="0" width="3" height="14" rx="1" fill="var(--bar-empty)"/></svg><span class="mono">76%</span></span></td>
+          <td>Home-5G-Plus</td><td class="mono">149</td><td>WPA2-PSK</td><td class="mono">AA:21:F7:04:9B:33</td>
+          <td style="text-align:right"><button class="btn sm primary">连接</button></td>
+        </tr>
+        <tr>
+          <td><span class="sig"><svg width="20" height="14" viewBox="0 0 20 14"><rect x="0" y="9" width="3" height="5" rx="1" fill="var(--ok)"/><rect x="5" y="6" width="3" height="8" rx="1" fill="var(--ok)"/><rect x="10" y="3" width="3" height="11" rx="1" fill="var(--bar-empty)"/><rect x="15" y="0" width="3" height="14" rx="1" fill="var(--bar-empty)"/></svg><span class="mono">52%</span></span></td>
+          <td>Neighbor_WiFi <span class="chip">隐藏网络不在此列</span></td><td class="mono">36</td><td>WPA2/WPA3</td><td class="mono">C2:56:27:1A:44:08</td>
+          <td style="text-align:right"><button class="btn sm primary">连接</button></td>
+        </tr>
+        <tr>
+          <td><span class="sig"><svg width="20" height="14" viewBox="0 0 20 14"><rect x="0" y="9" width="3" height="5" rx="1" fill="var(--warn)"/><rect x="5" y="6" width="3" height="8" rx="1" fill="var(--bar-empty)"/><rect x="10" y="3" width="3" height="11" rx="1" fill="var(--bar-empty)"/><rect x="15" y="0" width="3" height="14" rx="1" fill="var(--bar-empty)"/></svg><span class="mono">18%</span></span></td>
+          <td>Office Guest</td><td class="mono">44</td><td>开放</td><td class="mono">6E:0A:B5:32:DC:71</td>
+          <td style="text-align:right"><button class="btn sm primary">连接</button></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="right">
+      <button class="btn" onclick="document.getElementById('scanModal').classList.remove('open')">关闭</button>
+    </div>
+  </div>
+</div>

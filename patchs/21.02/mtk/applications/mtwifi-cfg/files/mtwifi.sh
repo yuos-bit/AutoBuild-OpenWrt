@@ -29,14 +29,23 @@ detect_mtwifi() {
 					esac
 				fi
 
+				# SSID 按驱动/设备 MAC 衍生成 Xiaomi-<MAC>（与闭源 mt_wifi 默认命名一致，
+				# 例如 LAN MAC 88:c3:97:ed:c2:45 → Xiaomi-88C3；5G 加 -5G 后缀）
+				if [ -n "$ifname" ]; then
+					_hwaddr="$(cat /sys/class/net/${ifname}/address 2>/dev/null)"
+				fi
+				[ -n "$_hwaddr" ] || _hwaddr="$(cat /sys/class/net/br-lan/address 2>/dev/null)"
+				_machead="$(echo "$_hwaddr" | tr -d ':' | cut -c1-4 | tr 'a-f' 'A-F')"
+				[ -n "$_machead" ] || _machead="XXXX"
+
 				if [ "$band" = "2g" ]; then
 					htmode="HT40"
 					htbsscoex="1"
-					ssid="ImmortalWrt-2.4G"
+					ssid="Xiaomi-${_machead}"
 				else
 					htmode="VHT80"
 					htbsscoex="0"
-					ssid="ImmortalWrt-5G"
+					ssid="Xiaomi-${_machead}-5G"
 				fi
 
 				uci -q batch <<-EOF

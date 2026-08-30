@@ -80,6 +80,14 @@ sed -i '1509s/IMAGE_SIZE := 14848k/IMAGE_SIZE := 16064k/' target/linux/ramips/im
 # 设置闭源驱动开机自启
 sed -i '2a ifconfig rai0 up\nifconfig ra0 up\nbrctl addif br-lan rai0\nbrctl addif br-lan ra0' package/base-files/files/etc/rc.local
 
+# 闭源 mt_wifi 需用 nl80211(CFG80211) 才能在 LuCI 无线页显示真实信道/速率/信号。
+# 老 mt_wifi 默认不含 CFG80211，这里在内核 ramips config 强制内置（否则 iwinfo 读不到 ra0/rai0）；
+# 需配合 config 里的 MT7603E_CFG80211_SUPPORT/MTK_CFG80211_SUPPORT=y 使用。
+if [ -f target/linux/ramips/config-5.4 ]; then
+	grep -q '^CONFIG_CFG80211=y$' target/linux/ramips/config-5.4 || echo 'CONFIG_CFG80211=y' >> target/linux/ramips/config-5.4
+	grep -q '^CONFIG_WIRELESS_EXT=y$' target/linux/ramips/config-5.4 || echo 'CONFIG_WIRELESS_EXT=y' >> target/linux/ramips/config-5.4
+fi
+
 # 单独拉取软件包
 git clone -b default-openwrt-21.02 https://github.com/yuos-bit/other package/default-settings
 git clone -b main https://github.com/yuos-bit/other package/main

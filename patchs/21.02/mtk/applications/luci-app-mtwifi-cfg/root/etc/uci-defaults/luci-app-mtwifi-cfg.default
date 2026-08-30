@@ -8,6 +8,17 @@ if [ ! -e /etc/config/wireless ]; then
 	[ -e /etc/config/wireless ] && uci -q commit wireless
 fi
 
+# 生成后默认开启安全加密（psk2 + 1234567890），避免出现开放网络。
+# SSID 名由 /etc/config/wireless 决定，可在 LuCI「网络→无线」里按需修改。
+if [ -e /etc/config/wireless ]; then
+	uci -q show wireless | sed -n 's/^wireless\.\([^.]*\)=wifi-iface$/\1/p' | while read _wifi_iface; do
+		[ "$(uci -q get wireless.$_wifi_iface.mode)" = "ap" ] || continue
+		uci -q set wireless.$_wifi_iface.encryption="psk2"
+		uci -q set wireless.$_wifi_iface.key="1234567890"
+	done
+	uci -q commit wireless
+fi
+
 if [ -d /www/luci-static/resources/view/network ]; then
 	mv -f /usr/share/luci-app-mtwifi-cfg/wireless-mtk.js /www/luci-static/resources/view/network/wireless.js
 fi

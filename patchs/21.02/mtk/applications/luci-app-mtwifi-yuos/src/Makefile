@@ -1,5 +1,8 @@
 all: mtwifi-sta
 
+# luci.mk invokes "make clean compile" via Build/Compile/Default
+compile: all
+
 mtwifi-sta: mtwifi-sta.c
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $<
 
@@ -10,4 +13,4 @@ install: all
 clean:
 	rm -f mtwifi-sta
 
-.PHONY: all install clean
+.PHONY: all compile install clean

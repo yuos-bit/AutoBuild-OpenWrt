@@ -628,6 +628,34 @@ return view.extend({
 		mark_radio_restart(this, section_id);
 	},
 
+	handleAddIface: function(devName, ev) {
+		var section_id = next_free_sid(uci.sections('wireless', 'wifi-iface').length),
+		    ssid = 'OpenWrt',
+		    ifaces = uci.sections('wireless', 'wifi-iface');
+
+		for (var i = 0; i < ifaces.length; i++)
+			if (ifaces[i].device == devName && (ifaces[i].mode || 'ap') == 'ap' && ifaces[i].ssid) {
+				ssid = ifaces[i].ssid + '-2';
+				break;
+			}
+
+		if (uci.sections('wireless', 'wifi-iface').length >= 16) {
+			ui.addNotification(null, E('p', _('A maximum of 16 MBSSID interfaces is supported.')));
+			return;
+		}
+
+		uci.unset('wireless', devName, 'disabled');
+
+		uci.add('wireless', 'wifi-iface', section_id);
+		uci.set('wireless', section_id, 'device', devName);
+		uci.set('wireless', section_id, 'mode', 'ap');
+		uci.set('wireless', section_id, 'ssid', ssid);
+		uci.set('wireless', section_id, 'encryption', 'psk2');
+		uci.set('wireless', section_id, 'key', '1234567890');
+
+		return this.iface_section.renderMoreOptionsModal(section_id);
+	},
+
 	handleKick: function(ifname, mac, ev) {
 		var btn = ev.currentTarget;
 
@@ -756,7 +784,7 @@ return view.extend({
 			});
 		}).then(L.bind(function() {
 			ui.addNotification(null, E('p', _('Client interface "%s" configured - check the WPA key below and apply.').format(section_id)));
-			return this.renderMoreOptionsModal(section_id);
+			return this.iface_section.renderMoreOptionsModal(section_id);
 		}, this));
 	},
 
@@ -878,25 +906,25 @@ return view.extend({
 		};
 
 		s.addModalOptions = function(s) {
-			return network.getWifiNetwork(s.section).then(function(radioNet) {
-				var hwtype = uci.get('wireless', s.section, 'type'),
-				    band = get_band(s.section),
-				    is_mtwifi = (hwtype == 'mtwifi'),
-				    o, ss;
+			/* device rows: s.section IS the radio (wifi-device) section name */
+			var hwtype = uci.get('wireless', s.section, 'type'),
+			    band = get_band(s.section),
+			    is_mtwifi = (hwtype == 'mtwifi'),
+			    o, ss;
 
-				o = s.option(form.SectionValue, '_device', form.NamedSection, s.section, 'wifi-device', _('Device Configuration'));
-				o.modalonly = true;
+			o = s.option(form.SectionValue, '_device', form.NamedSection, s.section, 'wifi-device', _('Device Configuration'));
+			o.modalonly = true;
 
-				ss = o.subsection;
-				ss.tab('general', _('General Setup'));
-				ss.tab('advanced', _('Advanced Settings'));
+			ss = o.subsection;
+			ss.tab('general', _('General Setup'));
+			ss.tab('advanced', _('Advanced Settings'));
 
-				var isDisabled = (uci.get('wireless', s.section, 'disabled') == '1');
+			var isDisabled = (uci.get('wireless', s.section, 'disabled') == '1');
 
-				o = ss.taboption('general', form.Button, '_toggle', isDisabled ? _('Wireless network is disabled') : _('Wireless network is enabled'));
-				o.inputstyle = isDisabled ? 'apply' : 'reset';
-				o.inputtitle = isDisabled ? _('Enable') : _('Disable');
-				o.onclick = ui.createHandlerFn(s, network_updown, s.section, s.map);
+			o = ss.taboption('general', form.Button, '_toggle', isDisabled ? _('Wireless network is disabled') : _('Wireless network is enabled'));
+			o.inputstyle = isDisabled ? 'apply' : 'reset';
+			o.inputtitle = isDisabled ? _('Enable') : _('Disable');
+			o.onclick = ui.createHandlerFn(s, network_updown, s.section, s.map);
 
 				if (is_mtwifi) {
 					o = ss.taboption('general', form.ListValue, 'channel', _('Channel'));
@@ -965,7 +993,6 @@ return view.extend({
 					o = ss.taboption('advanced', form.Value, 'country', _('Country Code'));
 					o.datatype = 'and(uppercase,minlength(2),maxlength(2))';
 				}
-			});
 		};
 
 		/* device row summary cell (populated statically + by poll) */
@@ -1120,34 +1147,6 @@ return view.extend({
 			document.querySelector('.cbi-section-table-row[data-sid="%s"]'.format(section_id)).style.opacity = 0.5;
 
 			return form.TypedSection.prototype.handleRemove.apply(this, [section_id, ev]);
-		};
-
-		s2.handleAddIface = function(devName, ev) {
-			var section_id = next_free_sid(uci.sections('wireless', 'wifi-iface').length),
-			    ssid = 'OpenWrt',
-			    ifaces = uci.sections('wireless', 'wifi-iface');
-
-			for (var i = 0; i < ifaces.length; i++)
-				if (ifaces[i].device == devName && (ifaces[i].mode || 'ap') == 'ap' && ifaces[i].ssid) {
-					ssid = ifaces[i].ssid + '-2';
-					break;
-				}
-
-			if (uci.sections('wireless', 'wifi-iface').length >= 16) {
-				ui.addNotification(null, E('p', _('A maximum of 16 MBSSID interfaces is supported.')));
-				return;
-			}
-
-			uci.unset('wireless', devName, 'disabled');
-
-			uci.add('wireless', 'wifi-iface', section_id);
-			uci.set('wireless', section_id, 'device', devName);
-			uci.set('wireless', section_id, 'mode', 'ap');
-			uci.set('wireless', section_id, 'ssid', ssid);
-			uci.set('wireless', section_id, 'encryption', 'psk2');
-			uci.set('wireless', section_id, 'key', '1234567890');
-
-			return this.renderMoreOptionsModal(section_id);
 		};
 
 		s2.addModalOptions = function(s) {
@@ -1376,6 +1375,8 @@ return view.extend({
 		};
 
 		/* ----------------------------------------------- page frame */
+
+		this.iface_section = s2;
 
 		return m.render().then(L.bind(function(m, nodes) {
 			poll.add(L.bind(function() {

@@ -6,9 +6,10 @@ compile: all
 mtwifi-sta: mtwifi-sta.c
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $<
 
+# note: luci.mk does not export INSTALL_BIN into the src/ build, use coreutils install
 install: all
-	mkdir -p $(DESTDIR)/usr/bin
-	$(INSTALL_BIN) mtwifi-sta $(DESTDIR)/usr/bin/
+	install -d -m0755 $(DESTDIR)/usr/bin
+	install -m0755 mtwifi-sta $(DESTDIR)/usr/bin/
 
 clean:
 	rm -f mtwifi-sta

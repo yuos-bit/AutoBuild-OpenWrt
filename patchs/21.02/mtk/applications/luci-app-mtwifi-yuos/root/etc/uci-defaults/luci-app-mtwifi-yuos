@@ -1,6 +1,26 @@
 #!/bin/sh
 # uci-defaults for luci-app-mtwifi-yuos
 
+# 清理 mac80211 误检产生的幽灵无线电节。
+# 开启 MTK_CFG80211_SUPPORT 后 MT7615 会注册 cfg80211 wiphy(phy0)，
+# /sbin/wifi config 时 mac80211.sh detect 把它当成 mac80211 设备，
+# 生成 type=mac80211 的 radio0 + default_radio0（SSID 还取到未初始化的全零 MAC）。
+# 本固件 AP 由闭源驱动接管（wpad-openssl 已移除），这些节只会显示为「已禁用」的干扰项。
+# 仅在存在 mtwifi 设备时执行，避免误伤纯 mac80211 固件。
+purge_non_mtwifi() {
+	# uci show 的值带引号（type='mtwifi'），用 grep 匹配更可靠
+	uci -q show wireless 2>/dev/null | grep -q "\.type='mtwifi'" || return 0
+
+	for _dev in $(uci -q show wireless | sed -n 's/^wireless\.\([^.]*\)\.type=.*/\1/p'); do
+		[ "$(uci -q get wireless.$_dev.type)" = "mtwifi" ] && continue
+		for _ifc in $(uci -q show wireless | sed -n 's/^wireless\.\([^.]*\)=wifi-iface$/\1/p'); do
+			[ "$(uci -q get wireless.$_ifc.device)" = "$_dev" ] && uci -q delete wireless.$_ifc
+		done
+		uci -q delete wireless.$_dev
+	done
+	uci -q commit wireless
+}
+
 # 1) 首次开机确定性生成 /etc/config/wireless（不依赖 10-mtwifi-detect hotplug 时序）。
 #    缺省会导致「网络→无线」菜单因 depends uci.wireless.@wifi-device 为空而隐藏，
 #    且 mt_wifi 驱动会退回自身默认配置而非 UCI 里的配置。
@@ -8,6 +28,9 @@ if [ ! -e /etc/config/wireless ]; then
 	/sbin/wifi config
 	[ -e /etc/config/wireless ] && uci -q commit wireless
 fi
+
+# 1.5) 清除 wifi config 中 mac80211 误检生成的幽灵节
+[ -e /etc/config/wireless ] && purge_non_mtwifi
 
 # 2) 生成后默认开启安全加密（psk2 + 1234567890），避免出现开放网络。
 if [ -e /etc/config/wireless ]; then

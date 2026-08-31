@@ -474,7 +474,7 @@ return view.extend({
 							E('span', { 'class': 'mtw-dot ' + (up ? 'on' : 'off') }),
 							E('span', { 'class': 'mtw-state' }, up ? _('running') : _('disabled'))
 						]),
-						E('div', { 'class': 'mtw-ssid' }, [ firstSsid || '?', ' ', chips ]),
+						E('div', { 'class': 'mtw-ssid' }, [ firstSsid || '?', ' ' ].concat(chips)),
 						E('div', { 'class': 'mtw-stats' }, stats),
 						extra.length ? E('div', { 'class': 'mtw-stats two' }, extra) : E([]),
 						E('div', { 'class': 'mtw-actions' },
@@ -1095,13 +1095,13 @@ return view.extend({
 				chips.push(E('span', { 'class': 'mtw-chip warn' }, _('disabled')));
 
 			return E('div', {}, [
-				E('strong', {}, [ wifi_svg(disabled ? 'var(--mtw-muted)' : 'var(--mtw-accent)'), ' %s '.format(v.ssid || '?') ]),
-				chips,
+				E('strong', {}, [ wifi_svg(disabled ? 'var(--mtw-muted)' : 'var(--mtw-accent)'), ' %s '.format(v.ssid || '?') ])
+			].concat(chips).concat([
 				E('div', {}, E('span', { 'class': 'mtw-ifname' }, '%s%s · %s'.format(
 					ifname ? ifname + ' · ' : '',
 					f ? band_label(f.band) : (devName || '?'),
 					L.toArray(v.network).join(', ') || '-')))
-			]);
+			]));
 		};
 
 		s2.renderRowActions = function(section_id) {

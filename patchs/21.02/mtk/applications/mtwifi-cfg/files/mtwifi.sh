@@ -29,23 +29,35 @@ detect_mtwifi() {
 					esac
 				fi
 
-				# SSID 按驱动/设备 MAC 衍生成 Xiaomi-<MAC>（与闭源 mt_wifi 默认命名一致，
-				# 例如 LAN MAC 88:c3:97:ed:c2:45 → Xiaomi-88C3；5G 加 -5G 后缀）
-				if [ -n "$ifname" ]; then
-					_hwaddr="$(cat /sys/class/net/${ifname}/address 2>/dev/null)"
-				fi
-				[ -n "$_hwaddr" ] || _hwaddr="$(cat /sys/class/net/br-lan/address 2>/dev/null)"
-				_machead="$(echo "$_hwaddr" | tr -d ':' | cut -c1-4 | tr 'a-f' 'A-F')"
+				# SSID 生成：Xiaoyu_<MAC4>_2.4G / Xiaoyu_<MAC4>_5G（与固件整体命名方案一致）。
+				# 注意：raX 在驱动 EEPROM 初始化完成前 MAC 可能为全零，hotplug 触发的
+				# detect 很早，因此优先用以太网口 MAC（eth0，来自 factory 分区，最稳定），
+				# 全零时逐级回退 raX → br-lan，仍全零则用 XXXX。
+				_hwaddr="$(cat /sys/class/net/eth0/address 2>/dev/null)"
+				case "$_hwaddr" in
+					""|"00:00:00:00:00:00")
+						[ -n "$ifname" ] && _hwaddr="$(cat /sys/class/net/${ifname}/address 2>/dev/null)"
+						;;
+				esac
+				case "$_hwaddr" in
+					""|"00:00:00:00:00:00")
+						_hwaddr="$(cat /sys/class/net/br-lan/address 2>/dev/null)"
+						;;
+				esac
+				case "$_hwaddr" in
+					""|"00:00:00:00:00:00") _hwaddr="" ;;
+				esac
+				_machead="$(echo "$_hwaddr" | awk -F: '{print toupper($1 $2)}')"
 				[ -n "$_machead" ] || _machead="XXXX"
 
 				if [ "$band" = "2g" ]; then
 					htmode="HT40"
 					htbsscoex="1"
-					ssid="Xiaomi-${_machead}"
+					ssid="Xiaoyu_${_machead}_2.4G"
 				else
 					htmode="VHT80"
 					htbsscoex="0"
-					ssid="Xiaomi-${_machead}-5G"
+					ssid="Xiaoyu_${_machead}_5G"
 				fi
 
 				uci -q batch <<-EOF

@@ -5,5 +5,20 @@
 		need_up=1
 	fi
 	/sbin/wifi config
+
+	# 清理 mac80211.sh detect 对 MT7615 CFG80211 wiphy(phy0) 的误检：
+	# 每次 wifi config 都会重新生成 type=mac80211 的 radio0/default_radio0，
+	# 这里在每次 config 后删除非 mtwifi 的设备节及其接口（仅当存在 mtwifi 设备）。
+	if [ -f /etc/config/wireless ] && uci -q get wireless | grep -q "\.type='mtwifi'"; then
+		for _dev in $(uci -q show wireless | sed -n 's/^wireless\.\([^.]*\)\.type=.*/\1/p'); do
+			[ "$(uci -q get wireless.$_dev.type)" = "mtwifi" ] && continue
+			for _ifc in $(uci -q show wireless | sed -n 's/^wireless\.\([^.]*\)=wifi-iface$/\1/p'); do
+				[ "$(uci -q get wireless.$_ifc.device)" = "$_dev" ] && uci -q delete wireless.$_ifc
+			done
+			uci -q delete wireless.$_dev
+		done
+		uci -q commit wireless
+	fi
+
 	[ "$need_up" = "1" ] && /sbin/wifi up
 }

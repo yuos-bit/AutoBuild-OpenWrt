@@ -168,6 +168,19 @@ detect_mac80211() {
 			dev_id="set wireless.radio${devidx}.macaddr=$(cat /sys/class/ieee80211/${dev}/macaddress)"
 		fi
 
+		# 固定频段配置（E8820v2 硬件探针顺序固定：pcie0=2.4G -> radio0，pcie1=5G -> radio1）
+		# radio0=2.4G: HT40（可选 20/40MHz）
+		# radio1=5G:   VHT80（硬件不支持 160MHz），固定信道 149（非DFS，中美制式下均有信号）
+		if [ "$devidx" = "0" ]; then
+			mode_band=2g
+			htmode=HT40
+			channel=auto
+		else
+			mode_band=5g
+			htmode=VHT80
+			channel=149
+		fi
+
 		uci -q batch <<-EOF
 			set wireless.radio${devidx}=wifi-device
 			set wireless.radio${devidx}.type=mac80211
@@ -175,27 +188,14 @@ detect_mac80211() {
 			set wireless.radio${devidx}.channel=${channel}
 			set wireless.radio${devidx}.band=${mode_band}
 			set wireless.radio${devidx}.htmode=$htmode
-			set wireless.radio${devidx}.disabled=1
-            set wireless.radio${devidx}.txpower=17
+			set wireless.radio${devidx}.disabled=0
+			set wireless.radio${devidx}.country='US'
+			set wireless.radio${devidx}.txpower=17
 
 			set wireless.default_radio${devidx}=wifi-iface
 			set wireless.default_radio${devidx}.device=radio${devidx}
 			set wireless.default_radio${devidx}.network=lan
 			set wireless.default_radio${devidx}.mode=ap
-
-			set wireless.default_radio0.ssid=Xiaoyu_$(cat /sys/class/ieee80211/${dev}/macaddress|awk -F ":" '{print $2""$3""$7 }'| tr a-z A-Z)_2.4G
-			set wireless.default_radio0.key=1234567890
-			set wireless.default_radio0.encryption=psk2
-			set wireless.radio1.country='US'
-			set wireless.radio1.htmode='HT20'
-			set wireless.radio1.channel='auto'
-
-			set wireless.default_radio1.ssid=Xiaoyu_$(cat /sys/class/ieee80211/${dev}/macaddress|awk -F ":" '{print $2""$3""$7 }'| tr a-z A-Z)_5G
-			set wireless.default_radio1.key=1234567890
-			set wireless.default_radio1.encryption=psk2
-			set wireless.radio0.country='US'
-			set wireless.radio0.htmode='VHT80'
-			set wireless.radio1.channel='auto'
 
 EOF
 		uci -q commit wireless

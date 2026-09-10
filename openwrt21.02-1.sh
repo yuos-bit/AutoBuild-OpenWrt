@@ -81,7 +81,7 @@ sed -i 's/ppp-mod-pppoe/iptables-mod-tproxy iptables-mod-extra ipset ip-full ppp
 #sed -i '2a ifconfig rai0 up\nifconfig ra0 up\nbrctl addif br-lan rai0\nbrctl addif br-lan ra0' package/base-files/files/etc/rc.local
 
 # 单独拉取软件包
-git clone -b default-openwrt-21.02 https://github.com/yuos-bit/other package/default-settings
+git clone -b xiaomi-ac2100-21.02 https://github.com/yuos-bit/other package/default-settings
 git clone -b main https://github.com/yuos-bit/other package/main
 git clone -b debug https://github.com/yuos-bit/luci-theme-edge2 package/luci-theme-edge2
 # 测试 tailscale

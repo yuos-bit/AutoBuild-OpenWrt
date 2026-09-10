@@ -63,5 +63,5 @@ git clone https://github.com/sbwml/packages_lang_golang -b 25.x feeds/packages/l
 #       package/main/mt/luci-app-mtwifi-cfg \
 #       package/main/mt/luci-app-mtwifi
 # cp -rf "$GITHUB_WORKSPACE/patchs/21.02/mtk/applications/"* package/main/applications/
-cp -rf "$GITHUB_WORKSPACE/patchs/21.02/turboacc" package/main/applications/turboacc
+# cp -rf "$GITHUB_WORKSPACE/patchs/21.02/turboacc" package/main/applications/turboacc
 

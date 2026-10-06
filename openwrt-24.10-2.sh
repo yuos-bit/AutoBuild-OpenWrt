@@ -10,8 +10,6 @@
 # Description: OpenWrt DIY script part 2 (After Update feeds)
 #=================================================
 
-# 修复libopenssl-legacy报错
-sed -i 's/ +libopenssl-legacy//g' package/passwall/shadowsocksr-libev/Makefile
 
 # 测试编译时间
 YUOS_DATE="$(date +%Y.%m.%d)(月更版)"
@@ -36,12 +34,31 @@ rm -rf feeds/packages/lang/golang
 find . -type d -name "golang" -prune -exec rm -rf {} \;
 git clone https://github.com/sbwml/packages_lang_golang -b 26.x feeds/packages/lang/golang
 
-# ===== 升级 dnsmasq 2.85 -> 2.87 添加 nftset 支持 =====
-# 说明：21.02 的 dnsmasq 2.85 不支持 nftset。用本地 patchs 目录中的 2.87 版本替换 feeds 中的 2.85
-# Makefile 已直接改为 2.87 + nftset，补丁已处理（删除 2.87 已包含的 CVE 修复，保留 kernel-support 补丁）
-DNSMASQ_PATH="feeds/packages/net/dnsmasq"
-if [ -d "$DNSMASQ_PATH" ] && [ -d "$GITHUB_WORKSPACE/patchs/21.02/dnsmasq" ]; then
-	rm -rf "$DNSMASQ_PATH"
-	cp -rf "$GITHUB_WORKSPACE/patchs/21.02/dnsmasq" "$DNSMASQ_PATH"
-	echo "dnsmasq: 2.85 -> 2.87 + nftset OK"
+# ===== 编译前校验 MTK 组件 =====
+# 说明：feeds install 之后、make defconfig 之前做一次快速校验。
+# 缺包时 make defconfig 只会静默丢弃对应 CONFIG_ 项，等到编译后期才报难以定位的错误，
+# 这里提前把问题暴露出来。
+MTK_REQUIRED="drivers/mt_wifi drivers/warp drivers/conninfra drivers/wifi-profile \
+applications/mtwifi-cfg applications/datconf applications/luci-app-mtwifi-cfg \
+applications/luci-app-turboacc-mtk applications/luci-app-eqos-mtk"
+
+MTK_MISSING=""
+for d in $MTK_REQUIRED; do
+	[ -f "package/mtk/$d/Makefile" ] || MTK_MISSING="$MTK_MISSING $d"
+done
+if [ -n "$MTK_MISSING" ]; then
+	echo "警告：package/mtk 缺少以下组件，编译将失败："
+	for d in $MTK_MISSING; do echo "   - $d"; done
+	echo "   请确认脚本1 中的 patchs/24.10/mtk 拷贝步骤已执行。"
+else
+	echo "校验通过：package/mtk 组件齐全"
+fi
+
+# kmod-mediatek_hnat 由厂商树的 package/kernel/linux/modules/netdevices.mk 提供，
+# 上游 openwrt/openwrt 没有它 —— 用这个判断当前源码树是否为厂商树。
+if grep -q "mediatek_hnat" package/kernel/linux/modules/netdevices.mk 2>/dev/null; then
+	echo "校验通过：厂商树（含 kmod-mediatek_hnat / HNAT 硬件加速）"
+else
+	echo "警告：当前源码树没有 kmod-mediatek_hnat，说明不是厂商树。"
+	echo "   本配置的 MTK 闭源驱动无法编译，请把 workflow 的 REPO_URL 换成带 package/mtk 的 24.10 厂商树。"
 fi

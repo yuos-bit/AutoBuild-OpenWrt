@@ -59,12 +59,16 @@ on:
   #   types: [started]                  # 点击 star 之后
   
 env:
-  REPO_URL: https://github.com/openwrt/openwrt
-  REPO_BRANCH: openwrt-24.10
+  # 必须使用带 package/mtk 的 24.10 厂商树。
+  # 上游 openwrt/openwrt 没有 package/mtk，也没有 kmod-mediatek_hnat，
+  # MTK 闭源驱动（mt_wifi / warp / conninfra）在那里无法编译。
+  # 该树的 package/mtk 会被 openwrt-24.10-1.sh 用 patchs/24.10/mtk 覆盖。
+  REPO_URL: https://github.com/padavanonly/immortalwrt-mt798x-6.6
+  REPO_BRANCH: openwrt-24.10-6.6
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: config/24.10/Openwrt_${{ github.event.inputs.model }}.config
-  DIY_P1_SH: openwrt24.10-1.sh
-  DIY_P2_SH: openwrt24.10-2.sh
+  DIY_P1_SH: openwrt-24.10-1.sh
+  DIY_P2_SH: openwrt-24.10-2.sh
 #  UPLOAD_BIN_DIR: true
 #  UPLOAD_FIRMWARE: true
 #  UPLOAD_COWTRANSFER: false

@@ -36,6 +36,46 @@ else
 	echo "警告：未找到 $MTK_PATCH_DIR，将使用源码树自带的 package/mtk"
 fi
 
+# 补齐 MTK 驱动源码包（必须放在上面的覆盖之后）
+# 说明：patchs 里的 conninfra / mt_wifi / warp 只带 Makefile 与补丁，驱动源码不在树内，
+# 而是靠 PKG_SOURCE 指定的 tarball；这些 Makefile 又没有 PKG_SOURCE_URL，只能从 dl/ 取。
+# 厂商树自带的 dl/ 只有它自己版本的包（mt_wifi 7.6.6.1、warp 20221209、conninfra 用树内 src/），
+# 所以下面从上游 dl 缓存补齐 patchs 对应的 20231229 版本。
+# 缺少任意一个，对应的驱动包都会因取不到源码而编译失败。
+# 注：这些 Makefile 未设 PKG_HASH，OpenWrt 只是跳过校验（include/download.mk 里 HASH 是条件赋值），不会报错。
+MTK_DL_URL="https://raw.githubusercontent.com/padavanonly/immortalwrt-mt798x-6.6/mt798x-mt799x-6.6-mtwifi/dl"
+MTK_DL_FILES="
+mt79xx_conninfra_20231229-f2fa25.tar.xz
+mt79xx_20231229-4012a0.tar.xz
+warp_20231229-5f71ec.tar.xz
+"
+MTK_DL_MISSING=""
+mkdir -p dl
+for f in $MTK_DL_FILES; do
+	if [ -s "dl/$f" ]; then
+		echo "dl/$f 已存在，跳过"
+		continue
+	fi
+	echo "下载 $f ..."
+	if command -v wget >/dev/null 2>&1; then
+		wget -q --timeout=180 -O "dl/$f" "$MTK_DL_URL/$f"
+	else
+		curl -sL --max-time 180 -o "dl/$f" "$MTK_DL_URL/$f"
+	fi
+	if [ -s "dl/$f" ]; then
+		echo "  ok $(du -h "dl/$f" | cut -f1)"
+	else
+		rm -f "dl/$f"
+		MTK_DL_MISSING="$MTK_DL_MISSING $f"
+	fi
+done
+if [ -n "$MTK_DL_MISSING" ]; then
+	echo "警告：以下源码包下载失败，对应 MTK 驱动将编译失败："
+	for f in $MTK_DL_MISSING; do echo "   - $f"; done
+else
+	echo "MTK 驱动源码包齐全"
+fi
+
 # 设置shadowsocksr-libev
 # sed -i 's/ +libopenssl-legacy//g' feeds/small/shadowsocksr-libev/Makefile
 

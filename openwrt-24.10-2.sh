@@ -62,3 +62,22 @@ else
 	echo "警告：当前源码树没有 kmod-mediatek_hnat，说明不是厂商树。"
 	echo "   本配置的 MTK 闭源驱动无法编译，请把 workflow 的 REPO_URL 换成带 package/mtk 的 24.10 厂商树。"
 fi
+
+# patchs 的 conninfra / mt_wifi / warp 不带驱动源码，源码靠 dl/ 里的 tarball。
+# 厂商树的 dl/ 没有这些文件，缺了会在编译时报 "failed to build"，很难定位，这里提前查。
+MTK_DL_NEEDED="
+mt79xx_conninfra_20231229-f2fa25.tar.xz
+mt79xx_20231229-4012a0.tar.xz
+warp_20231229-5f71ec.tar.xz
+"
+MTK_DL_MISSING=""
+for f in $MTK_DL_NEEDED; do
+	[ -s "dl/$f" ] || MTK_DL_MISSING="$MTK_DL_MISSING $f"
+done
+if [ -n "$MTK_DL_MISSING" ]; then
+	echo "警告：dl/ 缺少以下 MTK 驱动源码包，编译将失败："
+	for f in $MTK_DL_MISSING; do echo "   - $f"; done
+	echo "   请确认脚本1 中的 dl 补齐步骤已执行（或源码树 dl/ 已自带）。"
+else
+	echo "校验通过：MTK 驱动源码包齐全"
+fi

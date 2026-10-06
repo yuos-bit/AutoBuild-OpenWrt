@@ -36,33 +36,66 @@ else
 	echo "警告：未找到 $MTK_PATCH_DIR，将使用源码树自带的 package/mtk"
 fi
 
-# 补齐 MTK 驱动源码包（必须放在上面的覆盖之后）
-# 说明：patchs 里的 conninfra / mt_wifi / warp 只带 Makefile 与补丁，驱动源码不在树内，
-# 而是靠 PKG_SOURCE 指定的 tarball；这些 Makefile 又没有 PKG_SOURCE_URL，只能从 dl/ 取。
-# 厂商树自带的 dl/ 只有它自己版本的包（mt_wifi 7.6.6.1、warp 20221209、conninfra 用树内 src/），
-# 所以下面从上游 dl 缓存补齐 patchs 对应的 20231229 版本。
-# 缺少任意一个，对应的驱动包都会因取不到源码而编译失败。
+# 补齐 MTK 源码包（必须放在上面的覆盖之后）
+# 说明：patchs 里有一部分包不含源码，源码由 PKG_SOURCE 指定为 tarball；这些 Makefile
+# 都没有 PKG_SOURCE_URL，只能从 dl/ 取。厂商树自带的 dl/ 只有它自己那一版的包
+# （mt_wifi 7.6.6.1、warp 20221209、datconf 6bb733f7，conninfra 干脆用树内 src/），
+# 与 patchs 需要的版本对不上，于是取不到源码而编译失败。
+#
+# 失败表现很绕，注意：取不到 URL 时 OpenWrt 会在 dl/ 留下空占位文件，而 workflow 里
+#   find dl -size -1024c -exec rm -f {} \;
+# 会把它删掉，等到编译阶段解包时才报 "tar: Exiting with failure status"，
+# 看不出是缺源码。所以下面必须补齐，缺一个就有一个包编译失败。
+#
+# 清单来自 patchs/24.10/mtk 下所有 Makefile 的 PKG_SOURCE（共 4 个文件；
+# mt_wifi 的 7661 分支未选用，故不需要 mt79xx_20220907-8b55f5.tar.xz）：
+#   applications/datconf  -> datconf-757f9679.tar.bz2
+#   drivers/conninfra     -> mt79xx_conninfra_20231229-f2fa25.tar.xz
+#   drivers/mt_wifi(7672) -> mt79xx_20231229-4012a0.tar.xz
+#   drivers/warp          -> warp_20231229-5f71ec.tar.xz
 # 注：这些 Makefile 未设 PKG_HASH，OpenWrt 只是跳过校验（include/download.mk 里 HASH 是条件赋值），不会报错。
 MTK_DL_URL="https://raw.githubusercontent.com/padavanonly/immortalwrt-mt798x-6.6/mt798x-mt799x-6.6-mtwifi/dl"
 MTK_DL_FILES="
+datconf-757f9679.tar.bz2
 mt79xx_conninfra_20231229-f2fa25.tar.xz
 mt79xx_20231229-4012a0.tar.xz
 warp_20231229-5f71ec.tar.xz
 "
+# 校验压缩包完整性；对应的解压工具不存在时不做判断（返回 0）
+verify_archive() {
+	case "$1" in
+	*.xz)
+		command -v xz >/dev/null 2>&1 || return 0
+		xz -t "$1" 2>/dev/null
+		;;
+	*.bz2)
+		command -v bzip2 >/dev/null 2>&1 || return 0
+		bzip2 -t "$1" 2>/dev/null
+		;;
+	*)
+		return 0
+		;;
+	esac
+}
+
 MTK_DL_MISSING=""
 mkdir -p dl
 for f in $MTK_DL_FILES; do
-	if [ -s "dl/$f" ]; then
-		echo "dl/$f 已存在，跳过"
+	# 已存在也要校验：截断/损坏的包放行到编译阶段，报错会非常难定位
+	if [ -s "dl/$f" ] && verify_archive "dl/$f"; then
+		echo "dl/$f 已存在且完整，跳过"
 		continue
 	fi
 	echo "下载 $f ..."
+	rm -f "dl/$f"
 	if command -v wget >/dev/null 2>&1; then
-		wget -q --timeout=180 -O "dl/$f" "$MTK_DL_URL/$f"
+		# wget 的 --timeout 是单次读超时，不会掐断仍在传输的大文件
+		wget -q --timeout=180 --tries=3 -O "dl/$f" "$MTK_DL_URL/$f"
 	else
-		curl -sL --max-time 180 -o "dl/$f" "$MTK_DL_URL/$f"
+		# curl 的 --max-time 是总时长，给足余量避免大文件被截断
+		curl -fsSL --retry 3 --retry-delay 5 --max-time 900 -o "dl/$f" "$MTK_DL_URL/$f"
 	fi
-	if [ -s "dl/$f" ]; then
+	if [ -s "dl/$f" ] && verify_archive "dl/$f"; then
 		echo "  ok $(du -h "dl/$f" | cut -f1)"
 	else
 		rm -f "dl/$f"
@@ -70,10 +103,10 @@ for f in $MTK_DL_FILES; do
 	fi
 done
 if [ -n "$MTK_DL_MISSING" ]; then
-	echo "警告：以下源码包下载失败，对应 MTK 驱动将编译失败："
+	echo "警告：以下源码包下载失败或完整性校验不通过，对应 MTK 包将编译失败："
 	for f in $MTK_DL_MISSING; do echo "   - $f"; done
 else
-	echo "MTK 驱动源码包齐全"
+	echo "MTK 源码包齐全且完整"
 fi
 
 # 设置shadowsocksr-libev

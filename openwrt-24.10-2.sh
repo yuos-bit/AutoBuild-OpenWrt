@@ -63,9 +63,10 @@ else
 	echo "   本配置的 MTK 闭源驱动无法编译，请把 workflow 的 REPO_URL 换成带 package/mtk 的 24.10 厂商树。"
 fi
 
-# patchs 的 conninfra / mt_wifi / warp 不带驱动源码，源码靠 dl/ 里的 tarball。
-# 厂商树的 dl/ 没有这些文件，缺了会在编译时报 "failed to build"，很难定位，这里提前查。
+# patchs 的部分包不含源码，源码靠 dl/ 里的 tarball（清单见脚本1）。
+# 厂商树的 dl/ 没有这些文件，缺了会在编译阶段报难懂的 tar / failed to build，这里提前查。
 MTK_DL_NEEDED="
+datconf-757f9679.tar.bz2
 mt79xx_conninfra_20231229-f2fa25.tar.xz
 mt79xx_20231229-4012a0.tar.xz
 warp_20231229-5f71ec.tar.xz

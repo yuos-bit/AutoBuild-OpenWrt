@@ -1,0 +1,148 @@
+/dts-v1/;
+
+#include "mt7628an.dtsi"
+
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/input/input.h>
+
+/ {
+	compatible = "xiaomi,mi-router-3a", "mediatek,mt7628an-soc";
+	model = "Xiaomi Mi Router 3A";
+
+	aliases {
+		led-boot = &led_power_yellow;
+		led-failsafe = &led_power_red;
+		led-running = &led_power_blue;
+		led-upgrade = &led_power_yellow;
+		label-mac-device = &ethernet;
+	};
+
+	chosen {
+		bootargs = "console=ttyS0,115200";
+	};
+	/*内存大小64M*/
+	memory@0 {
+		device_type = "memory";
+		reg = <0x0 0x4000000>;
+	};
+
+	leds {
+		compatible = "gpio-leds";
+        
+        led_power_blue: power_blue {
+			label = "blue:power";
+			gpios = <&gpio 11 GPIO_ACTIVE_LOW>;
+		};
+
+		led_power_yellow: power_yellow {
+			label = "yellow:power";
+			gpios = <&gpio 44 GPIO_ACTIVE_LOW>;
+		};
+
+		led_power_red: power_red {
+			label = "red:power";
+			gpios = <&gpio 5 GPIO_ACTIVE_LOW>;
+		};
+
+	};
+
+	keys {
+		compatible = "gpio-keys";
+
+		reset {
+			label = "reset";
+			gpios = <&gpio 38 GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_RESTART>;
+		};
+	};
+};
+
+&wmac {
+	status = "okay";
+};
+
+&spi0 {
+	status = "okay";
+
+	m25p80@0 {
+		compatible = "jedec,spi-nor";
+		reg = <0>;
+		spi-max-frequency = <10000000>;
+		/*闪存大小16M*/
+		partitions {
+			compatible = "fixed-partitions";
+			#address-cells = <1>;
+			#size-cells = <1>;
+
+			partition@0 {
+				label = "u-boot";
+				reg = <0x0 0x30000>;
+				read-only;
+			};
+
+			partition@30000 {
+				label = "u-boot-env";
+				reg = <0x30000 0x10000>;
+				read-only;
+			};
+
+			factory: partition@40000 {
+				label = "factory";
+				reg = <0x40000 0x10000>;
+				read-only;
+			};
+
+			partition@50000 {
+				compatible = "denx,uimage";
+				label = "firmware";
+				reg = <0x50000 0xfb0000>;
+			};
+		};
+	};
+};
+/*以上均已测试通过，勿修改*/
+/*5g WIFI*/
+&pcie {
+	status = "okay";
+};
+
+&pcie0 {
+	wifi@0,0 {
+		compatible = "mediatek,mt76";
+		reg = <0x0000 0 0 0 0>;
+		mediatek,mtd-eeprom = <&factory 0x8000>;
+		mtd-mac-address = <&factory 0x2e>;
+		/*从 HC5861B.dts 抄写的，希望有用，第四次测试*/
+		ieee80211-freq-limit = <5000000 6000000>;
+	};
+};
+/*5g WIFI*/
+
+/*总线*/
+&pinctrl {
+	state_default: pinctrl0 {
+		gpio {
+			ralink,group = "gpio", "refclk", "wdt", "wled_an";
+			ralink,function = "gpio";
+		};
+	};
+};
+/*总线*/
+
+/*MAC地址获取地址*/
+&ethernet {
+	mtd-mac-address = <&factory 0x28>;
+};
+/*MAC地址获取地址*/
+
+&esw {
+	mediatek,portmap = <0x2f>;
+	/*从 4A-100M.dts 抄写的，希望有用，第四次测试*/
+	mediatek,portdisable = <0x2a>;
+};
+
+/*wan口默认启用*/
+&wmac {
+	status = "okay";
+};
+/*wan口默认启用*/

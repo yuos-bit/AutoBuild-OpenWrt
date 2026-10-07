@@ -1,0 +1,59 @@
+From: AutoBuild-OpenWrt
+Subject: [PATCH] conninfra: 适配 6.6 内核的 class_create() 与 ioremap_nocache()
+
+conninfra_dev.c:
+  Linux 6.4 起 class_create() 去掉了 struct module *owner 参数，只剩 name：
+
+    - struct class *class_create(struct module *owner, const char *name);
+    + struct class *__must_check class_create(const char *name);
+
+  否则报：
+    error: passing argument 1 of 'class_create' from incompatible pointer type
+    error: too many arguments to function 'class_create'
+
+  这里只去掉第一个实参，保留原来的类名 CONNINFRA_DEVICE_NAME("conninfra_dev")。
+
+  注：厂商树把类名换成了 CONNINFRA_DRVIER_NAME("conninfra_drv")，那是随
+  它们自己那套源码做的功能改动，不是兼容所需。本目录内的 conninfra 与
+  mt_wifi 是同一版本配套的，故保留原类名以保持自洽。设备节点名由
+  device_create() 决定（同样是 "conninfra_dev"），两种写法下都不变。
+
+consys_reg_mng.c:
+  ioremap_nocache() 已从内核移除，改用 ioremap()：
+
+    - vir_addr = ioremap_nocache(addr, 0x100);
+    + vir_addr = ioremap(addr, 0x100);
+
+  改完后该文件与厂商树的版本逐字节一致。
+
+--- a/src/conninfra_dev.c
++++ b/src/conninfra_dev.c
+@@ -240,7 +240,7 @@
+ 		goto err1;
+ 	}
+
+-	pConninfraClass = class_create(THIS_MODULE, CONNINFRA_DEVICE_NAME);
++	pConninfraClass = class_create(CONNINFRA_DEVICE_NAME);
+ 	if (IS_ERR(pConninfraClass)) {
+ 		pr_err("class create fail, error code(%ld)\n", PTR_ERR(pConninfraClass));
+ 		goto err1;
+--- a/platform/consys_reg_mng.c
++++ b/platform/consys_reg_mng.c
+@@ -107,7 +107,7 @@
+ {
+ 	void __iomem *vir_addr = NULL;
+
+-	vir_addr = ioremap_nocache(addr, 0x100);
++	vir_addr = ioremap(addr, 0x100);
+ 	if (!vir_addr) {
+ 		pr_err("ioremap fail\n");
+ 		return -1;
+@@ -125,7 +125,7 @@
+ {
+ 	void __iomem *vir_addr = NULL;
+
+-	vir_addr = ioremap_nocache(addr, 0x100);
++	vir_addr = ioremap(addr, 0x100);
+ 	if (!vir_addr) {
+ 		pr_err("ioremap fail\n");
+ 		return -1;

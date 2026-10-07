@@ -1,0 +1,24 @@
+From: AutoBuild-OpenWrt
+Subject: [PATCH] warp: 改用 <linux/stdarg.h>，修复 6.6 内核编译
+
+Linux 5.15 起内核用 -nostdinc 构建，编译器自带的 <stdarg.h> 不在搜索路径里：
+
+  warp_proc.c:24:10: fatal error: stdarg.h: No such file or directory
+     24 | #include <stdarg.h>
+
+内核改用自己的 <linux/stdarg.h>。
+
+厂商树 package/mtk/drivers/warp/src/warp_proc.c 第 24 行正是
+#include <linux/stdarg.h>，此处照做。
+
+--- a/warp_proc.c
++++ b/warp_proc.c
+@@ -21,7 +21,7 @@
+ #include "wed.h"
+ #include "warp.h"
+ #include "warp_hw.h"
+-#include <stdarg.h>
++#include <linux/stdarg.h>
+ #include "mcu/warp_woif.h"
+ #include "mcu/warp_wo.h"
+ #include "warp_meminfo_list.h"

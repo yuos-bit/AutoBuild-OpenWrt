@@ -1,0 +1,35 @@
+From: AutoBuild-OpenWrt
+Subject: [PATCH] mt_wifi: 改用 <linux/stdarg.h>，修复 6.6 内核编译
+
+Linux 5.15 起内核用 -nostdinc 构建，编译器自带的 <stdarg.h> 不在搜索路径里，
+内核改用 <linux/stdarg.h>。
+
+patchs 的 mt_wifi 里有 3 个文件用 <stdarg.h>，厂商对应文件都已改为
+<linux/stdarg.h>：
+  mt_wifi/embedded/ap/ap_mlme.c       （编译）
+  mt_wifi/embedded/common/mlme.c      （编译）
+  warp_driver/warp/warp_proc.c        （不编译，该目录只作 -I 头文件路径，
+                                        厂商更是整目录删除，故不改）
+
+--- a/mt_wifi/embedded/ap/ap_mlme.c
++++ b/mt_wifi/embedded/ap/ap_mlme.c
+@@ -26,7 +26,7 @@
+  */
+ 
+ #include "rt_config.h"
+-#include <stdarg.h>
++#include <linux/stdarg.h>
+ 
+ #ifdef IXIA_C50_MODE
+ #ifdef MT7986
+--- a/mt_wifi/embedded/common/mlme.c
++++ b/mt_wifi/embedded/common/mlme.c
+@@ -25,7 +25,7 @@
+ */
+ 
+ #include "rt_config.h"
+-#include <stdarg.h>
++#include <linux/stdarg.h>
+ #ifdef DOT11R_FT_SUPPORT
+ #include "ft.h"
+ #endif /* DOT11R_FT_SUPPORT */

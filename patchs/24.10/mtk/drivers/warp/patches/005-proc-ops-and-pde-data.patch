@@ -1,0 +1,261 @@
+From: AutoBuild-OpenWrt
+Subject: [PATCH] warp: 适配 6.6 的 proc_ops 与 pde_data()，修复编译
+
+上一版改用 <linux/stdarg.h> 后编译推进，warp_proc.c 报：
+
+  warp_proc.c:176:50: error: implicit declaration of function 'PDE_DATA';
+    did you mean 'NODE_DATA'? [-Werror=implicit-function-declaration]
+    176 |  return single_open(file, wdma_proc_show, PDE_DATA(file_inode(file)));
+
+以及一批 proc_create() 的指针类型不符：
+
+  ./include/linux/proc_fs.h:111: note: expected 'const struct proc_ops *'
+    but argument is of type 'const struct file_operations *'
+
+两处都是 5.6~6.6 期间内核 procfs 接口的变更：
+
+  1) PDE_DATA() 已被移除，改用 pde_data()。
+     处理方式与厂商树一致：在 warp_utility.h 里加一行兼容宏
+         #define PDE_DATA(i) pde_data(i)
+     （厂商树 package/mtk/drivers/warp/src/warp_utility.h:47 就是这一行）
+
+  2) proc_create() 自 5.6 起接收 struct proc_ops，不再是 struct file_operations。
+     厂商树把 warp_proc.c 里 13 个 fops 全部改成了 proc_ops，此处照做：
+         .owner   -> 删除（proc_ops 无此成员）
+         .open    -> .proc_open
+         .write   -> .proc_write
+         .read    -> .proc_read
+         .llseek  -> .proc_lseek
+         .release -> .proc_release
+     只改字段名、不动缩进对齐，改完与厂商树的写法逐行一致。
+
+--- a/warp_utility.h
++++ b/warp_utility.h
+@@ -44,6 +44,7 @@
+ #define WARP_FAIL_STATUS (-1)
+ #define WARP_OK_STATUS (0)
+ #define WARP_ALREADY_DONE_STATUS (1)
++#define PDE_DATA(i) pde_data(i)
+ 
+ enum {
+ 	WARP_DBG_START,
+--- a/warp_proc.c
++++ b/warp_proc.c
+@@ -1167,118 +1167,105 @@
+ /*
+  * global file operation
+ */
+-static const struct file_operations proc_warp_trace_fops = {
+-	.owner = THIS_MODULE,
+-	.open = warp_proc_trace_open,
+-	.write  = warp_proc_trace_write,
+-	.read	= seq_read,
+-	.llseek = seq_lseek,
+-	.release = single_release,
+-};
+-
+-static const struct file_operations proc_warp_conf_fops = {
+-	.owner = THIS_MODULE,
+-	.open = warp_proc_conf_open,
+-	.write  = warp_proc_conf_write,
+-	.read	= seq_read,
+-	.llseek = seq_lseek,
+-	.release = single_release,
+-};
+-
+-static const struct file_operations proc_warp_cr_fops = {
+-	.owner = THIS_MODULE,
+-	.open = warp_proc_cr_open,
+-	.write  = warp_proc_cr_write,
+-	.read  = seq_read,
+-	.llseek = seq_lseek,
+-	.release = single_release,
+-};
+-
+-static const struct file_operations proc_warp_stat_fops = {
+-	.owner = THIS_MODULE,
+-	.open = warp_proc_state_open,
+-	.write  = warp_proc_state_write,
+-	.read  = seq_read,
+-	.llseek = seq_lseek,
+-	.release = single_release,
+-};
+-
+-static const struct file_operations proc_warp_cfg_fops = {
+-	.owner = THIS_MODULE,
+-	.open = warp_proc_cfg_open,
+-	.read  = seq_read,
+-	.llseek = seq_lseek,
+-	.release = single_release,
+-};
+-
+-static const struct file_operations proc_warp_tx_fops = {
+-	.owner = THIS_MODULE,
+-	.open = warp_proc_tx_open,
+-	.read  = seq_read,
+-	.llseek = seq_lseek,
+-	.release = single_release,
+-};
+-
+-static const struct file_operations proc_warp_rx_fops = {
+-	.owner = THIS_MODULE,
+-	.open = warp_proc_rx_open,
+-	.read  = seq_read,
+-	.llseek = seq_lseek,
+-	.release = single_release,
+-};
+-
+-static const struct file_operations proc_wed_fops = {
+-	.owner = THIS_MODULE,
+-	.open = wed_proc_open,
+-	.write  = wed_proc_write,
+-	.read  = seq_read,
+-	.llseek = seq_lseek,
+-	.release = single_release,
+-};
+-
+-static const struct file_operations proc_wdma_fops = {
+-	.owner = THIS_MODULE,
+-	.open = wdma_proc_open,
+-	.write  = wdma_proc_write,
+-	.read  = seq_read,
+-	.llseek = seq_lseek,
+-	.release = single_release,
+-};
+-
+-static const struct file_operations proc_ctrl_fops = {
+-	.owner = THIS_MODULE,
+-	.open = warp_proc_ctrl_open,
+-	.write  = warp_proc_ctrl_write,
+-	.read  = seq_read,
+-	.llseek = seq_lseek,
+-	.release = single_release,
+-};
+-
+-
+-static const struct file_operations proc_rxbm_fops = {
+-	.owner = THIS_MODULE,
+-	.open = rxbm_proc_open,
+-	.write  = rxbm_proc_write,
+-	.read  = seq_read,
+-	.llseek = seq_lseek,
+-	.release = single_release,
+-};
+-
+-static const struct file_operations proc_wo_fops = {
+-	.owner = THIS_MODULE,
+-	.open = wo_proc_open,
+-	.write  = wo_proc_write,
+-	.read  = seq_read,
+-	.llseek = seq_lseek,
+-	.release = single_release,
+-};
+-
+-static const struct file_operations proc_woee_fops = {
+-	.owner = THIS_MODULE,
+-	.open = wo_ee_proc_open,
+-	.read  = seq_read,
+-	.llseek = seq_lseek,
+-	.release = single_release,
++static const struct proc_ops proc_warp_trace_fops = {
++	.proc_open = warp_proc_trace_open,
++	.proc_write  = warp_proc_trace_write,
++	.proc_read	= seq_read,
++	.proc_lseek = seq_lseek,
++	.proc_release = single_release,
++};
++
++static const struct proc_ops proc_warp_conf_fops = {
++	.proc_open = warp_proc_conf_open,
++	.proc_write  = warp_proc_conf_write,
++	.proc_read	= seq_read,
++	.proc_lseek = seq_lseek,
++	.proc_release = single_release,
++};
++
++static const struct proc_ops proc_warp_cr_fops = {
++	.proc_open = warp_proc_cr_open,
++	.proc_write  = warp_proc_cr_write,
++	.proc_read  = seq_read,
++	.proc_lseek = seq_lseek,
++	.proc_release = single_release,
++};
++
++static const struct proc_ops proc_warp_stat_fops = {
++	.proc_open = warp_proc_state_open,
++	.proc_write  = warp_proc_state_write,
++	.proc_read  = seq_read,
++	.proc_lseek = seq_lseek,
++	.proc_release = single_release,
++};
++
++static const struct proc_ops proc_warp_cfg_fops = {
++	.proc_open = warp_proc_cfg_open,
++	.proc_read  = seq_read,
++	.proc_lseek = seq_lseek,
++	.proc_release = single_release,
++};
++
++static const struct proc_ops proc_warp_tx_fops = {
++	.proc_open = warp_proc_tx_open,
++	.proc_read  = seq_read,
++	.proc_lseek = seq_lseek,
++	.proc_release = single_release,
++};
++
++static const struct proc_ops proc_warp_rx_fops = {
++	.proc_open = warp_proc_rx_open,
++	.proc_read  = seq_read,
++	.proc_lseek = seq_lseek,
++	.proc_release = single_release,
++};
++
++static const struct proc_ops proc_wed_fops = {
++	.proc_open = wed_proc_open,
++	.proc_write  = wed_proc_write,
++	.proc_read  = seq_read,
++	.proc_lseek = seq_lseek,
++	.proc_release = single_release,
++};
++
++static const struct proc_ops proc_wdma_fops = {
++	.proc_open = wdma_proc_open,
++	.proc_write  = wdma_proc_write,
++	.proc_read  = seq_read,
++	.proc_lseek = seq_lseek,
++	.proc_release = single_release,
++};
++
++static const struct proc_ops proc_ctrl_fops = {
++	.proc_open = warp_proc_ctrl_open,
++	.proc_write  = warp_proc_ctrl_write,
++	.proc_read  = seq_read,
++	.proc_lseek = seq_lseek,
++	.proc_release = single_release,
++};
++
++
++static const struct proc_ops proc_rxbm_fops = {
++	.proc_open = rxbm_proc_open,
++	.proc_write  = rxbm_proc_write,
++	.proc_read  = seq_read,
++	.proc_lseek = seq_lseek,
++	.proc_release = single_release,
++};
++
++static const struct proc_ops proc_wo_fops = {
++	.proc_open = wo_proc_open,
++	.proc_write  = wo_proc_write,
++	.proc_read  = seq_read,
++	.proc_lseek = seq_lseek,
++	.proc_release = single_release,
++};
++
++static const struct proc_ops proc_woee_fops = {
++	.proc_open = wo_ee_proc_open,
++	.proc_read  = seq_read,
++	.proc_lseek = seq_lseek,
++	.proc_release = single_release,
+ };
+ 
+ 

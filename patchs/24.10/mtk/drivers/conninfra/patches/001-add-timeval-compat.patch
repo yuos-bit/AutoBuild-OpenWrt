@@ -1,0 +1,35 @@
+From: AutoBuild-OpenWrt
+Subject: [PATCH] conninfra: 补 struct timeval 定义，修复在 6.6 内核上的编译失败
+
+Linux 6.6 的内核空间已不再提供 struct timeval：
+  - include/linux/time.h     不再定义它
+  - include/linux/timekeeping.h 已移除 do_gettimeofday()
+
+而 osal.h 只 include 了 workqueue.h / mutex.h / completion.h / wait.h，
+拿不到该类型，于是 osal.h:369 的函数声明被当作在参数表里新声明一个不完整
+类型，进而在 osal.c 里报：
+
+  osal.h:369:31: error: 'struct timeval' declared inside parameter list
+  osal.c:1199:5: error: conflicting types for 'osal_gettimeofday2'
+  osal.c:1208:11: error: invalid use of undefined type 'struct timeval'
+  cc1: all warnings being treated as errors
+
+这里自行补上定义。该写法与厂商树 package/mtk/drivers/conninfra/src 中的
+版本完全一致（厂商树同一份源码也正是靠这段垫片在 6.6 上编译通过）。
+
+--- a/base/include/osal.h
++++ b/base/include/osal.h
+@@ -244,6 +244,13 @@
+ 	unsigned long usec;
+ };
+
++typedef long __kernel_time_t;
++
++struct timeval {
++	__kernel_time_t		tv_sec;		/* seconds */
++	__kernel_suseconds_t	tv_usec;	/* microseconds */
++};
++
+ struct osal_op_history {
+ 	struct ring ring_buffer;
+ 	struct osal_op_history_entry *queue;

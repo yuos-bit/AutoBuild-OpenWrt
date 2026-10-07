@@ -1,0 +1,20 @@
+From: AutoBuild-OpenWrt
+Subject: [PATCH] warp: 移除 MODULE_SUPPORTED_DEVICE，修复在 6.6 内核上的编译失败
+
+MODULE_SUPPORTED_DEVICE() 在 Linux 5.13 被移除（commit "module: remove
+MODULE_SUPPORTED_DEVICE"），6.6 上该宏已不存在，于是这一行被当成在文件作用域
+里出现一个字符串常量，报：
+
+  warp_main.c:1511:25: error: expected declaration specifiers or '...'
+    before string constant
+    1511 | MODULE_SUPPORTED_DEVICE("mt7615 within mt7622");
+
+厂商树 package/mtk/drivers/warp/src/warp_main.c 中该行已被删除，此处照做。
+
+--- a/warp_main.c
++++ b/warp_main.c
+@@ -1508,5 +1508,4 @@
+
+ MODULE_LICENSE("GPL");
+ MODULE_DESCRIPTION(DRIVER_DESC);
+-MODULE_SUPPORTED_DEVICE("mt7615 within mt7622");

@@ -1,0 +1,24 @@
+From: AutoBuild-OpenWrt
+Subject: [PATCH] mt_wifi: ioremap_nocache() 改用 ioremap()，修复 6.6 内核编译
+
+ioremap_nocache() 已从内核移除，6.6 上不存在：
+
+  mt_wifi/mcu/fwdl_mt.c: error: implicit declaration of function 'ioremap_nocache'
+
+厂商树 package/mtk/drivers/mt_wifi/src/mt_wifi/mcu/fwdl_mt.c 中该处已改成
+ioremap()，此处照做。
+
+注：本补丁只放在 patches-7672/（本配置选用 MTK_MT_WIFI_DRIVER_VERSION_7672）。
+7661 分支是另一个源码包（mt79xx_20220907-8b55f5.tar.xz），未做核查。
+
+--- a/mt_wifi/mcu/fwdl_mt.c
++++ b/mt_wifi/mcu/fwdl_mt.c
+@@ -788,7 +788,7 @@
+ 			"emi_phy_addr = 0x%08x, emi_phy_addr_size = 0x%08x\n",
+ 			pChipCap->emi_phy_addr, pChipCap->emi_phy_addr_size);
+ 
+-	vir_addr = ioremap_nocache(pChipCap->emi_phy_addr, pChipCap->emi_phy_addr_size);
++	vir_addr = ioremap(pChipCap->emi_phy_addr, pChipCap->emi_phy_addr_size);
+ 	if (vir_addr != 0) {
+ 		/* parsing and find download emi payload */
+ 		for (i = 0; i < target->num_of_region; i++) {

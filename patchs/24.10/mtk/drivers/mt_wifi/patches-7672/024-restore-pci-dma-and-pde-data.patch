@@ -1,0 +1,42 @@
+From: AutoBuild-OpenWrt
+Subject: [PATCH] mt_wifi: 恢复 6.6 已移除的 PCI_DMA_* 与 PDE_DATA()
+
+内核侧的两处变更：
+
+  - Linux 6.4 把 PCI_DMA_BIDIRECTIONAL/TODEVICE/FROMDEVICE/NONE 随
+    include/linux/pci-dma-compat.h 一起删掉了，改用 DMA_* (dma-direction.h)。
+    该头文件在 v6.6 已不存在（404）。（注意：本包里的 RTMP_PCI_DMA_* 是
+    MTK 自己的宏，与内核无关，不受影响。）
+  - Linux 6.6 移除了 PDE_DATA()，改用 pde_data()。
+
+二者都在本包参与编译的文件里被用到：
+    cmm_mac_pci.c  hif_pci.c  token.c  mt_dmac.c  mt_fmac.c
+    diag.c  rt_proc.c  rt_rbus_pci_util.c
+这些文件都经 rt_config.h 间接包含本文件，故在这里统一补上兼容宏，
+避免逐个改约 50 处调用点。写法参照厂商在 warp_utility.h 中对 PDE_DATA
+的处理，以及本文件里既有的 PCI_DMA_MAPPING_ERROR 兼容宏。
+
+--- a/mt_wifi/include/os/rt_linux.h
++++ b/mt_wifi/include/os/rt_linux.h
+@@ -768,6 +768,21 @@
+ #define PCI_DMA_MAPPING_ERROR(_handle, _ptr)	\
+ 	dma_mapping_error(&((struct pci_dev *)(_handle))->dev, _ptr)
+ 
++/* Linux 6.4 removed the PCI_DMA_* aliases along with pci-dma-compat.h; */
++/* Linux 6.6 dropped PDE_DATA() in favour of pde_data().  Restore them. */
++#ifndef PCI_DMA_FROMDEVICE
++#define PCI_DMA_FROMDEVICE	DMA_FROM_DEVICE
++#endif
++#ifndef PCI_DMA_TODEVICE
++#define PCI_DMA_TODEVICE	DMA_TO_DEVICE
++#endif
++#ifndef PCI_DMA_BIDIRECTIONAL
++#define PCI_DMA_BIDIRECTIONAL	DMA_BIDIRECTIONAL
++#endif
++#ifndef PDE_DATA
++#define PDE_DATA(i)		pde_data(i)
++#endif
++
+ #define PCI_UNMAP_SINGLE(_pAd, _ptr, _size, _dir)						\
+ 	linux_pci_unmap_single(((POS_COOKIE)(_pAd->OS_Cookie))->pDev, _ptr, _size, _dir)
+ 

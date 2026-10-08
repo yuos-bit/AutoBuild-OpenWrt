@@ -1,0 +1,23 @@
+From: AutoBuild-OpenWrt
+Subject: [PATCH] warp: PCI_DMA_FROMDEVICE 改用 DMA_FROM_DEVICE，修复 6.6 编译
+
+PCI_DMA_FROMDEVICE 所在的 include/linux/pci-dma-compat.h 在 Linux 6.4
+被整体删除（v6.6 上该文件已不存在），常量改用 dma-direction.h 的
+DMA_FROM_DEVICE。
+
+  warp_bm_v2.c: error: 'PCI_DMA_FROMDEVICE' undeclared
+
+厂商树 package/mtk/drivers/warp/src/warp_bm_v2.c 中该处正是
+DMA_FROM_DEVICE，此处照做。
+
+--- a/warp_bm_v2.c
++++ b/warp_bm_v2.c
+@@ -1169,7 +1169,7 @@
+ 	for (i = 0; i < ring_len; i++)
+ 		wed_rx_bm_dma_cb_exit(wed, &ring->cell[i]);
+ 
+-	dma_unmap_single(&wed->pdev->dev, desc->alloc_pa, desc->alloc_size, PCI_DMA_FROMDEVICE);
++	dma_unmap_single(&wed->pdev->dev, desc->alloc_pa, desc->alloc_size, DMA_FROM_DEVICE);
+ 	warp_os_free_mem(desc->alloc_va);
+ 	memset(desc, 0, sizeof(*desc));
+ 

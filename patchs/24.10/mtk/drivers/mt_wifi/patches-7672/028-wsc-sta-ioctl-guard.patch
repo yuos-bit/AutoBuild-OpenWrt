@@ -1,55 +1,63 @@
 From: AutoBuild-OpenWrt
-Subject: [PATCH] mt_wifi: 修正 WSC STA 两个私有 ioctl 常量的条件编译
+Subject: [PATCH] mt_wifi: 让 WSC STA 两个私有 ioctl 常量对 AP 构建可见
 
 sta_ioctl.c 报：
 
   sta_ioctl.c:287: error: 'RTPRIV_IOCTL_SET_WSC_PROFILE_U32_ITEM' undeclared
   sta_ioctl.c:295: error: 'RTPRIV_IOCTL_SET_WSC_PROFILE_STRING_ITEM' undeclared
 
-两个常量定义在 rt_os.h，被两层条件包着：
+两个常量原本定义在 rt_os.h，被三层条件包着：
 
-  #ifdef CONFIG_STA_SUPPORT          <- 外层
-  ...
-    #ifdef WSC_STA_SUPPORT
-    #define RTPRIV_IOCTL_SET_WSC_PROFILE_U32_ITEM    (SIOCIWFIRSTPRIV + 0x14)
-    #define RTPRIV_IOCTL_SET_WSC_PROFILE_STRING_ITEM (SIOCIWFIRSTPRIV + 0x16)
-    #endif
-  #endif
+  32  #ifndef _RT_OS_H_
+  36  #if (KERNEL_VERSION(5, 6, 0) > LINUX_VERSION_CODE)   /* 整张 ioctl 常量表 */
+  47    #ifdef CONFIG_STA_SUPPORT
+  82      #ifdef WSC_STA_SUPPORT
+  83      #define RTPRIV_IOCTL_SET_WSC_PROFILE_U32_ITEM    (SIOCIWFIRSTPRIV + 0x14)
+  84      #define RTPRIV_IOCTL_SET_WSC_PROFILE_STRING_ITEM (SIOCIWFIRSTPRIV + 0x16)
+  85      #endif
+  86    #endif
 
-而使用处（sta_ioctl.c 的私有 ioctl 表）只要求 WSC_STA_SUPPORT。
+而使用处（sta_ioctl.c 的私有 ioctl 表）只用 WSC_STA_SUPPORT 把关：
 
-问题出在 mt_wifi_ap/Makefile：
+  #ifdef WSC_STA_SUPPORT
+      RTPRIV_IOCTL_SET_WSC_PROFILE_U32_ITEM, ...
 
-  ifneq ($(CONFIG_MT_AP_SUPPORT),)
-      EXTRA_CFLAGS += -DWSC_AP_SUPPORT
-      EXTRA_CFLAGS += -DWSC_STA_SUPPORT     <- AP 构建也定义它
-  endif
+两者不一致，于是常量被 CONFIG_STA_SUPPORT 挡住而报未声明。（旁证：编译器的
+"did you mean 'RTPRIV_IOCTL_WSC_PROFILE'" 说明 AP 段是活跃的，问题只出在
+STA 段那道守卫。）
 
-CONFIG_STA_SUPPORT 只在 STA 构建时（Makefile 里 CONFIG_MT_STA_SUPPORT 那支）
-才 -D。于是 AP 构建下「使用处开、定义处关」，编译失败。
+修法：把这两个常量移到文件末尾 —— 头文件保护之内、KERNEL_VERSION 块与
+CONFIG_STA_SUPPORT 之外，只由 WSC_STA_SUPPORT 把关，与使用处一致。
+这样无论最外层那个 KERNEL_VERSION 条件成立与否都可用。
 
-修法：把这两个常量移出外层 CONFIG_STA_SUPPORT，只由 WSC_STA_SUPPORT 把关
-—— 与该常量唯一的真实引用处保持一致的守卫。
-
-（另注：ap_ioctl.c 里对这两个名字的引用都在注释中，不影响。）
+ap_ioctl.c 里对这两个名字的引用都在注释中，不受影响。
 
 --- a/mt_wifi/include/os/rt_os.h
 +++ b/mt_wifi/include/os/rt_os.h
-@@ -79,11 +79,16 @@
+@@ -79,10 +79,6 @@
  
  
  
-+#endif /* CONFIG_STA_SUPPORT */
-+
-+/* mt_wifi_ap/Makefile defines WSC_STA_SUPPORT for CONFIG_MT_AP_SUPPORT builds
-+ * too, while CONFIG_STA_SUPPORT is only defined for STA builds.  These two
-+ * constants are referenced from sta_ioctl.c under WSC_STA_SUPPORT alone, so
-+ * gate them on that rather than on the enclosing CONFIG_STA_SUPPORT. */
- #ifdef WSC_STA_SUPPORT
- #define RTPRIV_IOCTL_SET_WSC_PROFILE_U32_ITEM       (SIOCIWFIRSTPRIV + 0x14)
- #define RTPRIV_IOCTL_SET_WSC_PROFILE_STRING_ITEM    (SIOCIWFIRSTPRIV + 0x16)
- #endif /* WSC_STA_SUPPORT */
--#endif /* CONFIG_STA_SUPPORT */
+-#ifdef WSC_STA_SUPPORT
+-#define RTPRIV_IOCTL_SET_WSC_PROFILE_U32_ITEM       (SIOCIWFIRSTPRIV + 0x14)
+-#define RTPRIV_IOCTL_SET_WSC_PROFILE_STRING_ITEM    (SIOCIWFIRSTPRIV + 0x16)
+-#endif /* WSC_STA_SUPPORT */
+ #endif /* CONFIG_STA_SUPPORT */
  
  #ifdef CONFIG_AP_SUPPORT
- /* Ralink defined OIDs */
+@@ -172,4 +168,15 @@
+ 
+ #endif
+ 
++/* WSC STA private ioctls.  mt_wifi_ap/Makefile defines WSC_STA_SUPPORT for
++ * CONFIG_MT_AP_SUPPORT builds too, while the original definitions sat behind
++ * CONFIG_STA_SUPPORT inside the KERNEL_VERSION < 5.6 block above, so
++ * sta_ioctl.c -- whose table is guarded by WSC_STA_SUPPORT alone -- could not
++ * see them.  Keep them last, inside the include guard but outside both, so
++ * they are available whenever WSC_STA_SUPPORT is set. */
++#ifdef WSC_STA_SUPPORT
++#define RTPRIV_IOCTL_SET_WSC_PROFILE_U32_ITEM       (SIOCIWFIRSTPRIV + 0x14)
++#define RTPRIV_IOCTL_SET_WSC_PROFILE_STRING_ITEM    (SIOCIWFIRSTPRIV + 0x16)
++#endif /* WSC_STA_SUPPORT */
++
+ #endif /* _RT_OS_H_ */

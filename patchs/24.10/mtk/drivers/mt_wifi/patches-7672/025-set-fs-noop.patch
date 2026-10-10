@@ -6,9 +6,7 @@ set_fs()、get_fs() 一并消失；v6.6 的 include/linux/uaccess.h 里只剩注
 
 本包在参与编译的文件里仍在用这一套（模式为
 orig_fs = get_fs(); set_fs(KERNEL_DS); ... set_fs(orig_fs);）：
-  mt_wifi/chips/mt7916_dbg.c      （#ifndef CONFIG_CPE_SUPPORT）
-  mt_wifi/chips/mt7981_dbg.c
-  mt_wifi/chips/mt7986_dbg.c
+  mt_wifi/chips/mt7916_dbg.c      / mt7981_dbg.c / mt7986_dbg.c
   mt_wifi/embedded/ap/ap_cfg.c
   mt_wifi/os/linux/rt_linux.c     （#ifdef VLAN_SUPPORT 那几处，
                                     其余在 #else 里是 <=5.4 的旧分支）
@@ -16,21 +14,23 @@ orig_fs = get_fs(); set_fs(KERNEL_DS); ... set_fs(orig_fs);）：
 
 这些代码只是为了让内核态缓冲区绕过 file/proc 辅助函数里的 access_ok
 检查；现代内核已不再用地址限制来把关，所以退化为空操作是正确语义。
+（厂商在 mt7981_dbg.c 里是把这些行注释掉；本包调用点较多，改用空操作宏。）
 
-写法：在 rt_linux.h 补一组兼容定义，受影响文件都经 rt_config.h 间接包含
-此头。mm_segment_t 用 typedef 补回，以便 rt_linux.h 自身的结构体成员能用。
+注意：mm_segment_t 的 typedef 必须放在 OS_FS_INFO 之前 —— 该结构体在
+rt_linux.h 里就用到它，放晚了会报 "unknown type name 'mm_segment_t'"。
 
 --- a/mt_wifi/include/os/rt_linux.h
 +++ b/mt_wifi/include/os/rt_linux.h
-@@ -783,6 +783,19 @@
- #define PDE_DATA(i)		pde_data(i)
- #endif
+@@ -64,6 +64,20 @@
+ 
+ #include "common/link_list.h"
  
 +/* Linux 5.10 removed the set_fs() address-limit mechanism outright:
 + * mm_segment_t, KERNEL_DS, set_fs() and get_fs() are all gone in 6.6.
 + * The driver used them only to let kernel-side buffers pass the
 + * access_ok() checks in the file/proc helpers; modern kernels no longer
-+ * gate that, so make them no-ops. */
++ * gate that, so make them no-ops.  Placed here, before the first use
++ * (OS_FS_INFO.fs below), so the typedef is in scope. */
 +#ifndef RTMP_SET_FS_COMPAT
 +#define RTMP_SET_FS_COMPAT
 +typedef unsigned long mm_segment_t;
@@ -39,6 +39,6 @@ orig_fs = get_fs(); set_fs(KERNEL_DS); ... set_fs(orig_fs);）：
 +#define get_fs()	((mm_segment_t)0)
 +#endif
 +
- #define PCI_UNMAP_SINGLE(_pAd, _ptr, _size, _dir)						\
- 	linux_pci_unmap_single(((POS_COOKIE)(_pAd->OS_Cookie))->pDev, _ptr, _size, _dir)
- 
+ #ifdef RT_CFG80211_SUPPORT
+ #if (KERNEL_VERSION(2, 6, 28) <= LINUX_VERSION_CODE)
+ #include <net/mac80211.h>

@@ -1,0 +1,37 @@
+From: AutoBuild-OpenWrt
+Subject: [PATCH] mt_wifi: 不再重定义 printk，改用 mt_printk，修复 6.6 编译
+
+rt_linux.h 里原本这样写：
+
+  #if (KERNEL_VERSION(4, 10, 0) > LINUX_VERSION_CODE)
+  #define MTWF_PRINT	printk
+  #else
+  #define  printk(fmt, ...) printk(KERN_CONT fmt, ##__VA_ARGS__)
+  #define MTWF_PRINT	pr_cont
+  #endif
+
+在旧内核里 printk 是真函数，这样重定义可以把驱动自己的 printk 调用变成
+续行输出。但 5.15 起内核把 printk 定义成了宏（printk_index_wrap），于是：
+
+  rt_linux.h:726: warning: "printk" redefined
+  rt_linux.h:726:27: error: implicit declaration of function 'printk';
+    did you mean '_printk'?
+
+报错机制：pr_info → 内核 printk 宏 → 撞上本文件的 printk 宏 → 宏递归不再
+展开，内层的 printk 变成一个不存在的函数调用。
+
+厂商的处理是把宏改名为 mt_printk（package/mtk/drivers/mt_wifi/src 里的
+rt_linux.h 正是这么写的），本处照做。改名后驱动里的 printk(...) 调用使用
+内核自己的宏，MTWF_PRINT 仍是 pr_cont，续行输出的语义由它承担。
+
+--- a/mt_wifi/include/os/rt_linux.h
++++ b/mt_wifi/include/os/rt_linux.h
+@@ -737,7 +737,7 @@
+ #if (KERNEL_VERSION(4, 10, 0) > LINUX_VERSION_CODE)
+ #define MTWF_PRINT	printk
+ #else
+-#define  printk(fmt, ...) printk(KERN_CONT fmt, ##__VA_ARGS__)
++#define mt_printk(fmt, ...) printk(KERN_CONT fmt, ##__VA_ARGS__)
+ #define MTWF_PRINT	pr_cont
+ #endif
+ #ifdef DBG_ENHANCE

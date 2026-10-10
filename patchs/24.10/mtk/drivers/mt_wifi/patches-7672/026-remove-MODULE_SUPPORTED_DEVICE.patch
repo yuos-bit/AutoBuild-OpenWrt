@@ -1,0 +1,26 @@
+From: AutoBuild-OpenWrt
+Subject: [PATCH] mt_wifi: 移除 MODULE_SUPPORTED_DEVICE，修复 6.6 内核编译
+
+MODULE_SUPPORTED_DEVICE() 在 Linux 5.13 被移除，v6.6 的
+include/linux/module.h 里已无此宏。本包在两处使用：
+
+  mt_wifi/os/linux/wbsys_main_dev.c:313   —— 该 .o 在 kbuild 对象列表里，
+                                             且该行位于 #ifndef MULTI_INF_SUPPORT
+                                             之内，而 MULTI_INF_SUPPORT 只在
+                                             CONFIG_FIRST_IF_MT7626 时才 -D
+                                             （本配置是 MT7981）→ 会真实编译，
+                                             属硬错误，删除该行。
+  mt_wifi/embedded/plug_in/whnat/woe_main.c:904
+                                          —— woe_main.o 不在 kbuild 对象列表，
+                                             不参与编译，不改。
+
+--- a/mt_wifi/os/linux/wbsys_main_dev.c
++++ b/mt_wifi/os/linux/wbsys_main_dev.c
+@@ -310,7 +310,6 @@
+ module_exit(wbsys_module_exit);
+ 
+ MODULE_DESCRIPTION("Register for MTK WIFI driver HIF is internal bus");
+-MODULE_SUPPORTED_DEVICE("mtk wbsys platform driver");
+ #endif
+ 
+ #endif /* RTMP_RBUS_SUPPORT */

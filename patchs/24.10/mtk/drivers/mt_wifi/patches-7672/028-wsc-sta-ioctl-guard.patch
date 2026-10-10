@@ -1,0 +1,55 @@
+From: AutoBuild-OpenWrt
+Subject: [PATCH] mt_wifi: 修正 WSC STA 两个私有 ioctl 常量的条件编译
+
+sta_ioctl.c 报：
+
+  sta_ioctl.c:287: error: 'RTPRIV_IOCTL_SET_WSC_PROFILE_U32_ITEM' undeclared
+  sta_ioctl.c:295: error: 'RTPRIV_IOCTL_SET_WSC_PROFILE_STRING_ITEM' undeclared
+
+两个常量定义在 rt_os.h，被两层条件包着：
+
+  #ifdef CONFIG_STA_SUPPORT          <- 外层
+  ...
+    #ifdef WSC_STA_SUPPORT
+    #define RTPRIV_IOCTL_SET_WSC_PROFILE_U32_ITEM    (SIOCIWFIRSTPRIV + 0x14)
+    #define RTPRIV_IOCTL_SET_WSC_PROFILE_STRING_ITEM (SIOCIWFIRSTPRIV + 0x16)
+    #endif
+  #endif
+
+而使用处（sta_ioctl.c 的私有 ioctl 表）只要求 WSC_STA_SUPPORT。
+
+问题出在 mt_wifi_ap/Makefile：
+
+  ifneq ($(CONFIG_MT_AP_SUPPORT),)
+      EXTRA_CFLAGS += -DWSC_AP_SUPPORT
+      EXTRA_CFLAGS += -DWSC_STA_SUPPORT     <- AP 构建也定义它
+  endif
+
+CONFIG_STA_SUPPORT 只在 STA 构建时（Makefile 里 CONFIG_MT_STA_SUPPORT 那支）
+才 -D。于是 AP 构建下「使用处开、定义处关」，编译失败。
+
+修法：把这两个常量移出外层 CONFIG_STA_SUPPORT，只由 WSC_STA_SUPPORT 把关
+—— 与该常量唯一的真实引用处保持一致的守卫。
+
+（另注：ap_ioctl.c 里对这两个名字的引用都在注释中，不影响。）
+
+--- a/mt_wifi/include/os/rt_os.h
++++ b/mt_wifi/include/os/rt_os.h
+@@ -79,11 +79,16 @@
+ 
+ 
+ 
++#endif /* CONFIG_STA_SUPPORT */
++
++/* mt_wifi_ap/Makefile defines WSC_STA_SUPPORT for CONFIG_MT_AP_SUPPORT builds
++ * too, while CONFIG_STA_SUPPORT is only defined for STA builds.  These two
++ * constants are referenced from sta_ioctl.c under WSC_STA_SUPPORT alone, so
++ * gate them on that rather than on the enclosing CONFIG_STA_SUPPORT. */
+ #ifdef WSC_STA_SUPPORT
+ #define RTPRIV_IOCTL_SET_WSC_PROFILE_U32_ITEM       (SIOCIWFIRSTPRIV + 0x14)
+ #define RTPRIV_IOCTL_SET_WSC_PROFILE_STRING_ITEM    (SIOCIWFIRSTPRIV + 0x16)
+ #endif /* WSC_STA_SUPPORT */
+-#endif /* CONFIG_STA_SUPPORT */
+ 
+ #ifdef CONFIG_AP_SUPPORT
+ /* Ralink defined OIDs */

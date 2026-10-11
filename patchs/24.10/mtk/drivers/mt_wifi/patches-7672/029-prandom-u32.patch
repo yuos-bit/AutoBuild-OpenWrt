@@ -1,0 +1,34 @@
+From: AutoBuild-OpenWrt
+Subject: [PATCH] mt_wifi: prandom_u32() 改用 get_random_u32()，修复 6.6 编译
+
+rt_os_util.c 报：
+
+  rt_os_util.c:264:16: error: implicit declaration of function 'prandom_u32';
+    did you mean 'get_random_u32'? [-Werror=implicit-function-declaration]
+
+prandom_u32() 已从内核移除 —— v6.6 的 include/linux/prandom.h 里只剩
+prandom_u32_state()。厂商对应实现用的正是 get_random_u32()，此处照做：
+
+  UINT32 MtRandom32(VOID)
+  {
+  #if (LINUX_VERSION_CODE  >= KERNEL_VERSION(3, 8, 0))
+  -	return prandom_u32();
+  +	return get_random_u32();
+  #else
+      return random32();
+  #endif
+  }
+
+（下面 #else 里的 random32() 走的是 <3.8.0 分支，6.6 上不编译。）
+
+--- a/mt_wifi/embedded/common/rt_os_util.c
++++ b/mt_wifi/embedded/common/rt_os_util.c
+@@ -261,7 +261,7 @@
+ UINT32 MtRandom32(VOID)
+ {
+ #if (LINUX_VERSION_CODE  >= KERNEL_VERSION(3, 8, 0))
+-	return prandom_u32();
++	return get_random_u32();
+ #else /* LINUX_VERSION_CODE >= KERNEL_VERSION(3,8,0) */
+ 	return random32();
+ #endif /* LINUX_VERSION_CODE < KERNEL_VERSION(3,8,0) */

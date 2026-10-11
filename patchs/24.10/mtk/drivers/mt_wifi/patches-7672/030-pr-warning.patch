@@ -1,0 +1,26 @@
+From: AutoBuild-OpenWrt
+Subject: [PATCH] mt_wifi: pr_warning 改用 pr_warn，修复 6.6 编译
+
+dbg_ctrl.c 报：
+
+  rt_linux.h:747:41: error: implicit declaration of function 'pr_warning';
+    did you mean 'pr_warn'? [-Werror=implicit-function-declaration]
+    747 | #define MTWF_PRINT_DBG_LVL_WARN         pr_warning
+
+pr_warning 是 5.15 起被移除的旧别名 —— v6.6 的 include/linux/printk.h 里
+只有 pr_warn。厂商 rt_linux.h 中该行正是 pr_warn，此处照做。
+
+同一 DBG_ENHANCE 块里的其余几项（pr_crit / pr_err / pr_notice / pr_info）
+在 6.6 均存在，无需改动。
+
+--- a/mt_wifi/include/os/rt_linux.h
++++ b/mt_wifi/include/os/rt_linux.h
+@@ -744,7 +744,7 @@
+ /* Mapping Wi-Fi driver log to syslog level */
+ #define MTWF_PRINT_DBG_LVL_OFF		pr_crit
+ #define MTWF_PRINT_DBG_LVL_ERROR	pr_err
+-#define MTWF_PRINT_DBG_LVL_WARN		pr_warning
++#define MTWF_PRINT_DBG_LVL_WARN		pr_warn
+ #define MTWF_PRINT_DBG_LVL_NOTICE	pr_notice
+ #define MTWF_PRINT_DBG_LVL_INFO		pr_info
+ #define MTWF_PRINT_DBG_LVL_DEBUG	pr_info

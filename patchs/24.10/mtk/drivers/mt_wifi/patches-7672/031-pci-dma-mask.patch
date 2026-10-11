@@ -1,0 +1,76 @@
+From: AutoBuild-OpenWrt
+Subject: [PATCH] mt_wifi: pci_set_dma_mask/pci_set_consistent_dma_mask 改用 dma_*
+
+rbus_prop_dev.c 报：
+
+  rbus_prop_dev.c:92: error: implicit declaration of function 'pci_set_dma_mask'
+  rbus_prop_dev.c:97: error: implicit declaration of function 'pci_set_consistent_dma_mask'
+
+这两个函数随 include/linux/pci-dma-compat.h 在 Linux 6.4 被整体删除
+（v6.6 上该文件已不存在，pci.h 里也没有这些符号）。等价替换是
+dma_set_mask() / dma_set_coherent_mask()：
+
+  - pci_set_dma_mask(pdev, X)              -> dma_set_mask(&pdev->dev, X)
+  - pci_set_consistent_dma_mask(pdev, X)   -> dma_set_coherent_mask(&pdev->dev, X)
+
+改动两处文件（pdev 均为 struct pci_dev *）：
+  os/linux/rbus_prop_dev.c   2 处（厂商同一位置正是这么改的，改完一致）
+  os/linux/pci_main_dev.c    4 处（厂商未改，按同一模式处理；其中 270/276
+                                  两处在 #if defined(PLATFORM_M_STB) 内，
+                                  另两处 284/289 在通用路径上）
+
+未改的引用：
+  include/os/rt_drv.h、include/os/rt_linux.h 里的 PCI_ALLOC_CONSISTENT 等
+  只是宏体，未被调用；os/linux/rt_profile.c:2340 的 pci_free_consistent 在
+  注释中。二者都不会展开，无害。
+
+--- a/mt_wifi/os/linux/rbus_prop_dev.c
++++ b/mt_wifi/os/linux/rbus_prop_dev.c
+@@ -89,12 +89,12 @@
+ 
+ 	MTWF_DBG(pAd, DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_INFO, "===> rt2880_probe\n");
+ 
+-	if (!pci_set_dma_mask(pdev, DMA_BIT_MASK(32))) {
++	if (!dma_set_mask(&pdev->dev, DMA_BIT_MASK(32))) {
+ 		/*
+ 		 * pci_set_consistent_dma_mask() will always be able to set the same
+ 		 * or a smaller mask as pci_set_dma_mask()
+ 		 */
+-		pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(32));
++		dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(32));
+ 	} else {
+ 		MTWF_DBG(pAd, DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR,
+ 				 "set DMA mask failed!errno=%d\n", rv);
+--- a/mt_wifi/os/linux/pci_main_dev.c
++++ b/mt_wifi/os/linux/pci_main_dev.c
+@@ -267,13 +267,13 @@
+ 
+ #if defined(PLATFORM_M_STB)
+ 	if (IS_ENABLED(CONFIG_ARM64) && (!IS_ENABLED(CONFIG_ZONE_DMA))) {
+-		if ((rv = pci_set_dma_mask(pdev, DMA_BIT_MASK(64))) != 0) {
++		if ((rv = dma_set_mask(&pdev->dev, DMA_BIT_MASK(64))) != 0) {
+ 			MTWF_DBG(NULL, DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR,
+ 					 "set DMA mask failed!errno=%d\n", rv);
+ 			return rv;
+ 		}
+ 
+-		if ((rv = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(64))) != 0) {
++		if ((rv = dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(64))) != 0) {
+ 			MTWF_DBG(NULL, DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR,
+ 					 "set DMA consistent mask failed!errno=%d\n", rv);
+ 			return rv;
+@@ -281,12 +281,12 @@
+ 	}
+ 	else
+ #endif
+-	if (!pci_set_dma_mask(pdev, DMA_BIT_MASK(32))) {
++	if (!dma_set_mask(&pdev->dev, DMA_BIT_MASK(32))) {
+ 		/*
+ 		 * pci_set_consistent_dma_mask() will always be able to set the same
+ 		 * or a smaller mask as pci_set_dma_mask()
+ 		 */
+-		pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(32));
++		dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(32));
+ 	} else {
+ 		MTWF_DBG(NULL, DBG_CAT_HIF, CATHIF_PCI, DBG_LVL_ERROR,
+ 				 "set DMA mask failed!errno=%d\n", rv);
